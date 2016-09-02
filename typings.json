@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "express": "registry:npm/express#4.14.0+20160815112707",
+    "sp-request": "npm:sp-request"
+  },
+  "globalDependencies": {
+    "jquery": "registry:dt/jquery#1.10.0+20160704162008",
+    "node": "registry:dt/node#6.0.0+20160831021119"
+  }
+}

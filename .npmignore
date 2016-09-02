@@ -1,0 +1,5 @@
+.vscode
+test
+typings
+config/_private.conf.json
+npm-debug.log

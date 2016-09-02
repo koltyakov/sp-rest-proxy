@@ -1,0 +1,21 @@
+{
+  "resolution": "main",
+  "tree": {
+    "src": "https://raw.githubusercontent.com/types/npm-express/53ba67bb089a4636ebf1d92a5b1da60175f60be3/typings.json",
+    "raw": "registry:npm/express#4.14.0+20160815112707",
+    "main": "index.d.ts",
+    "version": "4.14.0",
+    "dependencies": {
+      "serve-static": {
+        "src": "https://raw.githubusercontent.com/felixfbecker/typed-serve-static/fe2b0ca8e5f2bd696242c57fef96e85715b4c516/typings.json",
+        "raw": "registry:npm/serve-static#1.11.1+20160810053450",
+        "main": "index.d.ts",
+        "version": "1.11.1",
+        "name": "serve-static",
+        "type": "typings"
+      }
+    },
+    "name": "express",
+    "type": "typings"
+  }
+}

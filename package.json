@@ -1,0 +1,33 @@
+{
+  "name": "sp-rest-proxy",
+  "description": "SharePoint REST API Proxy for Node.js and Express local serve",
+  "version": "0.0.1",
+  "main": "./src/server.js",
+  "scripts": {
+    "serve": "node ./src/server.js",
+    "build": "npm install && bower install && typings install",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "sharepoint",
+    "rest",
+    "proxy",
+    "debug"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/koltyakov/sp-rest-proxy.git"
+  },
+  "author": "Andrew Koltyakov <andrew.koltyakov@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/koltyakov/sp-rest-proxy/issues"
+  },
+  "homepage": "https://github.com/koltyakov/sp-rest-proxy#readme",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0",
+    "prompt": "^1.0.0",
+    "sp-request": "^1.1.4"
+  }
+}

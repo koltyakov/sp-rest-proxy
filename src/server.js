@@ -8,6 +8,7 @@ spf.restProxy = function() {
     var fs = require("fs");
     var sprequest = require("sp-request");
     var prompt = require("prompt");
+    // var _ = require("lodash");
 
     var _self = this;
 
@@ -124,16 +125,23 @@ spf.restProxy = function() {
         //     baseUrl: req.baseUrl,
         //     body: req.body
         // });
+
+        // console.log("=== Headers", req.headers);
+        // console.log("=== Body", req.body);
+        // console.log("=== Data", req.data);
+
         _self.spr = _self.getCachedRequest(_self.spr);
         console.log("POST: " + _self.ctx.siteUrl + req.originalUrl);
         _self.spr.requestDigest(_self.ctx.siteUrl)
             .then(function (digest) {
-                console.log("Gigest: " + digest);
+                // console.log("Gigest: " + digest)
+
                 return _self.spr.post(_self.ctx.siteUrl + req.originalUrl, {
                     headers: {
                         "X-RequestDigest": digest,
-                        "accept": "application/json; odata=verbose",
-                    },
+                        "Accept": "application/json; odata=verbose",
+                        "Content-Type": "application/json; odata=verbose"
+                    }
                 });
             })
             .then(function (response) {

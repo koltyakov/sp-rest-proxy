@@ -1,0 +1,28 @@
+{
+  "name": "sp-rest-proxy",
+  "description": "SharePoint REST API Proxy for Node.js and Express local serve",
+  "main": "./src/server.js",
+  "authors": [
+    "Andrew Koltyakov <andrew.koltyakov@gmail.com>"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "sharepoint",
+    "rest",
+    "proxy",
+    "debug"
+  ],
+  "homepage": "https://github.com/koltyakov/sp-rest-proxy",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "src/lib",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "1.12.4",
+    "bootstrap": "^3.3.7"
+  }
+}

@@ -300,7 +300,7 @@
                 "global": false,
                 "dependencies": {
                   "async": {
-                    "src": "D:\\Projects\\GitHub\\sp-rest-proxy\\node_modules\\async\\package.json",
+                    "src": "D:\\Projects\\GitHub\\sp-rest-proxy\\node_modules\\form-data\\node_modules\\async\\package.json",
                     "raw": "npm:async",
                     "main": "dist/async.js",
                     "version": "2.0.1",
@@ -857,7 +857,7 @@
                 "src": "D:\\Projects\\GitHub\\sp-rest-proxy\\node_modules\\qs\\package.json",
                 "raw": "npm:qs",
                 "main": "lib/index.js",
-                "version": "6.2.1",
+                "version": "6.2.0",
                 "global": false,
                 "name": "qs"
               },

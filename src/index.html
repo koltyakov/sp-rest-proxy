@@ -99,8 +99,12 @@
                         <input type="radio" name="httpMethods" value="post"> POST
                     </label>
                 </div>
+                <div class="form-group hidden">
+                    <label for="headers">Headers:</label>
+                    <textarea class="form-control" rows="3" id="headers"></textarea>
+                </div>
                 <div class="form-group post hidden">
-                    <label for="postBody">Post body:</label>
+                    <label for="postBody">Data:</label>
                     <textarea class="form-control" rows="3" id="postBody"></textarea>
                 </div>
                 <button class="btn btn-default" id="apiRequestExecute">Send HTTP request</button>
@@ -147,6 +151,21 @@
 
                 ajaxOptions.url = $("#restEndpoint").val();
                 ajaxOptions.method = httpMethod.toUpperCase();
+
+                var headers = $("#headers").val();
+                if (headers.length > 0) {
+                    try {
+                        headers = JSON.parse(headers);
+                        ajaxOptions.headers = headers;
+                    } catch(ex) {
+                        $(".resultsArea .loading").addClass("hidden");
+                        $(".resultsArea .requestResutls").addClass("hidden").text("");
+                        $(".resultsArea .requestError").addClass("hidden").text("");
+                        $(".resultsArea .requestError").append("Headers body is not a correct JSON string!").removeClass("hidden");
+                        return;
+                    }
+                }
+
                 if (httpMethod === "post") {
                     var postBody = $("#postBody").val();
                     if (postBody.length > 0) {
@@ -156,7 +175,7 @@
                             $(".resultsArea .loading").addClass("hidden");
                             $(".resultsArea .requestResutls").addClass("hidden").text("");
                             $(".resultsArea .requestError").addClass("hidden").text("");
-                            $(".resultsArea .requestError").text("Post body is not a correct JSON string!").removeClass("hidden");
+                            $(".resultsArea .requestError").append("Data body is not a correct JSON string!").removeClass("hidden");
                             return;
                         }
                     }

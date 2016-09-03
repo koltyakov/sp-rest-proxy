@@ -1,5 +1,8 @@
 // npm run serve
 
+var Cpass = require("cpass");
+var cpass = new Cpass();
+
 var spf = spf || {};
 spf.restProxy = function() {
     var express = require("express");
@@ -18,6 +21,7 @@ spf.restProxy = function() {
         fs.exists(configPath.replace("./../", ""), function(exists) {
             if (exists) {
                 _self.ctx = require(configPath);
+                _self.ctx.password = cpass.decode(_self.ctx.password);
                 if (callback && typeof callback === "function") {
                     callback();
                 }
@@ -61,7 +65,7 @@ spf.restProxy = function() {
                     var json = {};
                     json.siteUrl = res.siteUrl;
                     json.username = res.username;
-                    json.password = res.password;
+                    json.password = cpass.encode(res.password);
                     if (res.domain.length > 0) {
                         json.domain = res.domain;
                     }

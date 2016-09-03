@@ -4,6 +4,8 @@
 
 Allows to perform API calls to local Express application with forwarding the queries to a remote SharePoint instance.
 
+This concept was created to show how is could be easy to implements real world data communications for SharePoint Framework local serve mode during web parts debug without deployment to SharePoint tenant.
+
 ## Supported SharePoint versions:
 - SharePoint Online
 - SharePoint 2013

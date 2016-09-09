@@ -26,6 +26,7 @@
   "homepage": "https://github.com/koltyakov/sp-rest-proxy#readme",
   "dependencies": {
     "body-parser": "^1.15.2",
+    "cors": "^2.8.1",
     "cpass": "^1.0.0",
     "express": "^4.14.0",
     "lodash": "^4.15.0",

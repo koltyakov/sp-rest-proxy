@@ -98,10 +98,10 @@ spf.restProxy = function() {
     _self.getCachedRequest = function(spr) {
         var env = {};
         if (_self.ctx.hasOwnProperty("domain")) {
-            env.domain = ctx.domain;
+            env.domain = _self.ctx.domain;
         }
         if (_self.ctx.hasOwnProperty("workstation")) {
-            env.workstation = ctx.workstation;
+            env.workstation = _self.ctx.workstation;
         }
         spr = spr || require("sp-request").create(_self.ctx, env);
         return spr;

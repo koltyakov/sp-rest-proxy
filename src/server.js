@@ -2,6 +2,7 @@
 
 var Cpass = require("cpass");
 var cpass = new Cpass();
+var cors = require("cors");
 
 var spf = spf || {};
 spf.restProxy = function() {
@@ -179,6 +180,7 @@ spf.restProxy = function() {
         _self.initContext(function() {
             app.use(bodyParser.urlencoded({ extended: true }));
             app.use(bodyParser.json());
+            app.use(cors());
             app.use("*/_api", _self.routers.apiRouter);
             app.use("/", _self.routers.staticRouter);
             app.listen(_self.port);

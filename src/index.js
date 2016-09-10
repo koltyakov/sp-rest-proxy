@@ -123,7 +123,16 @@ spf.restProxy = function(settings) {
     _self.routers.apiRouter.get("/*", function(req, res) {
         _self.spr = _self.getCachedRequest(_self.spr);
         console.log("GET: " + _self.ctx.siteUrl + req.originalUrl);
-        _self.spr.get(_self.ctx.siteUrl + req.originalUrl)
+        var requestHeadersPass = {};
+        if (req.headers["accept"]) {
+            requestHeadersPass["accept"] = req.headers["accept"];
+        }
+        if (req.headers["content-type"]) {
+            requestHeadersPass["content-type"] = req.headers["content-type"];
+        }
+        _self.spr.get(_self.ctx.siteUrl + req.originalUrl, {
+            headers: requestHeadersPass
+        })
             .then(function (response) {
                 res.status(response.statusCode);
                 res.json(response);
@@ -149,15 +158,24 @@ spf.restProxy = function(settings) {
 
         _self.spr = _self.getCachedRequest(_self.spr);
         console.log("POST: " + _self.ctx.siteUrl + req.originalUrl);
-        _self.spr.requestDigest(_self.ctx.siteUrl)
+        var requestHeadersPass = {};
+        if (req.headers["accept"]) {
+            requestHeadersPass["accept"] = req.headers["accept"];
+        }
+        if (req.headers["content-type"]) {
+            requestHeadersPass["content-type"] = req.headers["content-type"];
+        }
+        _self.spr.requestDigest(_self.ctx.siteUrl, {
+            headers: requestHeadersPass
+        })
             .then(function (digest) {
                 // console.log("Gigest: " + digest)
 
                 return _self.spr.post(_self.ctx.siteUrl + req.originalUrl, {
                     headers: {
                         "X-RequestDigest": digest,
-                        "Accept": "application/json; odata=verbose",
-                        "Content-Type": "application/json; odata=verbose"
+                        "Accept": "application/json; odata=verbose",       // ToDo - pass through proxy
+                        "Content-Type": "application/json; odata=verbose"  // ToDo - pass through proxy
                     }
                 });
             })

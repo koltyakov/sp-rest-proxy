@@ -1,8 +1,8 @@
 {
   "name": "sp-rest-proxy",
   "description": "SharePoint REST API Proxy for Node.js and Express local serve",
-  "version": "0.0.5",
-  "main": "./src/server.js",
+  "version": "0.1.0",
+  "main": "./src/index.js",
   "scripts": {
     "serve": "node ./src/server.js",
     "build": "npm install && bower install && typings install",
@@ -12,7 +12,8 @@
     "sharepoint",
     "rest",
     "proxy",
-    "debug"
+    "debug",
+    "API"
   ],
   "repository": {
     "type": "git",
@@ -30,6 +31,7 @@
     "cpass": "^1.0.0",
     "express": "^4.14.0",
     "lodash": "^4.15.0",
+    "path": "^0.12.7",
     "prompt": "^1.0.0",
     "sp-request": "^1.1.4"
   }

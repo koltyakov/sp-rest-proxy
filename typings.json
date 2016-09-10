@@ -4,6 +4,7 @@
     "sp-request": "npm:sp-request"
   },
   "globalDependencies": {
+    "cors": "registry:dt/cors#0.0.0+20160708202709",
     "jquery": "registry:dt/jquery#1.10.0+20160704162008",
     "lodash": "registry:dt/lodash#4.14.0+20160830145422",
     "node": "registry:dt/node#6.0.0+20160831021119"

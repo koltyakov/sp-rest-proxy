@@ -2,6 +2,7 @@ var Cpass = require("cpass");
 var cpass = new Cpass();
 var cors = require("cors");
 var path = require('path');
+var mkdirp = require('mkdirp');
 
 var spf = spf || {};
 spf.restProxy = function(settings) {
@@ -77,12 +78,18 @@ spf.restProxy = function(settings) {
                     }
                     _self.ctx = json;
                     if (res.save) {
-                        fs.writeFile(configPath, JSON.stringify(json), "utf8", function(err) {
+                        var saveFolderPath = path.dirname(configPath);
+                        mkdirp(saveFolderPath, function(err) {
                             if (err) {
-                                console.log(err);
-                                return;
-                            }
-                            console.log("Config file is saved to " + configPath);
+                                console.log("Error creating folder " + "`" + saveFolderPath + " `", err);
+                            };
+                            fs.writeFile(configPath, JSON.stringify(json), "utf8", function(err) {
+                                if (err) {
+                                    console.log(err);
+                                    return;
+                                }
+                                console.log("Config file is saved to " + configPath);
+                            });
                         });
                     }
                     if (callback && typeof callback === "function") {

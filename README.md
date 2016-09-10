@@ -86,3 +86,9 @@ Prompt credentials for a SharePoint site.
 6\. Ajax REST calls as if you were in SharePoint site page context:
 
 ![REST Client Example](./docs/img/client-example.png)
+
+## Some additional info
+
+UPD: sp-rest-proxy works with pnp-js-core:
+
+![PnP JS Core + sp-rest-proxy](http://koltyakov.ru/images/pnp-sp-rest-proxy.png)

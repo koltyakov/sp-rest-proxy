@@ -16,7 +16,46 @@ This concept was created to show how is could be easy to implements real world d
 - SharePoint 2013
 - SharePoint 2016
 
-## How to use:
+## How to use as a module:
+
+1\. Install NPM module in the project:
+
+```bash
+npm install --save-dev sp-rest-proxy
+```
+
+2\. Create server.js with the following code:
+
+```javascript
+var RestProxy = require("sp-rest-proxy");
+
+var settings = {
+    configPath: __dirname + "/config/_private.conf.json", // Location for SharePoint instance mapping and credentials
+    port: 8080,                                           // Local server port
+    staticRoot: __dirname + "/static"                     // Root folder for static content
+};
+
+var restProxy = new RestProxy(settings);
+restProxy.serve();
+```
+
+3\. Add npm task for serve into package.json:
+
+```json
+"scripts": {
+    "serve": "node ./server.js"
+}
+```
+
+Check if the path to server.js is correct.
+
+4\. Run `npm run serve`.
+
+5\. Provide SharePoint configuration parameters.
+
+6\. Test local API proxy in action.
+
+## How to develop:
 
 ### Install:
 
@@ -47,3 +86,9 @@ Prompt credentials for a SharePoint site.
 6\. Ajax REST calls as if you were in SharePoint site page context:
 
 ![REST Client Example](./docs/img/client-example.png)
+
+## Some additional info
+
+UPD: sp-rest-proxy works with pnp-js-core:
+
+![PnP JS Core + sp-rest-proxy](http://koltyakov.ru/images/pnp-sp-rest-proxy.png)

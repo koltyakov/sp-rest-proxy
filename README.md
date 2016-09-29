@@ -2,6 +2,11 @@
 
 > Concept for REST API proxy to SharePoint tenant as if it were a local API.
 
+[![NPM](https://nodei.co/npm/sp-rest-proxy.png?mini=true&downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/sp-rest-proxy/)
+
+[![npm version](https://badge.fury.io/js/sp-rest-proxy.svg)](https://badge.fury.io/js/sp-rest-proxy)
+[![Downloads](https://img.shields.io/npm/dm/sp-rest-proxy.svg)](https://www.npmjs.com/package/sp-rest-proxy)
+
 Allows to perform API calls to local Express application with forwarding the queries to a remote SharePoint instance.
 
 This concept was created to show how is could be easy to implements real world data communications for SharePoint Framework local serve mode during web parts debug without deployment to SharePoint tenant.

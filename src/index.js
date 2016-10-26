@@ -24,7 +24,7 @@ spf.restProxy = function(settings) {
     var configPath = settings.configPath;
 
     _self.initContext = function(callback) {
-        console.log("Config path: " +  settings.configPath);
+        console.log("Config path: " + settings.configPath);
         fs.exists(configPath, function(exists) {
             if (exists) {
                 _self.ctx = require(configPath);
@@ -90,6 +90,7 @@ spf.restProxy = function(settings) {
                                 }
                                 console.log("Config file is saved to " + configPath);
                             });
+                            console.log("Please check readme for additional auth methods: https://github.com/koltyakov/sp-rest-proxy");
                         });
                     }
                     if (callback && typeof callback === "function") {
@@ -109,14 +110,15 @@ spf.restProxy = function(settings) {
     };
 
     _self.getCachedRequest = function(spr) {
-        var env = {};
-        if (_self.ctx.hasOwnProperty("domain")) {
-            env.domain = _self.ctx.domain;
-        }
-        if (_self.ctx.hasOwnProperty("workstation")) {
-            env.workstation = _self.ctx.workstation;
-        }
-        spr = spr || require("sp-request").create(_self.ctx, env);
+        // var env = {};
+        // if (_self.ctx.hasOwnProperty("domain")) {
+        //     env.domain = _self.ctx.domain;
+        // }
+        // if (_self.ctx.hasOwnProperty("workstation")) {
+        //     env.workstation = _self.ctx.workstation;
+        // }
+        // spr = spr || require("sp-request").create(_self.ctx, env);
+        spr = spr || require("sp-request").create(_self.ctx);
         return spr;
     };
 

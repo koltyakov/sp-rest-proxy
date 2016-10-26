@@ -39,6 +39,8 @@ var restProxy = new RestProxy(settings);
 restProxy.serve();
 ```
 
+[Configuration parameters cheatsheet](https://github.com/koltyakov/sp-rest-proxy/tree/master/docs/authparameters.md)
+
 3\. Add npm task for serve into package.json:
 
 ```json

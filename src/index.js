@@ -13,6 +13,9 @@ spf.restProxy = function(settings) {
     var sprequest = require("sp-request");
     var prompt = require("prompt");
 
+    var spauth = require('node-sp-auth');
+    var request = require('request-promise');
+
     // default settings
     settings.configPath = path.join(settings.configPath || __dirname + "/../config/_private.conf.json");
     settings.port = settings.port || 8080;
@@ -105,8 +108,18 @@ spf.restProxy = function(settings) {
 
     _self.port = process.env.PORT || settings.port;
     _self.routers = {
-        apiRouter: express.Router(),
+        apiRestRouter: express.Router(),
+        apiSoapRouter: express.Router(),
         staticRouter: express.Router()
+    };
+
+    _self.getAuthOptions = function(callback) {
+        spauth.getAuth(_self.ctx.siteUrl, _self.ctx)
+            .then(function(options) {
+                if (callback && typeof callback === "function") {
+                    callback(options);
+                }
+            });
     };
 
     _self.getCachedRequest = function(spr) {
@@ -122,7 +135,7 @@ spf.restProxy = function(settings) {
         return spr;
     };
 
-    _self.routers.apiRouter.get("/*", function(req, res) {
+    _self.routers.apiRestRouter.get("/*", function(req, res) {
         _self.spr = _self.getCachedRequest(_self.spr);
         console.log("GET: " + _self.ctx.siteUrl + req.originalUrl);
         var requestHeadersPass = {};
@@ -145,50 +158,80 @@ spf.restProxy = function(settings) {
             });
     });
 
-    _self.routers.apiRouter.post("/*", function(req, res) {
-        // res.json({
-        //     method: req.method,
-        //     headers: req.headers,
-        //     url: req.url,
-        //     baseUrl: req.baseUrl,
-        //     body: req.body
-        // });
+    _self.routers.apiRestRouter.post("/*", function(req, res) {
+        var reqBody = "";
+        req.on('data', function (chunk) {
+            reqBody += chunk;
+        });
 
-        // console.log("=== Headers", req.headers);
-        // console.log("=== Body", req.body);
-        // console.log("=== Data", req.data);
+        req.on('end', function () {
 
+            _self.spr = _self.getCachedRequest(_self.spr);
+            console.log("POST: " + _self.ctx.siteUrl + req.originalUrl);
+            var requestHeadersPass = {};
+            if (req.headers["accept"]) {
+                requestHeadersPass["accept"] = req.headers["accept"];
+            }
+            if (req.headers["content-type"]) {
+                requestHeadersPass["content-type"] = req.headers["content-type"];
+            }
+            _self.spr.requestDigest(_self.ctx.siteUrl, {
+                headers: requestHeadersPass
+            })
+                .then(function (digest) {
+                    return _self.spr.post(_self.ctx.siteUrl + req.originalUrl, {
+                        headers: {
+                            "X-RequestDigest": digest,
+                            "Accept": "application/json; odata=verbose",       // ToDo - pass through proxy
+                            "Content-Type": "application/json; odata=verbose"  // ToDo - pass through proxy
+                        },
+                        body: reqBody
+                    });
+                })
+                .then(function (response) {
+                    res.status(response.statusCode);
+                    res.json(response);
+                })
+                .catch(function (err) {
+                    res.status(err.statusCode);
+                    res.json(err);
+                });
+        });
+    });
+
+    _self.routers.apiSoapRouter.post("/*", function(req, res, next) {
         _self.spr = _self.getCachedRequest(_self.spr);
         console.log("POST: " + _self.ctx.siteUrl + req.originalUrl);
-        var requestHeadersPass = {};
-        if (req.headers["accept"]) {
-            requestHeadersPass["accept"] = req.headers["accept"];
-        }
-        if (req.headers["content-type"]) {
-            requestHeadersPass["content-type"] = req.headers["content-type"];
-        }
-        _self.spr.requestDigest(_self.ctx.siteUrl, {
-            headers: requestHeadersPass
-        })
-            .then(function (digest) {
-                // console.log("Gigest: " + digest)
+        var regExpOrigin = new RegExp(req.headers.origin, "g");
+        var soapBody = "";
+        req.on('data', function (chunk) {
+            soapBody += chunk;
+        });
+        req.on('end', function () {
+            soapBody = soapBody.replace(regExpOrigin, _self.ctx.siteUrl);
 
-                return _self.spr.post(_self.ctx.siteUrl + req.originalUrl, {
-                    headers: {
-                        "X-RequestDigest": digest,
-                        "Accept": "application/json; odata=verbose",       // ToDo - pass through proxy
-                        "Content-Type": "application/json; odata=verbose"  // ToDo - pass through proxy
-                    }
+            _self.getAuthOptions(function(opt) {
+                var headers = opt.headers; // .Cookie - auth cookie
+
+                headers["Accept"] = "application/xml, text/xml, */*; q=0.01";
+                headers["Content-Type"] = "text/xml;charset=\"UTF-8\"";
+                headers["Content-Length"] = soapBody.length;
+                headers["X-Requested-With"] = "XMLHttpRequest";
+
+                request.post({
+                    url: _self.ctx.siteUrl + req.originalUrl,
+                    headers: headers,
+                    body: soapBody
+                }).then(function(response) {
+                    res.send(response);
+                    res.end();
+                })
+                .catch(function (err) {
+                    res.status(err.statusCode);
+                    res.json(err);
                 });
-            })
-            .then(function (response) {
-                res.status(response.statusCode);
-                res.json(response);
-            })
-            .catch(function (err) {
-                res.status(err.statusCode);
-                res.json(err);
             });
+        });
     });
 
     _self.routers.staticRouter.get("/*", function(req, res) {
@@ -205,7 +248,6 @@ spf.restProxy = function(settings) {
             res.json(response);
             return;
         }
-        // res.sendFile(__dirname + url);
         res.sendFile(path.join(settings.staticRoot + url));
     });
 
@@ -214,7 +256,8 @@ spf.restProxy = function(settings) {
             app.use(bodyParser.urlencoded({ extended: true }));
             app.use(bodyParser.json());
             app.use(cors());
-            app.use("*/_api", _self.routers.apiRouter);
+            app.use("*/_api", _self.routers.apiRestRouter);
+            app.use("*/_vti_bin", _self.routers.apiSoapRouter);
             app.use("/", _self.routers.staticRouter);
             app.listen(_self.port);
             console.log("SharePoint REST Proxy has been started on port " + _self.port);
@@ -222,8 +265,5 @@ spf.restProxy = function(settings) {
     };
     return _self;
 };
-
-// var restProxy = new spf.restProxy();
-// restProxy.serve();
 
 module.exports = spf.restProxy;

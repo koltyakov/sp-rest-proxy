@@ -20,11 +20,14 @@ spf.restProxy = function(settings) {
     settings.configPath = path.join(settings.configPath || __dirname + "/../config/_private.conf.json");
     settings.port = settings.port || 8080;
     settings.staticRoot = path.join(settings.staticRoot || __dirname + "/../src");
+    settings.staticLibPath = path.join(settings.staticLibPath || __dirname + "/../src/lib");
     // default settings
 
     var _self = this;
 
     var configPath = settings.configPath;
+
+    _self.staticLibPathExists = fs.existsSync(settings.staticLibPath);
 
     _self.initContext = function(callback) {
         console.log("Config path: " + settings.configPath);
@@ -123,14 +126,6 @@ spf.restProxy = function(settings) {
     };
 
     _self.getCachedRequest = function(spr) {
-        // var env = {};
-        // if (_self.ctx.hasOwnProperty("domain")) {
-        //     env.domain = _self.ctx.domain;
-        // }
-        // if (_self.ctx.hasOwnProperty("workstation")) {
-        //     env.workstation = _self.ctx.workstation;
-        // }
-        // spr = spr || require("sp-request").create(_self.ctx, env);
         spr = spr || require("sp-request").create(_self.ctx);
         return spr;
     };
@@ -236,7 +231,12 @@ spf.restProxy = function(settings) {
 
     _self.routers.staticRouter.get("/*", function(req, res) {
         var filename;
-        var url = "/index.html";
+        var url = "";
+        if (_self.staticLibPathExists) {
+            url = "/static/index.html";
+        } else {
+            url = "/static/index_cdn.html";
+        }
         if (req.url !== "/") {
             url = req.url;
         }

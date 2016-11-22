@@ -47,16 +47,16 @@ spf.restProxy = function(settings) {
                     required: true
                 });
                 promptFor.push({
-                    description: "User login",
-                    name: "username",
-                    type: "string",
-                    required: true
-                });
-                promptFor.push({
                     description: "Domain (for On-Prem only)",
                     name: "domain",
                     type: "string",
                     required: false
+                });
+                promptFor.push({
+                    description: "User login",
+                    name: "username",
+                    type: "string",
+                    required: true
                 });
                 promptFor.push({
                     description: "Password",

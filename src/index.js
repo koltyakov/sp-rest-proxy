@@ -34,7 +34,9 @@ spf.restProxy = function(settings) {
         fs.exists(configPath, function(exists) {
             if (exists) {
                 _self.ctx = require(configPath);
-                _self.ctx.password = cpass.decode(_self.ctx.password);
+                if (typeof _self.ctx.password !== "undefined") {
+                    _self.ctx.password = cpass.decode(_self.ctx.password);
+                }
                 if (callback && typeof callback === "function") {
                     callback();
                 }
@@ -133,19 +135,31 @@ spf.restProxy = function(settings) {
     _self.routers.apiRestRouter.get("/*", function(req, res) {
         _self.spr = _self.getCachedRequest(_self.spr);
         console.log("GET: " + _self.ctx.siteUrl + req.originalUrl);
+
+        // var requestHeadersPass = {};
+        // if (req.headers["accept"]) {
+        //     requestHeadersPass["accept"] = req.headers["accept"];
+        // }
+        // if (req.headers["content-type"]) {
+        //     requestHeadersPass["content-type"] = req.headers["content-type"];
+        // }
+
         var requestHeadersPass = {};
-        if (req.headers["accept"]) {
-            requestHeadersPass["accept"] = req.headers["accept"];
+        var ignoreHeaders = [ "host", "referer", "if-none-match", "connection", "cache-control", "cache-control", "user-agent", "accept-encoding" ];
+        for (var prop in req.headers) {
+            if (req.headers.hasOwnProperty(prop)) {
+                if (ignoreHeaders.indexOf(prop.toLowerCase()) === -1) {
+                    requestHeadersPass[prop] = req.headers[prop];
+                }
+            }
         }
-        if (req.headers["content-type"]) {
-            requestHeadersPass["content-type"] = req.headers["content-type"];
-        }
+
         _self.spr.get(_self.ctx.siteUrl + req.originalUrl, {
             headers: requestHeadersPass
         })
             .then(function (response) {
                 res.status(response.statusCode);
-                res.json(response);
+                res.json(response.body);
             })
             .catch(function (err) {
                 res.status(err.statusCode);
@@ -163,29 +177,40 @@ spf.restProxy = function(settings) {
 
             _self.spr = _self.getCachedRequest(_self.spr);
             console.log("POST: " + _self.ctx.siteUrl + req.originalUrl);
+
+            // var requestHeadersPass = {};
+            // if (req.headers["accept"]) {
+            //     requestHeadersPass["accept"] = req.headers["accept"];
+            // }
+            // if (req.headers["content-type"]) {
+            //     requestHeadersPass["content-type"] = req.headers["content-type"];
+            // }
+
             var requestHeadersPass = {};
-            if (req.headers["accept"]) {
-                requestHeadersPass["accept"] = req.headers["accept"];
+            var ignoreHeaders = [ "host", "referer", "if-none-match", "connection", "cache-control", "cache-control", "user-agent", "accept-encoding" ];
+            for (var prop in req.headers) {
+                if (req.headers.hasOwnProperty(prop)) {
+                    if (ignoreHeaders.indexOf(prop.toLowerCase()) === -1) {
+                        requestHeadersPass[prop] = req.headers[prop];
+                    }
+                }
             }
-            if (req.headers["content-type"]) {
-                requestHeadersPass["content-type"] = req.headers["content-type"];
-            }
+
             _self.spr.requestDigest(_self.ctx.siteUrl, {
                 headers: requestHeadersPass
             })
                 .then(function (digest) {
+                    requestHeadersPass["X-RequestDigest"] = digest;
+                    requestHeadersPass["accept"] = requestHeadersPass["accept"] || "application/json; odata=verbose";
+                    requestHeadersPass["content-type"] = requestHeadersPass["content-type"] || "application/json; odata=verbose";
                     return _self.spr.post(_self.ctx.siteUrl + req.originalUrl, {
-                        headers: {
-                            "X-RequestDigest": digest,
-                            "Accept": "application/json; odata=verbose",       // ToDo - pass through proxy
-                            "Content-Type": "application/json; odata=verbose"  // ToDo - pass through proxy
-                        },
+                        headers: requestHeadersPass,
                         body: reqBody
                     });
                 })
                 .then(function (response) {
                     res.status(response.statusCode);
-                    res.json(response);
+                    res.json(response.body);
                 })
                 .catch(function (err) {
                     res.status(err.statusCode);

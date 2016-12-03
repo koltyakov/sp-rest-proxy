@@ -178,31 +178,35 @@ spf.restProxy = function(settings) {
             _self.spr = _self.getCachedRequest(_self.spr);
             console.log("POST: " + _self.ctx.siteUrl + req.originalUrl);
 
-            // var requestHeadersPass = {};
-            // if (req.headers["accept"]) {
-            //     requestHeadersPass["accept"] = req.headers["accept"];
-            // }
-            // if (req.headers["content-type"]) {
-            //     requestHeadersPass["content-type"] = req.headers["content-type"];
-            // }
-
-            var requestHeadersPass = {};
-            var ignoreHeaders = [ "host", "referer", "if-none-match", "connection", "cache-control", "cache-control", "user-agent", "accept-encoding" ];
-            for (var prop in req.headers) {
-                if (req.headers.hasOwnProperty(prop)) {
-                    if (ignoreHeaders.indexOf(prop.toLowerCase()) === -1) {
-                        requestHeadersPass[prop] = req.headers[prop];
-                    }
-                }
+            var requestHeaders = {};
+            if (req.headers["accept"]) {
+                requestHeaders["accept"] = req.headers["accept"];
+            }
+            if (req.headers["content-type"]) {
+                requestHeaders["content-type"] = req.headers["content-type"];
             }
 
             _self.spr.requestDigest(_self.ctx.siteUrl, {
-                headers: requestHeadersPass
+                headers: requestHeaders
             })
                 .then(function (digest) {
+
+                    var requestHeadersPass = {};
+                    var ignoreHeaders = [ "host", "referer", "if-none-match",
+                                          "connection", "cache-control", "cache-control",
+                                          "user-agent", "accept-encoding",
+                                          "accept", "content-type" ];
+                    for (var prop in req.headers) {
+                        if (req.headers.hasOwnProperty(prop)) {
+                            if (ignoreHeaders.indexOf(prop.toLowerCase()) === -1) {
+                                requestHeadersPass[prop] = req.headers[prop];
+                            }
+                        }
+                    }
+
                     requestHeadersPass["X-RequestDigest"] = digest;
-                    requestHeadersPass["accept"] = requestHeadersPass["accept"] || "application/json; odata=verbose";
-                    requestHeadersPass["content-type"] = requestHeadersPass["content-type"] || "application/json; odata=verbose";
+                    requestHeadersPass["accept"] = "application/json; odata=verbose";
+                    requestHeadersPass["content-type"] = "application/json; odata=verbose";
                     return _self.spr.post(_self.ctx.siteUrl + req.originalUrl, {
                         headers: requestHeadersPass,
                         body: reqBody

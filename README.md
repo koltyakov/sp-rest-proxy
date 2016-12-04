@@ -91,7 +91,7 @@ Prompt credentials for a SharePoint site.
 
 ## Authentication settings
 
-Since communication module (sp-request), which is used in sppull, had received additional SharePoint authentication methods, they are also supported in sppull.
+Since communication module (sp-request), which is used in sppull, had received additional SharePoint authentication methods, they are also supported in sp-rest-proxy.
 
 - SharePoint On-Premise (Add-In permissions):
     - `clientId`

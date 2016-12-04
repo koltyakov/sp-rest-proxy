@@ -15,6 +15,7 @@ spf.restProxy = function(settings) {
 
     var spauth = require('node-sp-auth');
     var request = require('request-promise');
+    var metadata = require(path.join(__dirname, "/..", "/package.json"));
 
     // default settings
     settings.configPath = path.join(settings.configPath || __dirname + "/../config/_private.conf.json");
@@ -32,15 +33,25 @@ spf.restProxy = function(settings) {
     _self.initContext = function(callback) {
         console.log("Config path: " + settings.configPath);
         fs.exists(configPath, function(exists) {
+            var needPrompts = !exists;
             if (exists) {
                 _self.ctx = require(configPath);
                 if (typeof _self.ctx.password !== "undefined") {
                     _self.ctx.password = cpass.decode(_self.ctx.password);
                 }
-                if (callback && typeof callback === "function") {
-                    callback();
+                if (_self.ctx.password === "" || typeof _self.ctx.password === "undefined") {
+                    needPrompts = true;
+                    if (typeof _self.ctx.clientId !== "undefined" && typeof _self.ctx.clientSecret !== "undefined") {
+                        needPrompts = false;
+                    }
                 }
-            } else {
+                if (!needPrompts) {
+                    if (callback && typeof callback === "function") {
+                        callback();
+                    }
+                }
+            }
+            if (needPrompts) {
                 var promptFor = [];
                 promptFor.push({
                     description: "SharePoint Site Url",
@@ -136,20 +147,22 @@ spf.restProxy = function(settings) {
         _self.spr = _self.getCachedRequest(_self.spr);
         console.log("GET: " + _self.ctx.siteUrl + req.originalUrl);
 
-        // var requestHeadersPass = {};
-        // if (req.headers["accept"]) {
-        //     requestHeadersPass["accept"] = req.headers["accept"];
-        // }
-        // if (req.headers["content-type"]) {
-        //     requestHeadersPass["content-type"] = req.headers["content-type"];
-        // }
+        var requestHeadersPass = {
+            "accept": "application/json; odata=verbose",
+            "content-type": "application/json; odata=verbose"
+        };
 
-        var requestHeadersPass = {};
-        var ignoreHeaders = [ "host", "referer", "if-none-match", "connection", "cache-control", "cache-control", "user-agent", "accept-encoding" ];
+        var ignoreHeaders = [ "host", "referer", "if-none-match", "connection",
+                              "cache-control", "cache-control", "user-agent",
+                              "accept-encoding", "x-requested-with", "accept-language" ];
+
         for (var prop in req.headers) {
             if (req.headers.hasOwnProperty(prop)) {
                 if (ignoreHeaders.indexOf(prop.toLowerCase()) === -1) {
-                    requestHeadersPass[prop] = req.headers[prop];
+                    requestHeadersPass[prop.toLowerCase()] = req.headers[prop];
+                    if (prop.toLowerCase() === "accept" && requestHeadersPass[prop.toLowerCase()] === '*/*') {
+                        requestHeadersPass[prop.toLowerCase()] = "application/json; odata=verbose";
+                    }
                 }
             }
         }
@@ -162,8 +175,8 @@ spf.restProxy = function(settings) {
                 res.json(response.body);
             })
             .catch(function (err) {
-                res.status(err.statusCode);
-                res.json(err);
+                res.status(err.statusCode >= 100 && err.statusCode < 600 ? err.statusCode : 500);
+                res.send(err.message);
             });
     });
 
@@ -191,22 +204,28 @@ spf.restProxy = function(settings) {
             })
                 .then(function (digest) {
 
-                    var requestHeadersPass = {};
+                    var requestHeadersPass = {
+                        "accept": "application/json; odata=verbose",
+                        "content-type": "application/json; odata=verbose"
+                    };
+
                     var ignoreHeaders = [ "host", "referer", "if-none-match",
                                           "connection", "cache-control", "cache-control",
-                                          "user-agent", "accept-encoding",
+                                          "user-agent", "accept-encoding", "accept-language",
                                           "accept", "content-type" ];
+
                     for (var prop in req.headers) {
                         if (req.headers.hasOwnProperty(prop)) {
                             if (ignoreHeaders.indexOf(prop.toLowerCase()) === -1) {
-                                requestHeadersPass[prop] = req.headers[prop];
+                                requestHeadersPass[prop.toLowerCase()] = req.headers[prop];
                             }
                         }
                     }
 
                     requestHeadersPass["X-RequestDigest"] = digest;
-                    requestHeadersPass["accept"] = "application/json; odata=verbose";
-                    requestHeadersPass["content-type"] = "application/json; odata=verbose";
+                    // requestHeadersPass["accept"] = "application/json; odata=verbose";
+                    // requestHeadersPass["content-type"] = "application/json; odata=verbose";
+
                     return _self.spr.post(_self.ctx.siteUrl + req.originalUrl, {
                         headers: requestHeadersPass,
                         body: reqBody
@@ -217,8 +236,8 @@ spf.restProxy = function(settings) {
                     res.json(response.body);
                 })
                 .catch(function (err) {
-                    res.status(err.statusCode);
-                    res.json(err);
+                    res.status(err.statusCode >= 100 && err.statusCode < 600 ? err.statusCode : 500);
+                    res.send(err.message);
                 });
         });
     });
@@ -268,6 +287,11 @@ spf.restProxy = function(settings) {
         }
         if (req.url !== "/") {
             url = req.url;
+        } else {
+            var pageContent = String(fs.readFileSync(path.join(settings.staticRoot, url)));
+            pageContent = pageContent.replace('##proxyVersion#', metadata.version);
+            res.send(pageContent);
+            return;
         }
         if (req.url === "/config") {
             var response = {
@@ -277,7 +301,7 @@ spf.restProxy = function(settings) {
             res.json(response);
             return;
         }
-        res.sendFile(path.join(settings.staticRoot + url));
+        res.sendFile(path.join(settings.staticRoot, url));
     });
 
     _self.serve = function() {

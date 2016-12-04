@@ -89,8 +89,37 @@ Prompt credentials for a SharePoint site.
 
 ![REST Client Example](./docs/img/client-example.png)
 
+## Authentication settings
+
+Since communication module (sp-request), which is used in sppull, had received additional SharePoint authentication methods, they are also supported in sppull.
+
+- SharePoint On-Premise (Add-In permissions):
+    - `clientId`
+    - `issuerId`
+    - `realm`
+    - `rsaPrivateKeyPath`
+    - `shaThumbprint`
+- SharePoint On-Premise (NTLM handshake - more commonly used scenario):
+    - `username` - username without domain
+    - `password`
+    - `domain` / `workstation`
+- SharePoint Online (Add-In permissions):
+    - `clientId`
+    - `clientSecret`
+- SharePoint Online (SAML based with credentials - more commonly used scenario):
+    - `username` - user name for SP authentication [string, required]
+    - `password` - password [string, required]
+- ADFS user credantials:
+    - `username`
+    - `password`
+    - `relyingParty`
+    - `adfsUrl`
+
+For more information please check node-sp-auth [credential options](https://github.com/s-KaiNet/node-sp-auth#params) and [wiki pages](https://github.com/s-KaiNet/node-sp-auth/wiki).
+Auth settings are stored inside `./config/_private.conf.js`.
+
 ## Some additional info
 
-UPD: sp-rest-proxy works with pnp-js-core:
+sp-rest-proxy works with PnP JS Core (not POST request, as there is an endpoint transformation during POST request in PnP JS Core):
 
 ![PnP JS Core + sp-rest-proxy](http://koltyakov.ru/images/pnp-sp-rest-proxy.png)

@@ -26,7 +26,10 @@ $(function() {
         ajaxOptions.url = $("#restEndpoint").val();
         ajaxOptions.method = httpMethod.toUpperCase();
 
-        var headers = $("#headers").val();
+        var headers = $("#headers").val() || {
+            "accept": "application/json; odata=verbose",
+            "content-type": "application/json; odata=verbose"
+        };
         if (headers.length > 0) {
             try {
                 headers = JSON.parse(headers);

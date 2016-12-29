@@ -181,15 +181,13 @@ spf.restProxy = function(settings) {
     });
 
     _self.routers.apiRestRouter.post("/*", function(req, res) {
+        console.log("POST: " + _self.ctx.siteUrl + req.originalUrl);
+
         var reqBody = "";
-        req.on('data', function (chunk) {
-            reqBody += chunk;
-        });
 
-        req.on('end', function () {
-
+        var processPostRequest = function(reqBody, req, res) {
+            console.log("Request body:", reqBody);
             _self.spr = _self.getCachedRequest(_self.spr);
-            console.log("POST: " + _self.ctx.siteUrl + req.originalUrl);
 
             var requestHeaders = {};
             if (req.headers["accept"]) {
@@ -223,8 +221,11 @@ spf.restProxy = function(settings) {
                     }
 
                     requestHeadersPass["X-RequestDigest"] = digest;
-                    // requestHeadersPass["accept"] = "application/json; odata=verbose";
-                    // requestHeadersPass["content-type"] = "application/json; odata=verbose";
+                    //requestHeadersPass["accept"] = "application/json; odata=verbose";
+                    //requestHeadersPass["content-type"] = "application/json; odata=verbose";
+                    try {
+                        requestHeadersPass["content-length"] = JSON.stringify(reqBody).length;
+                    } catch (ex) {}
 
                     return _self.spr.post(_self.ctx.siteUrl + req.originalUrl, {
                         headers: requestHeadersPass,
@@ -239,7 +240,25 @@ spf.restProxy = function(settings) {
                     res.status(err.statusCode >= 100 && err.statusCode < 600 ? err.statusCode : 500);
                     res.send(err.message);
                 });
-        });
+        };
+
+        if (req.body) {
+            reqBody = req.body;
+            try {
+                reqBody = JSON.parse(reqBody);
+            } catch (ex) {}
+            processPostRequest(reqBody, req, res);
+        } else {
+            req.on('data', function (chunk) {
+                reqBody += chunk;
+            });
+            req.on('end', function () {
+                try {
+                    reqBody = JSON.parse(reqBody);
+                } catch (ex) {}
+                processPostRequest(reqBody, req, res);
+            });
+        }
     });
 
     _self.routers.apiSoapRouter.post("/*", function(req, res, next) {

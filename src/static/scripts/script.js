@@ -56,7 +56,8 @@ $(function() {
                     return;
                 }
             }
-            ajaxOptions.data = postBody;
+            ajaxOptions.data = JSON.parse(postBody);
+            // ajaxOptions.body = JSON.parse(postBody);
         }
 
         $(".resultsArea .loading").removeClass("hidden");

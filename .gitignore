@@ -3,3 +3,4 @@ bower_components
 src/lib
 config/_private.conf.json
 npm-debug.log
+npm-debug.log.*

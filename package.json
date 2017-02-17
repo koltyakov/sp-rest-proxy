@@ -34,8 +34,9 @@
     "express": "^4.14.0",
     "lodash": "^4.16.4",
     "mkdirp": "^0.5.1",
+    "node-sp-auth": "^1.2.3",
     "path": "^0.12.7",
     "prompt": "^1.0.0",
-    "sp-request": "^2.0.2"
+    "sp-request": "^2.0.3"
   }
 }

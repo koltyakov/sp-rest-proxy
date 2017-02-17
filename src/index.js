@@ -102,7 +102,7 @@ spf.restProxy = function(settings) {
                             if (err) {
                                 console.log("Error creating folder " + "`" + saveFolderPath + " `", err);
                             };
-                            fs.writeFile(configPath, JSON.stringify(json), "utf8", function(err) {
+                            fs.writeFile(configPath, JSON.stringify(json, null, 2), "utf8", function(err) {
                                 if (err) {
                                     console.log(err);
                                     return;
@@ -200,7 +200,7 @@ spf.restProxy = function(settings) {
             _self.spr.requestDigest(_self.ctx.siteUrl, {
                 headers: requestHeaders
             })
-                .then(function (digest) {
+                .then(function(digest) {
 
                     var requestHeadersPass = {
                         "accept": "application/json; odata=verbose",
@@ -221,8 +221,7 @@ spf.restProxy = function(settings) {
                     }
 
                     requestHeadersPass["X-RequestDigest"] = digest;
-                    //requestHeadersPass["accept"] = "application/json; odata=verbose";
-                    //requestHeadersPass["content-type"] = "application/json; odata=verbose";
+
                     try {
                         requestHeadersPass["content-length"] = JSON.stringify(reqBody).length;
                     } catch (ex) {}
@@ -233,6 +232,7 @@ spf.restProxy = function(settings) {
                     });
                 })
                 .then(function (response) {
+                    console.log('=== Response ===');
                     res.status(response.statusCode);
                     res.json(response.body);
                 })

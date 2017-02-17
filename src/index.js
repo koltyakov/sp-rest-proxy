@@ -2,6 +2,7 @@ var cpass = new (require("cpass"));
 var cors = require("cors");
 var path = require('path');
 var mkdirp = require('mkdirp');
+var extend = require('util')._extend;
 
 var spf = spf || {};
 spf.restProxy = function(settings) {
@@ -94,7 +95,7 @@ spf.restProxy = function(settings) {
                     if (res.domain.length > 0) {
                         json.domain = res.domain;
                     }
-                    _self.ctx = json;
+                    _self.ctx = extend({}, json);
                     if (res.save) {
                         var saveFolderPath = path.dirname(configPath);
                         mkdirp(saveFolderPath, function(err) {

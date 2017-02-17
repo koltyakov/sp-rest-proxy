@@ -1,5 +1,4 @@
-var Cpass = require("cpass");
-var cpass = new Cpass();
+var cpass = new (require("cpass"));
 var cors = require("cors");
 var path = require('path');
 var mkdirp = require('mkdirp');
@@ -111,6 +110,9 @@ spf.restProxy = function(settings) {
                             });
                             console.log("Please check readme for additional auth methods: https://github.com/koltyakov/sp-rest-proxy");
                         });
+                    }
+                    if (typeof _self.ctx.password !== "undefined") {
+                        _self.ctx.password = cpass.decode(_self.ctx.password);
                     }
                     if (callback && typeof callback === "function") {
                         callback();

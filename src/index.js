@@ -189,17 +189,7 @@ spf.restProxy = function(settings) {
             console.log("Request body:", reqBody);
             _self.spr = _self.getCachedRequest(_self.spr);
 
-            var requestHeaders = {};
-            if (req.headers["accept"]) {
-                requestHeaders["accept"] = req.headers["accept"];
-            }
-            if (req.headers["content-type"]) {
-                requestHeaders["content-type"] = req.headers["content-type"];
-            }
-
-            _self.spr.requestDigest(_self.ctx.siteUrl, {
-                headers: requestHeaders
-            })
+            _self.spr.requestDigest(_self.ctx.siteUrl)
                 .then(function(digest) {
 
                     var requestHeadersPass = {
@@ -232,7 +222,6 @@ spf.restProxy = function(settings) {
                     });
                 })
                 .then(function (response) {
-                    console.log('=== Response ===');
                     res.status(response.statusCode);
                     res.json(response.body);
                 })

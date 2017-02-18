@@ -192,7 +192,7 @@ spf.restProxy = function(settings) {
             console.log("Request body:", reqBody);
             _self.spr = _self.getCachedRequest(_self.spr);
 
-            _self.spr.requestDigest(_self.ctx.siteUrl)
+            _self.spr.requestDigest((_self.ctx.siteUrl + req.originalUrl).split('/_api')[0])
                 .then(function(digest) {
 
                     var requestHeadersPass = {

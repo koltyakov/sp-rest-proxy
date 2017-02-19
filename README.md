@@ -1,7 +1,5 @@
 # sp-rest-proxy - SharePoint REST API Proxy for Node.js and Express local serve
 
-> Concept for REST API proxy to SharePoint tenant as if it were a local API.
-
 [![NPM](https://nodei.co/npm/sp-rest-proxy.png?mini=true&downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/sp-rest-proxy/)
 
 [![npm version](https://badge.fury.io/js/sp-rest-proxy.svg)](https://badge.fury.io/js/sp-rest-proxy)
@@ -27,15 +25,16 @@ npm install --save-dev sp-rest-proxy
 2\. Create server.js with the following code:
 
 ```javascript
-var RestProxy = require("sp-rest-proxy");
+const RestProxy = require('sp-rest-proxy');
+const path = require('path');
 
-var settings = {
-    configPath: __dirname + "/config/_private.conf.json", // Location for SharePoint instance mapping and credentials
-    port: 8080,                                           // Local server port
-    staticRoot: __dirname + "/static"                     // Root folder for static content
+const settings = {
+    configPath: path.join(__dirname, '/../config/_private.conf.json'), // Location for SharePoint instance mapping and credentials
+    port: 8080,                                                        // Local server port
+    staticRoot: path.join(__dirname, '/../src')                        // Root folder for static content
 };
 
-var restProxy = new RestProxy(settings);
+const restProxy = new RestProxy(settings);
 restProxy.serve();
 ```
 

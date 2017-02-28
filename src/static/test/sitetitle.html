@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Show title using REST</title>
+    <meta name="viewport" content="width=device-width, maximum-scale=1, user-scalable=no" />
+
+    <link rel="shortcut icon" href="/img/favicon.ico" type="image/vnd.microsoft.icon" id="favicon">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/es6-promise/4.0.5/es6-promise.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.1/fetch.min.js"></script>
+</head>
+<body>
+    <h1 id="title">Loading...</h1>
+    <script>
+        fetch(new Request('/_api/web/title', {
+            credentials: 'include',
+            headers: new Headers({
+                "Accept": "application/json; odata=verbose"
+            }) 
+        }))
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(json) {
+                console.log(json);
+                title = json.d.Title;
+                var titleElement = document.getElementById('title');
+                titleElement.innerHTML = title;
+            })
+            .catch(function(ex) {
+                console.log('Error:', ex)
+            });
+    </script>
+</body>
+</html>

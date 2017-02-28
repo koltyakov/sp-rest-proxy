@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PnP JS Core Basic Test</title>
+    <meta name="viewport" content="width=device-width, maximum-scale=1, user-scalable=no" />
+
+    <link rel="shortcut icon" href="/img/favicon.ico" type="image/vnd.microsoft.icon" id="favicon">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/es6-promise/4.0.5/es6-promise.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.1/fetch.min.js"></script>
+    <script type="text/javascript" src="https://cdn.rawgit.com/SharePoint/PnP-JS-Core/master/dist/pnp.js"></script>
+
+</head>
+<body>
+    <h1 id="title">Lists on the web:</h1>
+    <ul id="lists">Loading...</ul>
+
+    <script>
+        var _spPageContextInfo = _spPageContextInfo || {};
+        _spPageContextInfo.webServerRelativeUrl = "/";
+        $pnp.sp.web.lists.get().then(function(lists) {
+            document.getElementById("lists").innerHTML =
+                lists.map(function(l) {
+                    return '<li>' + l.Title + '</li>';
+                }).join("");
+        });
+    </script>
+</body>
+</html>

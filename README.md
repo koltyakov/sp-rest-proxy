@@ -1,7 +1,5 @@
 # sp-rest-proxy - SharePoint REST API Proxy for Node.js and Express local serve
 
-> Concept for REST API proxy to SharePoint tenant as if it were a local API.
-
 [![NPM](https://nodei.co/npm/sp-rest-proxy.png?mini=true&downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/sp-rest-proxy/)
 
 [![npm version](https://badge.fury.io/js/sp-rest-proxy.svg)](https://badge.fury.io/js/sp-rest-proxy)
@@ -27,15 +25,16 @@ npm install --save-dev sp-rest-proxy
 2\. Create server.js with the following code:
 
 ```javascript
-var RestProxy = require("sp-rest-proxy");
+const RestProxy = require('sp-rest-proxy');
+const path = require('path');
 
-var settings = {
-    configPath: __dirname + "/config/_private.conf.json", // Location for SharePoint instance mapping and credentials
-    port: 8080,                                           // Local server port
-    staticRoot: __dirname + "/static"                     // Root folder for static content
+const settings = {
+    configPath: path.join(__dirname, '/../config/_private.conf.json'), // Location for SharePoint instance mapping and credentials
+    port: 8080,                                                        // Local server port
+    staticRoot: path.join(__dirname, '/../src')                        // Root folder for static content
 };
 
-var restProxy = new RestProxy(settings);
+const restProxy = new RestProxy(settings);
 restProxy.serve();
 ```
 
@@ -89,8 +88,37 @@ Prompt credentials for a SharePoint site.
 
 ![REST Client Example](./docs/img/client-example.png)
 
+## Authentication settings
+
+Since communication module (sp-request), which is used in sppull, had received additional SharePoint authentication methods, they are also supported in sp-rest-proxy.
+
+- SharePoint On-Premise (Add-In permissions):
+    - `clientId`
+    - `issuerId`
+    - `realm`
+    - `rsaPrivateKeyPath`
+    - `shaThumbprint`
+- SharePoint On-Premise (NTLM handshake - more commonly used scenario):
+    - `username` - username without domain
+    - `password`
+    - `domain` / `workstation`
+- SharePoint Online (Add-In permissions):
+    - `clientId`
+    - `clientSecret`
+- SharePoint Online (SAML based with credentials - more commonly used scenario):
+    - `username` - user name for SP authentication [string, required]
+    - `password` - password [string, required]
+- ADFS user credantials:
+    - `username`
+    - `password`
+    - `relyingParty`
+    - `adfsUrl`
+
+For more information please check node-sp-auth [credential options](https://github.com/s-KaiNet/node-sp-auth#params) and [wiki pages](https://github.com/s-KaiNet/node-sp-auth/wiki).
+Auth settings are stored inside `./config/_private.conf.js`.
+
 ## Some additional info
 
-UPD: sp-rest-proxy works with pnp-js-core:
+sp-rest-proxy works with PnP JS Core (not POST request, as there is an endpoint transformation during POST request in PnP JS Core):
 
 ![PnP JS Core + sp-rest-proxy](http://koltyakov.ru/images/pnp-sp-rest-proxy.png)

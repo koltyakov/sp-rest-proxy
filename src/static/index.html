@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SharePoint REST Proxy Example</title>
+    <link rel="shortcut icon" href="/img/favicon.ico" type="image/vnd.microsoft.icon" id="favicon">
+    <link type="text/css" rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.min.css">
+    <link type="text/css" rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap-theme.min.css">
+    <script type="text/javascript" src="/lib/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/lib/spservices/jquery.SPServices-0.7.2.min.js"></script>
+    <link type="text/css" rel="stylesheet" href="/static/styles/style.css">
+</head>
+<body>
+    <header class="navbar navbar-static-top" id="top"> 
+        <div class="container"> 
+            <div class="navbar-header"> 
+                <h1 class="page-header">SharePoint REST Node.js Proxy</h1>
+            </div>
+        </div>
+    </header>
+    <div class="container">
+        <div class="row info">
+            <div class="col-md-12">
+                <a href="https://msdn.microsoft.com/en-us/library/office/jj860569.aspx" target="_blank" id="api-reference"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span> REST API reference and samples</a>
+            </div>
+            <div class="col-md-12">
+                <label for="proxyVersion" class="info-lable">Proxy version:</label>
+                <span id="proxyVersion">##proxyVersion#</spandiv>
+            </div>
+            <div class="col-md-12">
+                <label for="siteUrl" class="info-lable">Site url:</label>
+                <span id="siteUrl">...</spandiv>
+            </div>
+            <div class="col-md-12">
+                <label for="username" class="info-lable">User name:</label>
+                <span id="username">...</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label for="restEndpoint">SharePoint REST relative endpoint:</label>
+                    <input type="text" class="form-control" id="restEndpoint" placeholder="REST Relative URL">
+                </div>
+                <label>HTTP Method:</label>
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="httpMethods" checked="checked" value="get"> GET
+                    </label>
+                    <label>
+                        <input type="radio" name="httpMethods" value="post"> POST
+                    </label>
+                </div>
+                <div class="form-group hidden">
+                    <label for="headers">Headers:</label>
+                    <textarea class="form-control" rows="3" id="headers"></textarea>
+                </div>
+                <div class="form-group post hidden">
+                    <label for="postBody">Data:</label>
+                    <textarea class="form-control" rows="3" id="postBody"></textarea>
+                </div>
+                <button class="btn btn-default" id="apiRequestExecute">Send HTTP request</button>
+            </div>
+        </div>
+        <div class="row resultsArea">
+            <div class="col-md-12">
+                <div class="loading hidden">
+                    <span class="glyphicon glyphicon-time" aria-hidden="true"></span> Loading...
+                </div>
+                <pre class="requestResutls hidden">
+                </pre>
+                <pre class="requestError hidden">
+                </pre>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" src="/static/scripts/script.js"></script>
+</body>
+</html>

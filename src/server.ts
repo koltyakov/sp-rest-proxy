@@ -1,6 +1,6 @@
 import * as path from 'path';
 
-import { RestProxy } from './index';
+import RestProxy from './index';
 import { IProxySettings } from './interfaces';
 
 const settings: IProxySettings = {

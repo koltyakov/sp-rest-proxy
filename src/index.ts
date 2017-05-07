@@ -17,7 +17,7 @@ export interface IRouters {
     [routerName: string]: express.Router;
 }
 
-export class RestProxy {
+export default class RestProxy {
 
     public app: express.Application;
     public settings: IProxySettings;

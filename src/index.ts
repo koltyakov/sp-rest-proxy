@@ -11,13 +11,9 @@ import { RestGetRouter } from './routers/restGet';
 import { RestPostRouter } from './routers/restPost';
 import { SoapRouter } from './routers/soap';
 import { StaticRouter } from './routers/static';
-import { IProxySettings, IProxyContext } from './interfaces';
+import { IProxySettings, IProxyContext, IRouters } from './interfaces';
 
-export interface IRouters {
-    [routerName: string]: express.Router;
-}
-
-export default class RestProxy {
+class RestProxy {
 
     public app: express.Application;
     public settings: IProxySettings;
@@ -68,3 +64,5 @@ export default class RestProxy {
             });
     }
 }
+
+module.exports = RestProxy;

@@ -1,4 +1,5 @@
 import { IAuthOptions } from 'node-sp-auth';
+import { Router } from 'express';
 
 export interface IProxySettings {
     configPath?: string;
@@ -13,4 +14,8 @@ export interface IProxySettings {
 export interface IProxyContext {
     siteUrl: string;
     context: IAuthOptions;
+}
+
+export interface IRouters {
+    [routerName: string]: Router;
 }

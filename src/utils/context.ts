@@ -1,4 +1,4 @@
-const prompt = require('prompt');
+import * as prompt from 'prompt';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as mkdirp from 'mkdirp';

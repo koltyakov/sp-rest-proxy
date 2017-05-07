@@ -18,38 +18,48 @@ export class RestPostRouter {
 
     public router = (req: Request, res: Response, next?: NextFunction) => {
         let endpointUrl = this.util.buildEndpointUrl(req.originalUrl);
-        console.log('\nPOST: ' + endpointUrl); // _self.ctx.siteUrl + req.originalUrl
+        console.log('\nPOST: ' + endpointUrl);
 
         let reqBody = '';
 
-        let processPostRequest = (reqBody, req, res) => {
-            let endpointUrl = this.util.buildEndpointUrl(req.originalUrl);
-            console.log('Request body:', reqBody);
+        // tslint:disable-next-line:no-shadowed-variable
+        let processPostRequest = (reqBodyData: any, req: Request, res: Response) => {
+            let endpointUrlStr = this.util.buildEndpointUrl(req.originalUrl);
+            console.log('Request body:', reqBodyData);
 
             this.spr = this.util.getCachedRequest(this.spr);
 
-            this.spr.requestDigest((endpointUrl).split('/_api')[0])
+            this.spr.requestDigest((endpointUrlStr).split('/_api')[0])
                 .then((digest: string) => {
-                    let requestHeadersPass = {
-                        'accept': 'application/json; odata=verbose',
-                        'content-type': 'application/json; odata=verbose'
-                    };
+                    let requestHeadersPass: any = {};
 
-                    let ignoreHeaders = [ 'host', 'referer', 'if-none-match',
-                        'connection', 'cache-control', 'cache-control', 'origin',
-                        'user-agent', 'accept-encoding', 'accept-language',
-                        'accept', 'content-type' ];
+                    let ignoreHeaders = [
+                        'host', 'referer', 'origin',
+                        'if-none-match', 'connection', 'cache-control', 'user-agent',
+                        'accept-encoding', 'x-requested-with', 'accept-language'
+                    ];
 
-                    Object.keys(req.headers).forEach((prop) => {
+                    Object.keys(req.headers).forEach((prop: string) => {
                         if (ignoreHeaders.indexOf(prop.toLowerCase()) === -1) {
-                            requestHeadersPass[prop.toLowerCase()] = req.headers[prop];
+                            if (prop.toLowerCase() === 'accept' && req.headers[prop] !== '*/*') {
+                                // tslint:disable-next-line:no-string-literal
+                                requestHeadersPass['Accept'] = req.headers[prop];
+                            } else if (prop.toLowerCase() === 'content-type') {
+                                requestHeadersPass['Content-Type'] = req.headers[prop];
+                            } else {
+                                requestHeadersPass[prop] = req.headers[prop];
+                            }
                         }
                     });
 
-                    requestHeadersPass['X-RequestDigest'] = digest;
+                    requestHeadersPass = {
+                        ...requestHeadersPass,
+                        'X-RequestDigest': digest
+                    };
 
                     try {
-                        requestHeadersPass['content-length'] = JSON.stringify(reqBody).length;
+                        requestHeadersPass['content-length'] = JSON.stringify(reqBodyData).length;
+                        // tslint:disable-next-line:no-empty
                     } catch (ex) {}
 
                     if (this.settings.debugOutput) {
@@ -57,9 +67,9 @@ export class RestPostRouter {
                         console.log(JSON.stringify(requestHeadersPass, null, 2));
                     }
 
-                    return this.spr.post(endpointUrl, {
+                    return this.spr.post(endpointUrlStr, {
                         headers: requestHeadersPass,
-                        body: reqBody
+                        body: reqBodyData
                     });
                 })
                 .then((response: any) => {
@@ -79,6 +89,7 @@ export class RestPostRouter {
             reqBody = req.body;
             try {
                 reqBody = JSON.parse(reqBody);
+                // tslint:disable-next-line:no-empty
             } catch (ex) {}
             processPostRequest(reqBody, req, res);
         } else {
@@ -88,6 +99,7 @@ export class RestPostRouter {
             req.on('end', () => {
                 try {
                     reqBody = JSON.parse(reqBody);
+                    // tslint:disable-next-line:no-empty
                 } catch (ex) {}
                 processPostRequest(reqBody, req, res);
             });

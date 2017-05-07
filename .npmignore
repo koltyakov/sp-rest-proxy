@@ -1,9 +1,7 @@
 .vscode
-/test
-/typings
-/config/_private.conf.json
+/tests
+/config/private.json
 npm-debug.log
 /src
 /docs
-/build
 !/dist

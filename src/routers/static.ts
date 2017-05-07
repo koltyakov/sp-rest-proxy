@@ -23,8 +23,9 @@ export class StaticRouter {
         if (this.staticLibPathExists) {
             url = '/static/index.html';
         } else {
-            url = '/static/index_cdn.html';
+            url = '/static/index-cdn.html';
         }
+
         if (req.url !== '/') {
             url = req.url;
         } else {
@@ -36,7 +37,7 @@ export class StaticRouter {
         if (req.url === '/config') {
             let response = {
                 siteUrl: this.ctx.siteUrl,
-                username: (this.ctx.context as any).username || 'Add-in'
+                username: (this.ctx.context as any).username || 'Add-In'
             };
             res.json(response);
             return;

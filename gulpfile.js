@@ -1,19 +1,55 @@
 'use strict';
 
-process.env.NODE_ENV = 'development';
+const gulp = require('gulp');
+const merge = require('merge-stream');
+const tslint = require('gulp-tslint');
+const tsc = require('gulp-typescript');
 
-let gulp = require('gulp');
-let plugins = require('gulp-load-plugins')({
-    pattern: ['gulp-*', 'gulp.*', 'run-sequence', 'merge-stream', 'yargs', 'del'],
-    rename: {
-        'gulp-typescript': 'tsc',
-        'run-sequence': 'rns',
-        'merge-stream': 'merge'
-    }
+const tsconfig = require('./tsconfig.json');
+
+gulp.task('clean', () => {
+    const del = require('del');
+    return del(['dist/**']);
 });
-let taskPath = './build/tasks/';
-let taskList = require('fs').readdirSync(taskPath);
 
-taskList.forEach(function (taskFile) {
-    require(taskPath + taskFile)(gulp, plugins);
+gulp.task('prepublish', ['clean'], () => {
+    let tsSourcesResult = gulp
+        .src(['./src/**/*.ts'])
+        .pipe(tsc.createProject('tsconfig.json')());
+
+    return merge[
+        tsSourcesResult.js.pipe(gulp.dest('./dist')),
+        tsSourcesResult.dts.pipe(gulp.dest('./dist'))
+    ];
+});
+
+gulp.task('tsc', () => {
+    const sourcemaps = require('gulp-sourcemaps');
+
+    let tsSourcesResult = gulp.src(['src/**/*.ts'])
+        .pipe(sourcemaps.init())
+        .pipe(tsc.createProject('tsconfig.json')());
+
+    let sources = tsSourcesResult.js
+        .pipe(sourcemaps.write('.'))
+        .pipe(gulp.dest('./dist'));
+
+    let declarations = tsSourcesResult.dts
+        .pipe(gulp.dest('./dist'));
+
+    return merge(sources, declarations);
+});
+
+gulp.task('tslint', () => {
+    const yargs = require('yargs');
+    let emitError = yargs.argv.emitError;
+    return gulp.src(['src/**/*.ts'])
+        .pipe(tslint({
+            configuration: './tslint.json',
+            formatter: 'verbose'
+        }))
+        .pipe(tslint.report({
+            summarizeFailureOutput: true,
+            emitError: emitError
+        }));
 });

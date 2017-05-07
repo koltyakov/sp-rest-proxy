@@ -21,7 +21,7 @@ export class SoapRouter {
         let endpointUrl = this.util.buildEndpointUrl(req.originalUrl);
         this.spr = this.util.getCachedRequest(this.spr);
 
-        console.log('\nPOST: ' + endpointUrl); // _self.ctx.siteUrl + req.originalUrl
+        console.log('\nPOST: ' + endpointUrl);
 
         let regExpOrigin = new RegExp(req.headers.origin, 'g');
         let soapBody = '';
@@ -33,12 +33,13 @@ export class SoapRouter {
 
             this.util.getAuthOptions()
                 .then((opt: IAuthResponse) => {
-                    let headers = opt.headers;
-
-                    headers['Accept'] = 'application/xml, text/xml, */*; q=0.01';
-                    headers['Content-Type'] = 'text/xml;charset="UTF-8"';
-                    headers['X-Requested-With'] = 'XMLHttpRequest';
-                    headers['Content-Length'] = soapBody.length;
+                    let headers = {
+                        ...opt.headers,
+                        'Accept': 'application/xml, text/xml, */*; q=0.01',
+                        'Content-Type': 'text/xml;charset="UTF-8"',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Content-Length': soapBody.length
+                    };
 
                     this.spr.post(endpointUrl, {
                         headers: headers,

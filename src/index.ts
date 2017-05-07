@@ -26,14 +26,14 @@ export class RestProxy {
     constructor(settings: IProxySettings = {}) {
         this.settings = {
             ...settings,
-            configPath: settings.configPath || path.join(__dirname, '/../config/_private.conf.json'),
+            configPath: settings.configPath || path.join(__dirname, '/../config/private.json'),
             hostname: settings.hostname || process.env.HOSTNAME || 'localhost',
             port: settings.port || process.env.PORT || 8080,
             staticRoot: settings.staticRoot || path.join(__dirname, '/../src'),
-            staticLibPath: settings.staticLibPath || path.join(__dirname, '/../src/lib'),
+            staticLibPath: settings.staticLibPath || path.join(__dirname, '/../bower_components'),
             debugOutput: settings.debugOutput || false,
             metadata: require(path.join(__dirname, '/../package.json'))
-        }
+        };
 
         this.app = express();
 

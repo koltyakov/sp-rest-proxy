@@ -20,24 +20,25 @@ export class RestGetRouter {
         let endpointUrl = this.util.buildEndpointUrl(req.originalUrl);
         this.spr = this.util.getCachedRequest(this.spr);
 
-        console.log('\nGET: ' + endpointUrl); // _self.ctx.siteUrl + req.originalUrl);
+        console.log('\nGET: ' + endpointUrl);
 
-        let requestHeadersPass = {
-            'accept': 'application/json; odata=verbose',
-            'content-type': 'application/json; odata=verbose'
-        };
+        let requestHeadersPass: any = {};
 
-        let ignoreHeaders = [ 'host', 'referer', 'if-none-match', 'connection',
-            'cache-control', 'cache-control', 'user-agent', 'origin',
-            'accept-encoding', 'x-requested-with', 'accept-language' ];
+        let ignoreHeaders = [
+            'host', 'referer', 'origin',
+            'if-none-match', 'connection', 'cache-control', 'user-agent',
+            'accept-encoding', 'x-requested-with', 'accept-language'
+        ];
 
-        // `origin` header causes 403 error in CORS requests
-
-        Object.keys(req.headers).forEach((prop) => {
+        Object.keys(req.headers).forEach((prop: string) => {
             if (ignoreHeaders.indexOf(prop.toLowerCase()) === -1) {
-                requestHeadersPass[prop.toLowerCase()] = req.headers[prop];
-                if (prop.toLowerCase() === 'accept' && requestHeadersPass[prop.toLowerCase()] === '*/*') {
-                    requestHeadersPass[prop.toLowerCase()] = 'application/json; odata=verbose';
+                if (prop.toLowerCase() === 'accept' && req.headers[prop] !== '*/*') {
+                    // tslint:disable-next-line:no-string-literal
+                    requestHeadersPass['Accept'] = req.headers[prop];
+                } else if (prop.toLowerCase() === 'content-type') {
+                    requestHeadersPass['Content-Type'] = req.headers[prop];
+                } else {
+                    requestHeadersPass[prop] = req.headers[prop];
                 }
             }
         });

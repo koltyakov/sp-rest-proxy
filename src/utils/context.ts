@@ -105,11 +105,13 @@ export class Context {
                         };
                         if (res.save) {
                             let saveFolderPath = path.dirname(this.settings.configPath);
-                            mkdirp(saveFolderPath, function (err) {
+                            // tslint:disable-next-line:no-shadowed-variable
+                            mkdirp(saveFolderPath, (err: any) => {
                                 if (err) {
                                     console.log('Error creating folder ' + '`' + saveFolderPath + ' `', err);
-                                };
-                                fs.writeFile(this.settings.configPath, JSON.stringify(json, null, 2), 'utf8', (err) => {
+                                }
+                                // tslint:disable-next-line:no-shadowed-variable
+                                fs.writeFile(this.settings.configPath, JSON.stringify(json, null, 2), 'utf8', (err: any) => {
                                     if (err) {
                                         console.log(err);
                                         return reject(err);

@@ -25,7 +25,7 @@ class RestProxy {
             configPath: settings.configPath || path.join(__dirname, '/../config/private.json'),
             hostname: settings.hostname || process.env.HOSTNAME || 'localhost',
             port: settings.port || process.env.PORT || 8080,
-            staticRoot: settings.staticRoot || path.join(__dirname, '/../src'),
+            staticRoot: settings.staticRoot || path.join(__dirname, '/../static'),
             staticLibPath: settings.staticLibPath || path.join(__dirname, '/../bower_components'),
             debugOutput: settings.debugOutput || false,
             metadata: require(path.join(__dirname, '/../package.json'))

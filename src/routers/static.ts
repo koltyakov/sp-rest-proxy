@@ -21,9 +21,9 @@ export class StaticRouter {
         let url = '';
 
         if (this.staticLibPathExists) {
-            url = '/static/index.html';
+            url = '/index.html';
         } else {
-            url = '/static/index-cdn.html';
+            url = '/index-cdn.html';
         }
 
         if (req.url !== '/') {

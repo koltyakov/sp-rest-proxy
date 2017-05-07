@@ -16,9 +16,11 @@ const RestProxy = function (settings) {
 
     // default settings
     settings.configPath = settings.configPath || path.join(__dirname, '/../config/_private.conf.json');
+    settings.hostname = settings.hostname || 'localhost';
     settings.port = settings.port || 8080;
     settings.staticRoot = settings.staticRoot || path.join(__dirname, '/../src');
     settings.staticLibPath = settings.staticLibPath || path.join(__dirname, '/../src/lib');
+    settings.debugOutput = settings.debugOutput || false;
     // default settings
 
     let _self = this;
@@ -125,6 +127,8 @@ const RestProxy = function (settings) {
     };
 
     _self.port = process.env.PORT || settings.port;
+    _self.hostname = process.env.HOSTNAME || settings.hostname;
+
     _self.routers = {
         apiRestRouter: express.Router(),
         apiSoapRouter: express.Router(),
@@ -169,8 +173,10 @@ const RestProxy = function (settings) {
         };
 
         let ignoreHeaders = [ 'host', 'referer', 'if-none-match', 'connection',
-            'cache-control', 'cache-control', 'user-agent',
+            'cache-control', 'cache-control', 'user-agent', 'origin',
             'accept-encoding', 'x-requested-with', 'accept-language' ];
+
+        // `origin` header causes 403 error in CORS requests
 
         Object.keys(req.headers).forEach((prop) => {
             if (ignoreHeaders.indexOf(prop.toLowerCase()) === -1) {
@@ -181,10 +187,18 @@ const RestProxy = function (settings) {
             }
         });
 
+        if (settings.debugOutput) {
+            console.log('\nHeaders:');
+            console.log(JSON.stringify(req.headers, null, 2));
+        }
+
         _self.spr.get(endpointUrl, {
             headers: requestHeadersPass
         })
             .then((response) => {
+                if (settings.debugOutput) {
+                    console.log(response.statusCode, response.body);
+                }
                 res.status(response.statusCode);
                 res.json(response.body);
             })
@@ -214,7 +228,7 @@ const RestProxy = function (settings) {
                     };
 
                     let ignoreHeaders = [ 'host', 'referer', 'if-none-match',
-                        'connection', 'cache-control', 'cache-control',
+                        'connection', 'cache-control', 'cache-control', 'origin',
                         'user-agent', 'accept-encoding', 'accept-language',
                         'accept', 'content-type' ];
 
@@ -230,12 +244,20 @@ const RestProxy = function (settings) {
                         requestHeadersPass['content-length'] = JSON.stringify(reqBody).length;
                     } catch (ex) {}
 
+                    if (settings.debugOutput) {
+                        console.log('\nHeaders:');
+                        console.log(JSON.stringify(requestHeadersPass, null, 2));
+                    }
+
                     return _self.spr.post(endpointUrl, {
                         headers: requestHeadersPass,
                         body: reqBody
                     });
                 })
                 .then((response) => {
+                    if (settings.debugOutput) {
+                        console.log(response.statusCode, response.body);
+                    }
                     res.status(response.statusCode);
                     res.json(response.body);
                 })
@@ -292,6 +314,9 @@ const RestProxy = function (settings) {
                     json: false
                 })
                     .then((response) => {
+                        if (settings.debugOutput) {
+                            console.log(response.statusCode, response.body);
+                        }
                         res.send(response);
                         res.end();
                     })
@@ -334,11 +359,24 @@ const RestProxy = function (settings) {
             app.use(bodyParser.urlencoded({ extended: true }));
             app.use(bodyParser.json());
             app.use(cors());
+
+            // app.options('*', cors());
+            // var allowCrossDomain = (req, res, next) => {
+            //     res.header('Access-Control-Allow-Origin', '*');
+            //     res.setHeader('Access-Control-Allow-Credentials', 'true');
+            //     // res.setHeader('Access-Control-Expose-Headers', 'Set-Cookie');
+            //     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+            //     res.header('Access-Control-Allow-Headers', 'Content-Type');
+            //     next();
+            // };
+            // app.use(allowCrossDomain);
+
             app.use('*/_api', _self.routers.apiRestRouter);
             app.use('*/_vti_bin', _self.routers.apiSoapRouter);
             app.use('/', _self.routers.staticRouter);
-            app.listen(_self.port);
-            console.log('SharePoint REST Proxy has been started on port ' + _self.port);
+            app.listen(_self.port, _self.hostname, () => {
+                console.log(`SharePoint REST Proxy has been started on http://${_self.hostname}:${_self.port}`);
+            });
         });
     };
 

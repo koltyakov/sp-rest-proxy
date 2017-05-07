@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "target": "es5",
+        "module": "commonjs",
+        "lib": [ "es2017" ],
+        "sourceMap": true,
+        "declaration": true,
+        "moduleResolution": "node",
+        "noImplicitAny": false,
+        "removeComments": true,
+        "types": [
+            "bluebird",
+            "node",
+            "sp-request"
+        ]
+    }
+}

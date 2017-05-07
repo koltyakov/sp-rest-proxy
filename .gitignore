@@ -1,6 +1,7 @@
 node_modules
 bower_components
-src/lib
+static/lib
 config/_private.conf.json
 debug.log
 npm-debug.*
+dist

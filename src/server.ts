@@ -1,10 +1,10 @@
-const path = require('path');
-const RestProxy = require(path.join(__dirname, '/index.js'));
+import * as path from 'path';
+import { RestProxy } from './index';
 
 const settings = {
     configPath: path.join(__dirname, '/../config/_private.conf.json'),
     port: 8080,
-    staticRoot: path.join(__dirname, '/../src')
+    staticRoot: path.join(__dirname, '/../')
 };
 
 const restProxy = new RestProxy(settings);

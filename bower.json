@@ -1,7 +1,7 @@
 {
   "name": "sp-rest-proxy",
   "description": "SharePoint REST API Proxy for Node.js and Express local serve",
-  "main": "./src/server.js",
+  "main": "./dist/server.js",
   "authors": [
     "Andrew Koltyakov <andrew.koltyakov@gmail.com>"
   ],
@@ -17,9 +17,10 @@
     "**/.*",
     "node_modules",
     "bower_components",
-    "src/lib",
+    "static/lib",
     "test",
-    "tests"
+    "tests",
+    "_private.conf.json"
   ],
   "dependencies": {
     "jquery": "1.12.4",

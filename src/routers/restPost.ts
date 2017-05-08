@@ -32,7 +32,9 @@ export class RestPostRouter {
             this.spr.requestDigest((endpointUrlStr).split('/_api')[0])
                 .then((digest: string) => {
                     let requestHeadersPass: any = {};
-
+                    let jsonOption = {
+                        json: true
+                    };
                     let ignoreHeaders = [
                         'host', 'referer', 'origin',
                         'if-none-match', 'connection', 'cache-control', 'user-agent',
@@ -54,14 +56,20 @@ export class RestPostRouter {
 
                     requestHeadersPass = {
                         ...requestHeadersPass,
-                        'X-RequestDigest': digest,
-                        'content-length': reqBodyData.length
+                        'X-RequestDigest': digest
+                        // 'content-length': reqBodyData.length
                     };
+
+                    if (req.originalUrl.toLowerCase().indexOf('/attachmentfiles/add') !== -1) {
+                        reqBodyData = (req as any).rawBody;
+                        jsonOption.json = false;
+                    }
 
                     // try {
                     //     reqBodyData = JSON.parse(reqBodyData);
-                    //     // tslint:disable-next-line:no-empty
-                    // } catch (ex) {}
+                    // } catch (ex) {
+                    //     console.log('Error parsing:', reqBodyData);
+                    // }
 
                     if (this.settings.debugOutput) {
                         console.log('\nHeaders:');
@@ -70,7 +78,8 @@ export class RestPostRouter {
 
                     return this.spr.post(endpointUrlStr, {
                         headers: requestHeadersPass,
-                        body: reqBodyData
+                        body: reqBodyData,
+                        ...jsonOption
                     });
                 })
                 .then((resp: any) => {

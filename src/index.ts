@@ -76,6 +76,7 @@ class RestProxy {
                 /* Raw text body injection into specific URI endpoint */
                 let bodyParserText = bodyParser.text({
                     type: '*/*',
+                    limit: '2mb',
                     verify: (req, res, buf, encoding) => {
                         if (buf && buf.length) {
                             req.rawBody = buf.toString(encoding || 'utf8');
@@ -87,7 +88,7 @@ class RestProxy {
                 /* Raw body injection into specific URI endpoint */
 
                 this.routers.apiRestRouter.get('/*', (new RestGetRouter(ctx, this.settings)).router);
-                this.routers.apiRestRouter.post('/*', bodyParser.json(), (new RestPostRouter(ctx, this.settings)).router);
+                this.routers.apiRestRouter.post('/*', bodyParser.json({ limit: '2mb' }), (new RestPostRouter(ctx, this.settings)).router);
                 this.routers.apiSoapRouter.post('/*', (new SoapRouter(ctx, this.settings)).router);
                 this.routers.staticRouter.get('/*', (new StaticRouter(ctx, this.settings)).router);
 

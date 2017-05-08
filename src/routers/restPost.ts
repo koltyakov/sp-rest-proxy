@@ -25,7 +25,12 @@ export class RestPostRouter {
         // tslint:disable-next-line:no-shadowed-variable
         let processPostRequest = (reqBodyData: any, req: Request, res: Response) => {
             let endpointUrlStr = this.util.buildEndpointUrl(req.originalUrl);
-            console.log('Request body:', reqBodyData);
+
+            if (endpointUrlStr.toLowerCase().indexOf('/attachmentfiles/add') !== -1) {
+                console.log('Request body:', reqBodyData.substr(0, reqBodyData.length > 100 ? 100 : reqBodyData.length));
+            } else {
+                console.log('Request body:', reqBodyData);
+            }
 
             this.spr = this.util.getCachedRequest(this.spr);
 
@@ -60,7 +65,7 @@ export class RestPostRouter {
                         // 'content-length': reqBodyData.length
                     };
 
-                    if (req.originalUrl.toLowerCase().indexOf('/attachmentfiles/add') !== -1) {
+                    if (endpointUrlStr.toLowerCase().indexOf('/attachmentfiles/add') !== -1) {
                         reqBodyData = (req as any).rawBody;
                         jsonOption.json = false;
                     }

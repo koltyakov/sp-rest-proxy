@@ -16,8 +16,8 @@ export class RestPostRouter {
         this.util = new ProxyUtils(this.ctx);
     }
 
-    public router = (req: Request, res: Response, next?: NextFunction) => {
-        let endpointUrl = this.util.buildEndpointUrl(req.originalUrl);
+    public router = (request: Request, response: Response, next?: NextFunction) => {
+        let endpointUrl = this.util.buildEndpointUrl(request.originalUrl);
         console.log('\nPOST: ' + endpointUrl);
 
         let reqBody = '';
@@ -54,13 +54,14 @@ export class RestPostRouter {
 
                     requestHeadersPass = {
                         ...requestHeadersPass,
-                        'X-RequestDigest': digest
+                        'X-RequestDigest': digest,
+                        'content-length': reqBodyData.length
                     };
 
-                    try {
-                        requestHeadersPass['content-length'] = JSON.stringify(reqBodyData).length;
-                        // tslint:disable-next-line:no-empty
-                    } catch (ex) {}
+                    // try {
+                    //     reqBodyData = JSON.parse(reqBodyData);
+                    //     // tslint:disable-next-line:no-empty
+                    // } catch (ex) {}
 
                     if (this.settings.debugOutput) {
                         console.log('\nHeaders:');
@@ -72,12 +73,12 @@ export class RestPostRouter {
                         body: reqBodyData
                     });
                 })
-                .then((response: any) => {
+                .then((resp: any) => {
                     if (this.settings.debugOutput) {
-                        console.log(response.statusCode, response.body);
+                        console.log(resp.statusCode, resp.body);
                     }
-                    res.status(response.statusCode);
-                    res.json(response.body);
+                    res.status(resp.statusCode);
+                    res.json(resp.body);
                 })
                 .catch((err: any) => {
                     res.status(err.statusCode >= 100 && err.statusCode < 600 ? err.statusCode : 500);
@@ -85,23 +86,15 @@ export class RestPostRouter {
                 });
         };
 
-        if (req.body) {
-            reqBody = req.body;
-            try {
-                reqBody = JSON.parse(reqBody);
-                // tslint:disable-next-line:no-empty
-            } catch (ex) {}
-            processPostRequest(reqBody, req, res);
+        if (request.body) {
+            reqBody = request.body;
+            processPostRequest(reqBody, request, response);
         } else {
-            req.on('data', (chunk) => {
+            request.on('data', (chunk) => {
                 reqBody += chunk;
             });
-            req.on('end', () => {
-                try {
-                    reqBody = JSON.parse(reqBody);
-                    // tslint:disable-next-line:no-empty
-                } catch (ex) {}
-                processPostRequest(reqBody, req, res);
+            request.on('end', () => {
+                processPostRequest(reqBody, request, response);
             });
         }
     }

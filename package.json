@@ -1,55 +1,55 @@
 {
-    "name": "sp-rest-proxy",
-    "description": "SharePoint REST API Proxy for Node.js and Express local serve",
-    "version": "2.0.0-beta4",
-    "main": "./dist/index.js",
-    "typings": "./dist/index",
-    "scripts": {
-        "serve": "node ./dist/server",
-        "ts-serve": "ts-node ./src/server",
-        "build": "npm install && gulp tsc"
-    },
-    "keywords": [
-        "sharepoint",
-        "rest",
-        "proxy",
-        "debug",
-        "API"
-    ],
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/koltyakov/sp-rest-proxy.git"
-    },
-    "author": "Andrew Koltyakov <andrew.koltyakov@gmail.com>",
-    "license": "MIT",
-    "bugs": {
-        "url": "https://github.com/koltyakov/sp-rest-proxy/issues"
-    },
-    "homepage": "https://github.com/koltyakov/sp-rest-proxy#readme",
-    "devDependencies": {
-        "@types/bluebird": "^3.0.35",
-        "@types/express": "^4.0.35",
-        "@types/node": "^6.0.73",
-        "del": "^2.2.2",
-        "gulp": "^3.9.1",
-        "gulp-sourcemaps": "^2.6.0",
-        "gulp-tslint": "^8.0.0",
-        "gulp-typescript": "^3.1.6",
-        "merge-stream": "^1.0.1",
-        "ts-node": "^3.0.4",
-        "tslint": "^5.2.0",
-        "typescript": "^2.3.2",
-        "yargs": "^8.0.1"
-    },
-    "dependencies": {
-        "bluebird": "^3.5.0",
-        "body-parser": "^1.15.2",
-        "cors": "^2.8.1",
-        "cpass": "^1.0.2",
-        "express": "^4.14.0",
-        "mkdirp": "^0.5.1",
-        "node-sp-auth": "^1.2.3",
-        "prompt": "^1.0.0",
-        "sp-request": "^2.0.3"
-    }
+  "name": "sp-rest-proxy",
+  "description": "SharePoint REST API Proxy for Node.js and Express local serve",
+  "version": "2.0.0-beta4",
+  "main": "./dist/index.js",
+  "typings": "./dist/index",
+  "scripts": {
+    "serve": "node ./dist/server",
+    "ts-serve": "ts-node ./src/server",
+    "build": "npm install && gulp tsc"
+  },
+  "keywords": [
+    "sharepoint",
+    "rest",
+    "proxy",
+    "debug",
+    "API"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/koltyakov/sp-rest-proxy.git"
+  },
+  "author": "Andrew Koltyakov <andrew.koltyakov@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/koltyakov/sp-rest-proxy/issues"
+  },
+  "homepage": "https://github.com/koltyakov/sp-rest-proxy#readme",
+  "devDependencies": {
+    "@types/bluebird": "^3.0.35",
+    "@types/express": "^4.0.35",
+    "@types/node": "^6.0.73",
+    "del": "^2.2.2",
+    "gulp": "^3.9.1",
+    "gulp-sourcemaps": "^2.6.0",
+    "gulp-tslint": "^8.0.0",
+    "gulp-typescript": "^3.1.6",
+    "merge-stream": "^1.0.1",
+    "ts-node": "^3.0.4",
+    "tslint": "^5.2.0",
+    "typescript": "^2.3.2",
+    "yargs": "^8.0.1"
+  },
+  "dependencies": {
+    "bluebird": "^3.5.0",
+    "body-parser": "^1.15.2",
+    "cors": "^2.8.1",
+    "cpass": "^1.0.2",
+    "express": "^4.14.0",
+    "mkdirp": "^0.5.1",
+    "node-sp-auth": "^1.2.3",
+    "prompt": "^1.0.0",
+    "sp-request": "^2.0.3"
+  }
 }

@@ -6,7 +6,7 @@ import { IProxySettings } from './interfaces';
 
 const settings: IProxySettings = {
     configPath: path.join(__dirname, '/../config/private.json'),
-    staticRoot: path.join(__dirname, '/../')
+    staticRoot: path.join(__dirname, '/../static')
 };
 
 (new RestProxy(settings)).serve();

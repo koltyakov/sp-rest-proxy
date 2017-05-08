@@ -1,5 +1,6 @@
 'use strict';
 
+import { Request, Response, NextFunction } from 'express';
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as cors from 'cors';
@@ -51,10 +52,16 @@ class RestProxy {
 
                 this.app.use(bodyParser.urlencoded({ extended: true }));
                 this.app.use(bodyParser.json());
+
+                // this.app.use(bodyParser.text({
+                //     type: '*/*'
+                // }));
+
                 this.app.use(cors());
                 this.app.use('*/_api', this.routers.apiRestRouter);
                 this.app.use('*/_vti_bin', this.routers.apiSoapRouter);
                 this.app.use('/', this.routers.staticRouter);
+
                 this.app.listen(this.settings.port, this.settings.hostname, () => {
                     console.log(`SharePoint REST Proxy has been started on http://${this.settings.hostname}:${this.settings.port}`);
                 });

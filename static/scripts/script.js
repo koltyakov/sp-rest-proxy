@@ -14,8 +14,11 @@ $(function() {
         var httpMethod = $("input[name=httpMethods]:checked").val();
         if (httpMethod === "post") {
             $(".form-group.post").removeClass("hidden");
+            $("input[name=odataMode][value=verbose]").prop("checked", true);
+            $("input[name=odataMode]").closest('.odata-modes').addClass("hidden");
         } else {
             $(".form-group.post").addClass("hidden");
+            $("input[name=odataMode]").closest('.odata-modes').removeClass("hidden");
         }
     });
     $("#apiRequestExecute").on("click", function(event) {
@@ -45,7 +48,7 @@ $(function() {
                     return;
                 }
             }
-            ajaxOptions.data = JSON.parse(postBody);
+            ajaxOptions.data = JSON.stringify(JSON.parse(postBody));
         }
 
         $(".resultsArea .loading").removeClass("hidden");

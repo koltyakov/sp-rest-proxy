@@ -7,6 +7,7 @@ export interface IProxySettings {
     port?: number;
     staticRoot?: string;
     staticLibPath?: string;
+    rawBodyLimitSize?: string;
     debugOutput?: boolean;
     metadata?: any;
 }

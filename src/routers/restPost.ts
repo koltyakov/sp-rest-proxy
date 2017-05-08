@@ -26,18 +26,14 @@ export class RestPostRouter {
         let processPostRequest = (reqBodyData: any, req: Request, res: Response) => {
             let endpointUrlStr = this.util.buildEndpointUrl(req.originalUrl);
 
-            if (endpointUrlStr.toLowerCase().indexOf('/attachmentfiles/add') !== -1) {
-                console.log('Request body:', reqBodyData.substr(0, reqBodyData.length > 100 ? 100 : reqBodyData.length));
-            } else {
-                console.log('Request body:', reqBodyData);
-            }
+            console.log('Request body:', reqBodyData);
 
             this.spr = this.util.getCachedRequest(this.spr);
 
             this.spr.requestDigest((endpointUrlStr).split('/_api')[0])
                 .then((digest: string) => {
                     let requestHeadersPass: any = {};
-                    let jsonOption = {
+                    let jsonOption: any = {
                         json: true
                     };
                     let ignoreHeaders = [
@@ -68,6 +64,7 @@ export class RestPostRouter {
                     if (endpointUrlStr.toLowerCase().indexOf('/attachmentfiles/add') !== -1) {
                         reqBodyData = (req as any).rawBody;
                         jsonOption.json = false;
+                        jsonOption.processData = false;
                     }
 
                     // try {

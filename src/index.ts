@@ -29,6 +29,7 @@ class RestProxy {
             staticRoot: settings.staticRoot || path.join(__dirname, '/../static'),
             staticLibPath: settings.staticLibPath || path.join(__dirname, '/../bower_components'),
             debugOutput: settings.debugOutput || false,
+            rawBodyLimitSize: settings.rawBodyLimitSize || '2mb',
             metadata: require(path.join(__dirname, '/../package.json'))
         };
 
@@ -74,9 +75,9 @@ class RestProxy {
 
 
                 /* Raw text body injection into specific URI endpoint */
-                let bodyParserText = bodyParser.text({
+                let bodyParserRaw = bodyParser.raw({
                     type: '*/*',
-                    limit: '2mb',
+                    limit: this.settings.rawBodyLimitSize,
                     verify: (req, res, buf, encoding) => {
                         if (buf && buf.length) {
                             req.rawBody = buf.toString(encoding || 'utf8');
@@ -84,11 +85,11 @@ class RestProxy {
                         return false;
                     }
                 });
-                this.routers.apiRestRouter.post('/*(/attachmentfiles/add)*', bodyParserText, (new RestPostRouter(ctx, this.settings)).router);
+                this.routers.apiRestRouter.post('/*(/attachmentfiles/add)*', bodyParserRaw, (new RestPostRouter(ctx, this.settings)).router);
                 /* Raw body injection into specific URI endpoint */
 
                 this.routers.apiRestRouter.get('/*', (new RestGetRouter(ctx, this.settings)).router);
-                this.routers.apiRestRouter.post('/*', bodyParser.json({ limit: '2mb' }), (new RestPostRouter(ctx, this.settings)).router);
+                // this.routers.apiRestRouter.post('/*', bodyParser.json({ limit: this.settings.rawBodyLimitSize }), (new RestPostRouter(ctx, this.settings)).router);
                 this.routers.apiSoapRouter.post('/*', (new SoapRouter(ctx, this.settings)).router);
                 this.routers.staticRouter.get('/*', (new StaticRouter(ctx, this.settings)).router);
 

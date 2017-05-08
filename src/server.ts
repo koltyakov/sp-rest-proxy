@@ -6,7 +6,8 @@ import { IProxySettings } from './interfaces';
 
 const settings: IProxySettings = {
     configPath: path.join(__dirname, '/../config/private.json'),
-    staticRoot: path.join(__dirname, '/../static')
+    staticRoot: path.join(__dirname, '/../static'),
+    rawBodyLimitSize: '4MB'
 };
 
 (new RestProxy(settings)).serve();

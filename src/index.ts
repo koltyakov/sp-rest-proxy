@@ -51,39 +51,15 @@ class RestProxy {
                 // this.app.use(bodyParser.urlencoded({ extended: true }));
                 // this.app.use(bodyParser.json({ strict: true }));
 
-                /* Experiments with middleware */
-                // this.app.use((req: Request, res: Response, next: NextFunction) => {
-                //     if (req.originalUrl.toLowerCase().indexOf('/attachmentfiles/add(') !== -1) {
-                //         req.headers['Content-Type'] = 'text/html';
-                //     }
-                //     console.log('middleware');
-                //     next();
-                // });
-
-                /* Experiments with body parser verify */
-                // this.app.use(bodyParser.json({
-                //     strict: false,
-                //     verify: (req, res, buf, encoding) => {
-                //         if (buf && buf.length) {
-                //             req.rawBody = buf.toString(encoding || 'utf8');
-                //         }
-                //         console.log('req.rawBody', req.rawBody);
-                //         return false;
-                //     }
-                // }));
-                // this.app.use(bodyParser.urlencoded({ extended: true }));
-
-
                 /* Raw text body injection into specific URI endpoint */
                 let bodyParserRaw = bodyParser.raw({
                     type: '*/*',
                     limit: this.settings.rawBodyLimitSize,
                     verify: (req, res, buf, encoding) => {
                         if (buf && buf.length) {
-                            req.rawBody = buf.toString(encoding || 'utf8');
+                            // req.rawBody = buf.toString(encoding || 'utf8');
                             req.buffer = buf;
                         }
-                        return false;
                     }
                 });
                 this.routers.apiRestRouter.post('/*(/attachmentfiles/add)*', bodyParserRaw, (new RestPostRouter(ctx, this.settings)).router);

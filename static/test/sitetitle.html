@@ -9,7 +9,9 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.1/fetch.min.js"></script>
 </head>
 <body>
+
     <h1 id="title">Loading...</h1>
+
     <script>
         fetch(new Request('/_api/web/title', {
             credentials: 'include',
@@ -30,5 +32,6 @@
                 console.log('Error:', ex)
             });
     </script>
+
 </body>
 </html>

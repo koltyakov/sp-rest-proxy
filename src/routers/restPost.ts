@@ -62,9 +62,11 @@ export class RestPostRouter {
                     };
 
                     if (endpointUrlStr.toLowerCase().indexOf('/attachmentfiles/add') !== -1) {
-                        reqBodyData = (req as any).rawBody;
+                        // reqBodyData = (req as any).rawBody;
+                        reqBodyData = (req as any).buffer;
                         jsonOption.json = false;
                         jsonOption.processData = false;
+                        requestHeadersPass['content-length'] = reqBodyData.byteLength;
                     }
 
                     // try {

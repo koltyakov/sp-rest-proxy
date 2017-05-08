@@ -81,6 +81,7 @@ class RestProxy {
                     verify: (req, res, buf, encoding) => {
                         if (buf && buf.length) {
                             req.rawBody = buf.toString(encoding || 'utf8');
+                            req.buffer = buf;
                         }
                         return false;
                     }
@@ -89,7 +90,7 @@ class RestProxy {
                 /* Raw body injection into specific URI endpoint */
 
                 this.routers.apiRestRouter.get('/*', (new RestGetRouter(ctx, this.settings)).router);
-                // this.routers.apiRestRouter.post('/*', bodyParser.json({ limit: this.settings.rawBodyLimitSize }), (new RestPostRouter(ctx, this.settings)).router);
+                this.routers.apiRestRouter.post('/*', bodyParser.json(), (new RestPostRouter(ctx, this.settings)).router);
                 this.routers.apiSoapRouter.post('/*', (new SoapRouter(ctx, this.settings)).router);
                 this.routers.staticRouter.get('/*', (new StaticRouter(ctx, this.settings)).router);
 

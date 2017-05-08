@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Item Attachments Basic Test</title>
+    <meta name="viewport" content="width=device-width, maximum-scale=1, user-scalable=no" />
+
+    <link rel="shortcut icon" href="/img/favicon.ico" type="image/vnd.microsoft.icon" id="favicon">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/es6-promise/4.0.5/es6-promise.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.1/fetch.min.js"></script>
+    <script type="text/javascript" src="https://cdn.rawgit.com/SharePoint/PnP-JS-Core/master/dist/pnp.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.js"></script>
+
+</head>
+<body>
+
+    <input id="my-attachments" type="file" fileread="run.AttachmentData" fileinfo="run.AttachmentInfo" />
+
+    <script>
+        var _spPageContextInfo = _spPageContextInfo || {};
+        _spPageContextInfo.webServerRelativeUrl = "/";
+
+        $(function() {
+            var listTitle = 'AttachmentsTest';
+            $("#my-attachments").change(function() {
+                var file = $(this)[0].files[0];
+                var getFileBuffer = function(file) {
+                    var deferred = $.Deferred();
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        deferred.resolve(e.target.result);
+                    }
+                    reader.onerror = function(e) {
+                        deferred.reject(e.target.error);
+                    }
+                    reader.readAsArrayBuffer(file);
+                    return deferred.promise();
+                };
+                getFileBuffer(file).then(function(buffer) {
+                    $pnp.sp.web.lists.select('Title').get()
+                        .then(function(lists) {
+                            return lists.filter(function(list) {
+                                return list.Title === listTitle;
+                            });
+                        })
+                        .then(function(lists) {
+                            if (lists.length === 0) {
+                                return $pnp.sp.web.lists.add(listTitle);
+                            } else {
+                                return lists[0];
+                            }
+                        })
+                        .then(function(list) {
+                            return $pnp.sp.web.lists.getByTitle(listTitle).items.add({
+                                Title: 'New item'
+                            });
+                        })
+                        .then(function(itemObject) {
+                            return itemObject.item.attachmentFiles
+                                .add(file.name, buffer);
+                        })
+                        .then(console.log)
+                        .catch(console.log);
+                });
+            });
+        });
+
+    </script>
+
+</body>
+</html>

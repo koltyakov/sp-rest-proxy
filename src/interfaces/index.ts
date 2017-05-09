@@ -8,6 +8,7 @@ export interface IProxySettings {
     staticRoot?: string;
     staticLibPath?: string;
     rawBodyLimitSize?: string;
+    jsonPayloadLimitSize?: string;
     debugOutput?: boolean;
     metadata?: any;
 }

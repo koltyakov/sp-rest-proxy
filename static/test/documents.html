@@ -13,28 +13,35 @@
 </head>
 <body>
 
-    <input id="my-attachments" type="file" fileread="run.AttachmentData" fileinfo="run.AttachmentInfo" />
+    <h2>Create item and add attachment</h2>
+    <input id="item-attachments" type="file" />
+    <pre id="item-attachments-out"></pre>
+
+    <h2>Upload document to Document library</h2>
+    <input id="document-upload" type="file" />
+    <pre id="document-upload-out"></pre>
 
     <script>
         var _spPageContextInfo = _spPageContextInfo || {};
         _spPageContextInfo.webServerRelativeUrl = "/";
 
+        var getFileBuffer = function(file) {
+            var deferred = $.Deferred();
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                deferred.resolve(e.target.result);
+            }
+            reader.onerror = function(e) {
+                deferred.reject(e.target.error);
+            }
+            reader.readAsArrayBuffer(file);
+            return deferred.promise();
+        };
+
         $(function() {
             var listTitle = 'AttachmentsTest';
-            $("#my-attachments").change(function() {
+            $("#item-attachments").change(function() {
                 var file = $(this)[0].files[0];
-                var getFileBuffer = function(file) {
-                    var deferred = $.Deferred();
-                    var reader = new FileReader();
-                    reader.onload = function(e) {
-                        deferred.resolve(e.target.result);
-                    }
-                    reader.onerror = function(e) {
-                        deferred.reject(e.target.error);
-                    }
-                    reader.readAsArrayBuffer(file);
-                    return deferred.promise();
-                };
                 getFileBuffer(file).then(function(buffer) {
                     $pnp.sp.web.lists.select('Title').get()
                         .then(function(lists) {
@@ -58,8 +65,31 @@
                             return itemObject.item.attachmentFiles
                                 .add(file.name, buffer);
                         })
-                        .then(console.log)
-                        .catch(console.log);
+                        .then(function(result) {
+                            $('#tem-attachments-out').text(JSON.stringify(result, null, 2));
+                        })
+                        .catch(function(error) {
+                            $('#tem-attachments-out').text(JSON.stringify(error, null, 2));
+                        });
+                });
+            });
+
+            var docLibPath = '/Shared Documents';
+            $("#document-upload").change(function() {
+                var file = $(this)[0].files[0];
+                getFileBuffer(file).then(function(buffer) {
+                    $pnp.sp.web.select('ServerRelativeUrl').get()
+                        .then(function(web) {
+                            return $pnp.sp.web
+                                .getFolderByServerRelativeUrl(web.ServerRelativeUrl + docLibPath)
+                                .files.add(file.name, buffer, true);
+                        })
+                        .then(function(result) {
+                            $('#document-upload-out').text(JSON.stringify(result, null, 2));
+                        })
+                        .catch(function(error) {
+                            $('#document-upload-out').text(JSON.stringify(error, null, 2));
+                        });
                 });
             });
         });

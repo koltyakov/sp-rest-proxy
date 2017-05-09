@@ -30,6 +30,7 @@ class RestProxy {
             staticLibPath: settings.staticLibPath || path.join(__dirname, '/../bower_components'),
             debugOutput: settings.debugOutput || false,
             rawBodyLimitSize: settings.rawBodyLimitSize || '2mb',
+            jsonPayloadLimitSize: settings.jsonPayloadLimitSize || '2mb',
             metadata: require(path.join(__dirname, '/../package.json'))
         };
 
@@ -47,11 +48,7 @@ class RestProxy {
             .get()
             .then((ctx: IProxyContext): void => {
 
-                /* Original implementations */
-                // this.app.use(bodyParser.urlencoded({ extended: true }));
-                // this.app.use(bodyParser.json({ strict: true }));
-
-                /* Raw text body injection into specific URI endpoint */
+                /* Raw body injection into specific URI endpoint */
                 let bodyParserRaw = bodyParser.raw({
                     type: '*/*',
                     limit: this.settings.rawBodyLimitSize,
@@ -62,13 +59,32 @@ class RestProxy {
                         }
                     }
                 });
-                this.routers.apiRestRouter.post('/*(/attachmentfiles/add)*', bodyParserRaw, (new RestPostRouter(ctx, this.settings)).router);
-                /* Raw body injection into specific URI endpoint */
+                this.routers.apiRestRouter.post(
+                    '/*(/attachmentfiles/add|/files/add)*',
+                    bodyParserRaw,
+                    (new RestPostRouter(ctx, this.settings)).router
+                );
+                /* Raw injection into specific URI endpoint */
 
-                this.routers.apiRestRouter.get('/*', (new RestGetRouter(ctx, this.settings)).router);
-                this.routers.apiRestRouter.post('/*', bodyParser.json(), (new RestPostRouter(ctx, this.settings)).router);
-                this.routers.apiSoapRouter.post('/*', (new SoapRouter(ctx, this.settings)).router);
-                this.routers.staticRouter.get('/*', (new StaticRouter(ctx, this.settings)).router);
+                this.routers.apiRestRouter.get(
+                    '/*',
+                    (new RestGetRouter(ctx, this.settings)).router
+                );
+                this.routers.apiRestRouter.post(
+                    '/*',
+                    bodyParser.json({
+                        limit: this.settings.jsonPayloadLimitSize
+                    }),
+                    (new RestPostRouter(ctx, this.settings)).router
+                );
+                this.routers.apiSoapRouter.post(
+                    '/*',
+                    (new SoapRouter(ctx, this.settings)).router
+                );
+                this.routers.staticRouter.get(
+                    '/*',
+                    (new StaticRouter(ctx, this.settings)).router
+                );
 
                 this.app.use(bodyParser.urlencoded({ extended: true }));
 

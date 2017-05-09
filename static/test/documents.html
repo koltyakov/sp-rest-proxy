@@ -58,7 +58,7 @@
                         })
                         .then(function(list) {
                             return $pnp.sp.web.lists.getByTitle(listTitle).items.add({
-                                Title: 'New item'
+                                Title: file.name
                             });
                         })
                         .then(function(itemObject) {

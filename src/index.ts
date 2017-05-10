@@ -46,6 +46,7 @@ class RestProxy {
     public serve = () => {
         (new AuthConfig({
             configPath: this.settings.configPath,
+            defaultConfigPath: this.settings.defaultConfigPath,
             encryptPassword: true,
             saveConfigOnDisk: true
         }))

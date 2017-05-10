@@ -3,6 +3,7 @@ import { Router } from 'express';
 
 export interface IProxySettings {
     configPath?: string;
+    defaultConfigPath?: string;
     hostname?: string;
     port?: number;
     staticRoot?: string;

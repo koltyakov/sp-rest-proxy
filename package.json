@@ -1,7 +1,7 @@
 {
   "name": "sp-rest-proxy",
   "description": "SharePoint REST API Proxy for Node.js and Express local serve",
-  "version": "2.0.6",
+  "version": "2.0.7",
   "main": "./dist/index.js",
   "typings": "./dist/index",
   "scripts": {
@@ -47,7 +47,7 @@
     "cors": "^2.8.1",
     "express": "^4.14.0",
     "node-sp-auth": "^1.2.3",
-    "node-sp-auth-config": "^1.0.5",
+    "node-sp-auth-config": "^1.0.7",
     "sp-request": "^2.0.3"
   }
 }

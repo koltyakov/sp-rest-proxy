@@ -1716,9 +1716,9 @@ negotiator@0.6.1:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/negotiator/-/negotiator-0.6.1.tgz#2b327184e8992101177b28563fb5e7102acd0ca9"
 
-node-sp-auth-config@^1.0.4:
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/node-sp-auth-config/-/node-sp-auth-config-1.0.4.tgz#d664c57bee3950dda93aba48a16c80717b922c1f"
+node-sp-auth-config@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/node-sp-auth-config/-/node-sp-auth-config-1.0.5.tgz#89b8bf2ba10617863a0ec9eb6e9f4f4ad1117bb5"
   dependencies:
     bluebird "^3.5.0"
     colors "^1.1.2"

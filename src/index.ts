@@ -1,5 +1,6 @@
 'use strict';
 
+import { AuthConfig } from 'node-sp-auth-config';
 import { Request, Response, NextFunction } from 'express';
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
@@ -7,7 +8,6 @@ import * as cors from 'cors';
 import * as path from 'path';
 import * as fs from 'fs';
 
-import { Context } from './utils/context';
 import { RestGetRouter } from './routers/restGet';
 import { RestPostRouter } from './routers/restPost';
 import { SoapRouter } from './routers/soap';
@@ -44,9 +44,18 @@ class RestProxy {
     }
 
     public serve = () => {
-        (new Context(this.settings))
-            .get()
-            .then((ctx: IProxyContext): void => {
+        (new AuthConfig({
+            configPath: this.settings.configPath,
+            encryptPassword: true,
+            saveConfigOnDisk: true
+        }))
+            .getContext()
+            .then((context): void => {
+
+                let ctx: IProxyContext = {
+                    siteUrl: context.siteUrl,
+                    context: context.authOptions
+                };
 
                 /* Raw body injection into specific URI endpoint */
                 let bodyParserRaw = bodyParser.raw({

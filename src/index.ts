@@ -10,6 +10,7 @@ import * as fs from 'fs';
 
 import { RestGetRouter } from './routers/restGet';
 import { RestPostRouter } from './routers/restPost';
+import { RestBatchRouter } from './routers/restBatch';
 import { SoapRouter } from './routers/soap';
 import { StaticRouter } from './routers/static';
 import { IProxySettings, IProxyContext, IRouters } from './interfaces';
@@ -58,28 +59,38 @@ class RestProxy {
                     context: context.authOptions
                 };
 
-                /* Raw body injection into specific URI endpoint */
                 let bodyParserRaw = bodyParser.raw({
                     type: '*/*',
                     limit: this.settings.rawBodyLimitSize,
                     verify: (req, res, buf, encoding) => {
                         if (buf && buf.length) {
-                            // req.rawBody = buf.toString(encoding || 'utf8');
+                            req.rawBody = buf.toString(encoding || 'utf8');
                             req.buffer = buf;
                         }
                     }
                 });
+
+                // REST - Files and attachments
                 this.routers.apiRestRouter.post(
                     '/*(/attachmentfiles/add|/files/add)*',
                     bodyParserRaw,
                     (new RestPostRouter(ctx, this.settings)).router
                 );
-                /* Raw injection into specific URI endpoint */
 
+                // REST - Batch requests
+                this.routers.apiRestRouter.post(
+                    '/[$]batch',
+                    bodyParserRaw,
+                    (new RestBatchRouter(ctx, this.settings)).router
+                );
+
+                // REST - POST requests (JSON)
                 this.routers.apiRestRouter.get(
                     '/*',
                     (new RestGetRouter(ctx, this.settings)).router
                 );
+
+                // REST - POST requests (JSON)
                 this.routers.apiRestRouter.post(
                     '/*',
                     bodyParser.json({
@@ -87,10 +98,14 @@ class RestProxy {
                     }),
                     (new RestPostRouter(ctx, this.settings)).router
                 );
+
+                //  SOAP requests (XML)
                 this.routers.apiSoapRouter.post(
                     '/*',
                     (new SoapRouter(ctx, this.settings)).router
                 );
+
+                // Static local content
                 this.routers.staticRouter.get(
                     '/*',
                     (new StaticRouter(ctx, this.settings)).router

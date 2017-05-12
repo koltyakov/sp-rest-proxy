@@ -66,7 +66,7 @@ export class RestBatchRouter {
                         } else if (prop.toLowerCase() === 'content-type') {
                             requestHeadersPass['Content-Type'] = req.headers[prop];
                         } else if (prop.toLowerCase() === 'x-requestdigest') {
-                            requestHeadersPass['X-RequestDigest'] = req.headers[prop];
+                            // requestHeadersPass['X-RequestDigest'] = req.headers[prop]; // Temporary commented
                         } else if (prop.toLowerCase() === 'content-length') {
                             requestHeadersPass['Content-Length'] = req.headers[prop];
                         } else {

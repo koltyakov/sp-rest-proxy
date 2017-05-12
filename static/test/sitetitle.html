@@ -16,8 +16,8 @@
         fetch(new Request('/_api/web/title', {
             credentials: 'include',
             headers: new Headers({
-                "Accept": "application/json; odata=verbose"
-            }) 
+                "Accept": "application/json;odata=verbose"
+            })
         }))
             .then(function(response) {
                 return response.json();

@@ -16,11 +16,11 @@ export class ProxyUtils {
     }
 
     public getAuthOptions = (): Promise<any> => {
-        return spauth.getAuth(this.ctx.siteUrl, this.ctx.context);
+        return spauth.getAuth(this.ctx.siteUrl, this.ctx.authOptions);
     }
 
     public getCachedRequest = (spr: ISPRequest): ISPRequest => {
-        this.spr = spr || spRequest.create(this.ctx.context);
+        this.spr = spr || spRequest.create(this.ctx.authOptions);
         return this.spr;
     }
 
@@ -36,3 +36,32 @@ export class ProxyUtils {
     }
 
 }
+
+export const generateGuid = (): string => {
+    const s4 = () => {
+        return Math.floor((1 + Math.random()) * 0x10000)
+            .toString(16)
+            .substring(1);
+    };
+    return `${s4()}${s4()}-${s4()}-${s4()}-${s4()}-${s4()}${s4()}${s4()}`;
+};
+
+export const checkNestedProperties = (object: any, ...args: string[]): boolean => {
+    for (let i: number = 0, len: number = args.length; i < len; i += 1) {
+        if (!object || !object.hasOwnProperty(args[i])) {
+            return false;
+        }
+        object = object[args[i]];
+    }
+    return true;
+};
+
+export const getCaseInsensitiveProp = (object: any, propertyName: string): any => {
+    propertyName = propertyName.toLowerCase();
+    return Object.keys(object).reduce((res: any, prop: string) => {
+        if (prop.toLowerCase() === propertyName) {
+            res = object[prop];
+        }
+        return res;
+    }, undefined);
+};

@@ -1,7 +1,11 @@
-.vscode
-/tests
+!/dist
+/test
 /config/private.json
-npm-debug.log
 /src
 /docs
-!/dist
+.vscode
+npm-debug.log
+tslconfig.json
+tslint.json
+jsconfig.json
+.eslintrc.js

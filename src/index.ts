@@ -13,13 +13,18 @@ import { RestPostRouter } from './routers/restPost';
 import { RestBatchRouter } from './routers/restBatch';
 import { SoapRouter } from './routers/soap';
 import { StaticRouter } from './routers/static';
+
+import { Server as GatewayServer } from './gateway/server';
+import { Client as GatewayClient } from './gateway/client';
+
 import { IProxySettings, IProxyContext, IRouters } from './interfaces';
+import { IGatewayServerSettings, IGatewayClientSettings } from './interfaces';
 
 class RestProxy {
 
-    public app: express.Application;
-    public settings: IProxySettings;
-    public routers: IRouters;
+    private app: express.Application;
+    private settings: IProxySettings;
+    private routers: IRouters;
 
     constructor(settings: IProxySettings = {}) {
         this.settings = {
@@ -44,7 +49,9 @@ class RestProxy {
         };
     }
 
-    public serve = () => {
+    // Server proxy main mode
+    public serveProxy() { this.serve(); }
+    public serve() {
         (new AuthConfig({
             configPath: this.settings.configPath,
             defaultConfigPath: this.settings.defaultConfigPath,
@@ -52,12 +59,7 @@ class RestProxy {
             saveConfigOnDisk: true
         }))
             .getContext()
-            .then((context): void => {
-
-                let ctx: IProxyContext = {
-                    siteUrl: context.siteUrl,
-                    context: context.authOptions
-                };
+            .then((context: IProxyContext): void => {
 
                 let bodyParserRaw = bodyParser.raw({
                     type: '*/*',
@@ -74,20 +76,20 @@ class RestProxy {
                 this.routers.apiRestRouter.post(
                     '/*(/attachmentfiles/add|/files/add)*',
                     bodyParserRaw,
-                    (new RestPostRouter(ctx, this.settings)).router
+                    (new RestPostRouter(context, this.settings)).router
                 );
 
                 // REST - Batch requests
                 this.routers.apiRestRouter.post(
                     '/[$]batch',
                     bodyParserRaw,
-                    (new RestBatchRouter(ctx, this.settings)).router
+                    (new RestBatchRouter(context, this.settings)).router
                 );
 
-                // REST - POST requests (JSON)
+                // REST - GET requests (JSON)
                 this.routers.apiRestRouter.get(
                     '/*',
-                    (new RestGetRouter(ctx, this.settings)).router
+                    (new RestGetRouter(context, this.settings)).router
                 );
 
                 // REST - POST requests (JSON)
@@ -96,19 +98,19 @@ class RestProxy {
                     bodyParser.json({
                         limit: this.settings.jsonPayloadLimitSize
                     }),
-                    (new RestPostRouter(ctx, this.settings)).router
+                    (new RestPostRouter(context, this.settings)).router
                 );
 
                 //  SOAP requests (XML)
                 this.routers.apiSoapRouter.post(
                     '/*',
-                    (new SoapRouter(ctx, this.settings)).router
+                    (new SoapRouter(context, this.settings)).router
                 );
 
                 // Static local content
                 this.routers.staticRouter.get(
                     '/*',
-                    (new StaticRouter(ctx, this.settings)).router
+                    (new StaticRouter(context, this.settings)).router
                 );
 
                 this.app.use(bodyParser.urlencoded({ extended: true }));
@@ -121,11 +123,24 @@ class RestProxy {
                 this.app.listen(this.settings.port, this.settings.hostname, () => {
                     console.log(`SharePoint REST Proxy has been started on http://${this.settings.hostname}:${this.settings.port}`);
                 });
+
             })
             .catch((err: any) => {
                 console.log('Error', err);
             });
     }
+
+    // Serve socket gateway server
+    public serveGateway(settings: IGatewayServerSettings) {
+        (new GatewayServer(settings, this.settings, this.app)).init();
+    }
+
+    // Serve socker gateway client
+    public serveClient(settings: IGatewayClientSettings) {
+        (new GatewayClient(settings, this.settings)).init();
+        this.serve();
+    }
+
 }
 
 module.exports = RestProxy;

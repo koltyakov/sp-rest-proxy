@@ -37,7 +37,7 @@ export class StaticRouter {
         if (req.url === '/config') {
             let response = {
                 siteUrl: this.ctx.siteUrl,
-                username: (this.ctx.context as any).username || 'Add-In'
+                username: (this.ctx.authOptions as any).username || 'Add-In'
             };
             res.json(response);
             return;

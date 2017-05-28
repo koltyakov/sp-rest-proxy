@@ -18,7 +18,10 @@ export class RestPostRouter {
 
     public router = (request: Request, response: Response, next?: NextFunction) => {
         let endpointUrl = this.util.buildEndpointUrl(request.originalUrl);
-        console.log('\nPOST: ' + endpointUrl);
+
+        if (!this.settings.silentMode) {
+            console.log('\nPOST: ' + endpointUrl);
+        }
 
         let reqBody = '';
 
@@ -38,7 +41,9 @@ export class RestPostRouter {
     private processPostRequest = (reqBodyData: any, req: Request, res: Response) => {
         let endpointUrlStr = this.util.buildEndpointUrl(req.originalUrl);
 
-        console.log('Request body:', reqBodyData);
+        if (!this.settings.silentMode) {
+            console.log('Request body:', reqBodyData);
+        }
 
         this.spr = this.util.getCachedRequest(this.spr);
 

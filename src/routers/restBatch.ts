@@ -18,7 +18,10 @@ export class RestBatchRouter {
 
     public router = (request: Request, response: Response, next?: NextFunction) => {
         let endpointUrl = this.util.buildEndpointUrl(request.originalUrl);
-        console.log('\POST (batch): ' + endpointUrl);
+
+        if (!this.settings.silentMode) {
+            console.log('\POST (batch): ' + endpointUrl);
+        }
 
         let reqBody = '';
 
@@ -44,7 +47,9 @@ export class RestBatchRouter {
         // reqBodyData = reqBodyData.replace(/ _api/g, ` ${endpointUrlStr.replace('/_api/$batch', '/')}_api`);
         // req.headers['Content-Length'] = reqBodyData.byteLength;
 
-        console.log('Request body:', reqBodyData);
+        if (!this.settings.silentMode) {
+            console.log('Request body:', reqBodyData);
+        }
 
         this.spr = this.util.getCachedRequest(this.spr);
 

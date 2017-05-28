@@ -12,6 +12,7 @@ export interface IProxySettings {
     jsonPayloadLimitSize?: string;
     debugOutput?: boolean;
     metadata?: any;
+    silentMode?: boolean;
 }
 
 export interface IProxyContext {

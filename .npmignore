@@ -2,6 +2,7 @@
 /test
 /config/private.json
 /src
+/examples
 /docs
 .vscode
 npm-debug.log

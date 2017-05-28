@@ -21,7 +21,9 @@ export class SoapRouter {
         let endpointUrl = this.util.buildEndpointUrl(req.originalUrl);
         this.spr = this.util.getCachedRequest(this.spr);
 
-        console.log('\nPOST: ' + endpointUrl);
+        if (!this.settings.silentMode) {
+            console.log('\nPOST: ' + endpointUrl);
+        }
 
         let regExpOrigin = new RegExp(req.headers.origin, 'g');
         let soapBody = '';

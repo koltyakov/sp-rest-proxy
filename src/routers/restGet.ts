@@ -20,7 +20,9 @@ export class RestGetRouter {
         let endpointUrl = this.util.buildEndpointUrl(req.originalUrl);
         this.spr = this.util.getCachedRequest(this.spr);
 
-        console.log('\nGET: ' + endpointUrl);
+        if (!this.settings.silentMode) {
+            console.log('\nGET: ' + endpointUrl);
+        }
 
         let requestHeadersPass: any = {};
 

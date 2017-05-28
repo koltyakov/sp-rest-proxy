@@ -78,7 +78,10 @@ export class RestPostRouter {
                     'content-length': reqBodyData.length
                 };
 
-                if (endpointUrlStr.toLowerCase().indexOf('/attachmentfiles/add') !== -1) {
+                if (
+                    endpointUrlStr.toLowerCase().indexOf('/attachmentfiles/add') !== -1 ||
+                    endpointUrlStr.toLowerCase().indexOf('/files/add') !== -1
+                ) {
                     // reqBodyData = (req as any).rawBody;
                     reqBodyData = (req as any).buffer;
                     jsonOption.json = false;

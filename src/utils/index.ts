@@ -65,3 +65,9 @@ export const getCaseInsensitiveProp = (object: any, propertyName: string): any =
         return res;
     }, undefined);
 };
+
+export const trimMultiline = (multiline: string): string => {
+    return multiline.trim().split('\n').map((line: string) => {
+        return line.trim();
+    }).join('\n');
+};

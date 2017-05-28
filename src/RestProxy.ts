@@ -11,6 +11,7 @@ import * as fs from 'fs';
 import { RestGetRouter } from './routers/restGet';
 import { RestPostRouter } from './routers/restPost';
 import { RestBatchRouter } from './routers/restBatch';
+import { CsomRouter } from './routers/csom';
 import { SoapRouter } from './routers/soap';
 import { StaticRouter } from './routers/static';
 
@@ -45,6 +46,7 @@ export default class RestProxy {
 
         this.routers = {
             apiRestRouter: express.Router(),
+            apiCsomRouter: express.Router(),
             apiSoapRouter: express.Router(),
             staticRouter: express.Router()
         };
@@ -102,6 +104,12 @@ export default class RestProxy {
                     (new RestPostRouter(context, this.settings)).router
                 );
 
+                //  CSOM requests (XML)
+                this.routers.apiCsomRouter.post(
+                    '/*',
+                    (new CsomRouter(context, this.settings)).router
+                );
+
                 //  SOAP requests (XML)
                 this.routers.apiSoapRouter.post(
                     '/*',
@@ -118,6 +126,7 @@ export default class RestProxy {
 
                 this.app.use(cors());
                 this.app.use('*/_api', this.routers.apiRestRouter);
+                this.app.use('*/_vti_bin/client.svc/ProcessQuery', this.routers.apiCsomRouter);
                 this.app.use('*/_vti_bin', this.routers.apiSoapRouter);
                 this.app.use('/', this.routers.staticRouter);
 

@@ -25,13 +25,15 @@ export class SoapRouter {
             console.log('\nPOST: ' + endpointUrl);
         }
 
-        let regExpOrigin = new RegExp(req.headers.origin, 'g');
         let soapBody = '';
         req.on('data', (chunk) => {
             soapBody += chunk;
         });
         req.on('end', () => {
-            soapBody = soapBody.replace(regExpOrigin, this.ctx.siteUrl);
+            if (req.headers.origin) {
+                let regExpOrigin = new RegExp(req.headers.origin, 'g');
+                soapBody = soapBody.replace(regExpOrigin, this.ctx.siteUrl);
+            }
 
             this.util.getAuthOptions()
                 .then((opt: IAuthResponse) => {

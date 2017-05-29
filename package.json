@@ -38,7 +38,6 @@
     "sp-request": "^2.0.3"
   },
   "devDependencies": {
-    "@types/axios": "^0.14.0",
     "@types/bluebird": "^3.0.35",
     "@types/chai": "^3.5.2",
     "@types/colors": "^1.1.3",

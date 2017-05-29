@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import * as request from 'request';
 
 import { ProxyUtils } from '../utils';
 import { IProxyContext, IProxySettings } from '../interfaces';
@@ -63,7 +64,7 @@ export class StaticRouter {
         let requestHeadersPass: any = {};
 
         let ignoreHeaders = [
-            'host', 'referer', 'origin', 'connection'
+            'host', 'referer', 'origin', 'accept-encoding', 'connection', 'if-none-match'
         ];
 
         Object.keys(req.headers).forEach((prop: string) => {
@@ -89,6 +90,21 @@ export class StaticRouter {
             encoding: null
         };
 
+        let ext = endpointUrl.split('?')[0].split('.').pop().toLowerCase();
+        if ([ 'js', 'css', 'aspx', 'css', 'html', 'json', 'axd' ].indexOf(ext) !== -1) {
+            delete advanced.encoding;
+            requestHeadersPass.Accept = 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8';
+        }
+
+        if (endpointUrl.indexOf('/ScriptResource.axd') !== -1) {
+            let axdUrlArr = endpointUrl.split('/ScriptResource.axd');
+            endpointUrl = axdUrlArr[0].replace('://', '___').split('/')[0].replace('___', '://') +
+                '/ScriptResource.axd' + axdUrlArr[1];
+
+            // request.get({ uri: endpointUrl }).pipe(res);
+            return;
+        }
+
         this.spr.get(endpointUrl, {
             headers: requestHeadersPass,
             ...advanced
@@ -101,27 +117,7 @@ export class StaticRouter {
                 res.status(response.statusCode);
                 res.contentType(response.headers['content-type']);
 
-                // console.log(Buffer.isBuffer(response.body));
-
-                // let filePath = path.resolve('./tmp/file.txt');
-                // fs.open(filePath, 'w', (err, fd) => {
-                //     if (err) {
-                //         throw 'error opening file: ' + err;
-                //     }
-
-                //     // tslint:disable-next-line:no-shadowed-variable
-                //     fs.write(fd, response.body, 0, response.body.length, null, (err) => {
-                //         if (err) {
-                //             throw 'error writing file: ' + err;
-                //         }
-                //         fs.close(fd, () => {
-                //             res.sendFile(filePath);
-                //         });
-                //     });
-                // });
-
                 res.send(response.body);
-
             })
             .catch((err: any) => {
                 res.status(err.statusCode >= 100 && err.statusCode < 600 ? err.statusCode : 500);

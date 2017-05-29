@@ -19,6 +19,7 @@ export class Server {
 
     private server: http.Server;
     private io: SocketIO.Server;
+    private socket: SocketIO.Socket;
     private app: Application;
 
     constructor(settings: IGatewayServerSettings, proxy: IProxySettings, app: Application) {
@@ -33,6 +34,8 @@ export class Server {
         this.server.listen(this.settings.port || this.proxy.port);
         this.io.on('connection', (socket) => {
 
+            this.socket = socket;
+
             let bodyParserRaw = bodyParser.raw({
                 type: '*/*',
                 limit: this.proxy.rawBodyLimitSize,
@@ -45,61 +48,19 @@ export class Server {
             });
 
             // REST - GET requests (JSON)
-            this.app.get('*/_api/*', (req, res) => {
-                const transaction = generateGuid();
-
-                console.log('\nGET: ' + req.originalUrl);
-
-                const responseCallback = (data) => {
-                    if (data.transaction === transaction) {
-                        let statusCode = data.response.statusCode;
-                        let body = data.response.body;
-                        try {
-                            body = JSON.parse(body);
-                        } catch (ex) {
-                            //
-                        }
-                        res.status(statusCode);
-                        res.json(body);
-                        socket.removeListener('RESPONSE', responseCallback);
-                    }
-                };
-                socket.on('RESPONSE', responseCallback);
-
-                let request = {
-                    url: req.originalUrl,
-                    method: 'GET',
-                    headers: req.headers,
-                    transaction: transaction
-                };
-                this.io.emit('REQUEST', request);
-            });
+            this.app.get('*/_api/*', this.restGetTransmitter);
 
             // REST - Files and attachments
-            this.app.post('*/_api/*(/attachmentfiles/add|/files/add)*', bodyParserRaw, (req, res) => {
-                //
-            });
+            this.app.post('*/_api/*(/attachmentfiles/add|/files/add)*', bodyParserRaw, this.restPostTransmitter);
 
             // REST - Batch requests
-            this.app.post('*/_api/[$]batch', bodyParserRaw, (req, res) => {
-                //
-            });
+            this.app.post('*/_api/[$]batch', bodyParserRaw, this.restPostTransmitter);
 
             // REST - POST requests (JSON)
-            this.app.post('*/_api/*', bodyParser.json({
-                limit: this.proxy.jsonPayloadLimitSize
-            }), (req, res) => {
-                const transaction = generateGuid();
+            this.app.post('*/_api/*', bodyParser.json({ limit: this.proxy.jsonPayloadLimitSize }), this.restPostTransmitter);
 
-                console.log('\nPOST: ' + req.originalUrl);
-
-                //
-            });
-
-            //  SOAP requests (XML)
-            this.app.post('*/_vti_bin/*', (req, res) => {
-                //
-            });
+            //  CSOM/SOAP requests (XML)
+            this.app.post('*/_vti_bin/*', this.restPostTransmitter);
 
             let staticRouter = express.Router();
             staticRouter.get(
@@ -117,6 +78,93 @@ export class Server {
             this.app.use(cors());
             this.app.use('/', staticRouter);
 
+        });
+    }
+
+    private restGetTransmitter(req: express.Request, res: express.Response) {
+        const transaction = generateGuid();
+
+        if (!this.proxy.silentMode) {
+            console.log('\nGET: ' + req.originalUrl);
+        }
+
+        const responseCallback = (data) => {
+            if (data.transaction === transaction) {
+                let statusCode = data.response.statusCode;
+                let body = data.response.body;
+                try {
+                    body = JSON.parse(body);
+                } catch (ex) {
+                    //
+                }
+                res.status(statusCode);
+                res.json(body);
+                this.socket.removeListener('RESPONSE', responseCallback);
+            }
+        };
+        this.socket.on('RESPONSE', responseCallback);
+
+        let request = {
+            url: req.originalUrl,
+            method: 'GET',
+            headers: req.headers,
+            transaction: transaction
+        };
+        this.io.emit('REQUEST', request);
+    }
+
+    private restPostTransmitter(req: express.Request, res: express.Response) {
+        const transaction = generateGuid();
+
+        if (!this.proxy.silentMode) {
+            console.log('\nPOST: ' + req.originalUrl);
+        }
+
+        const responseCallback = (data) => {
+            if (data.transaction === transaction) {
+                let statusCode = data.response.statusCode;
+                let body = data.response.body;
+                try {
+                    body = JSON.parse(body);
+                } catch (ex) {
+                    //
+                }
+                res.status(statusCode);
+                res.json(body);
+                this.socket.removeListener('RESPONSE', responseCallback);
+            }
+        };
+        this.socket.on('RESPONSE', responseCallback);
+
+        const extractPostRequestBody = (request: express.Request, callback: Function): void => {
+            let reqBody = '';
+
+            if (request.body) {
+                reqBody = request.body;
+                if (callback && typeof callback === 'function') {
+                    callback(reqBody);
+                }
+            } else {
+                request.on('data', (chunk) => {
+                    reqBody += chunk;
+                });
+                request.on('end', () => {
+                    if (callback && typeof callback === 'function') {
+                        callback(reqBody);
+                    }
+                });
+            }
+        };
+
+        extractPostRequestBody(req, (body: any) => {
+            let request = {
+                url: req.originalUrl,
+                method: 'POST',
+                headers: req.headers,
+                body: body,
+                transaction: transaction
+            };
+            this.io.emit('REQUEST', request);
         });
     }
 

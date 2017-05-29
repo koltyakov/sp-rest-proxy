@@ -7,11 +7,6 @@
         "declaration": true,
         "moduleResolution": "node",
         "noImplicitAny": false,
-        "removeComments": true,
-        "types": [
-            "bluebird",
-            "node",
-            "sp-request"
-        ]
+        "removeComments": true
     }
 }

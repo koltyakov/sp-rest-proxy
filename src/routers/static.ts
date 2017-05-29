@@ -101,7 +101,7 @@ export class StaticRouter {
             endpointUrl = axdUrlArr[0].replace('://', '___').split('/')[0].replace('___', '://') +
                 '/ScriptResource.axd' + axdUrlArr[1];
 
-            // request.get({ uri: endpointUrl }).pipe(res);
+            request.get({ uri: endpointUrl }).pipe(res);
             return;
         }
 
@@ -111,7 +111,7 @@ export class StaticRouter {
         })
             .then((response: any) => {
                 if (!this.settings.silentMode) {
-                    console.log(response.statusCode, response.headers['content-type']);
+                    // console.log(response.statusCode, response.headers['content-type']);
                 }
 
                 res.status(response.statusCode);

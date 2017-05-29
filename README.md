@@ -9,12 +9,25 @@ Allows to perform API calls to local Express application with forwarding the que
 
 This concept was created to show how is could be easy to implements real world data communications for SharePoint Framework local serve mode during web parts debug without deployment to SharePoint tenant.
 
-## Supported SharePoint versions:
+## Supported SharePoint versions
 - SharePoint Online
 - SharePoint 2013
 - SharePoint 2016
 
-## How to use as a module:
+## Support proxying
+- REST API
+- CSOM requests
+- SOAP web services
+- Static resources
+
+## Proxy modes
+- API Proxy server
+- Socket gateway server
+- Socket gateway client
+
+Socket proxying allows to forward API from behind NAT (experimental).
+
+## How to use as a module
 
 1\. Install NPM module in the project:
 
@@ -22,16 +35,21 @@ This concept was created to show how is could be easy to implements real world d
 npm install --save-dev sp-rest-proxy
 ```
 
+or
+
+```bash
+yarn add sp-rest-proxy --dev
+```
+
 2\. Create server.js with the following code:
 
 ```javascript
 const RestProxy = require('sp-rest-proxy');
-const path = require('path');
 
 const settings = {
-    configPath: path.join(__dirname, '/../config/_private.conf.json'), // Location for SharePoint instance mapping and credentials
-    port: 8080,                                                        // Local server port
-    staticRoot: path.join(__dirname, '/../src')                        // Root folder for static content
+    configPath: './config/_private.conf.json', // Location for SharePoint instance mapping and credentials
+    port: 8080,                                // Local server port
+    staticRoot: './static'                     // Root folder for static content
 };
 
 const restProxy = new RestProxy(settings);
@@ -56,11 +74,11 @@ Check if the path to server.js is correct.
 
 6\. Test local API proxy in action.
 
-## How to develop:
+## How to develop
 
-### Install:
+### Install
 
-1\. Clone the project:
+1\. Clone/fork the project:
 
 ```bash
 git clone https://github.com/koltyakov/sp-rest-proxy
@@ -71,54 +89,73 @@ git clone https://github.com/koltyakov/sp-rest-proxy
 3\. Install dependencies:
 
 ```bash
+npm install
+```
+
+or
+
+```bash
+yarn install
+```
+
+4\. Build:
+
+```bash
 npm run build
 ```
 
-4\. Run the server:
+5\. Run the server:
 
 ```bash
 npm run serve
 ```
 
-Prompt credentials for a SharePoint site.
+or serve in TypeScript directly
 
-5\. Navigate to http://localhost:8080
+```bash
+npm run ts-serve
+```
 
-6\. Ajax REST calls as if you were in SharePoint site page context:
+Prompts credentials for a SharePoint site.
+
+6\. Navigate to http://localhost:8080 (or whatever in settings)
+
+7\. Ajax REST calls as if you were in SharePoint site page context:
 
 ![REST Client Example](./docs/img/client-example.png)
 
+8\. Tests.
+
+```bash
+npm run test
+```
+
+![Tests Example](./docs/img/tests-example.png)
+
 ## Authentication settings
 
-Since communication module (sp-request), which is used in sppull, had received additional SharePoint authentication methods, they are also supported in sp-rest-proxy.
+The proxy provides wizard-like approach for building and managing config files for [`node-sp-auth`](https://github.com/s-KaiNet/node-sp-auth) (Node.js to SharePoint unattended http authentication).
 
-- SharePoint On-Premise (Add-In permissions):
-    - `clientId`
-    - `issuerId`
-    - `realm`
-    - `rsaPrivateKeyPath`
-    - `shaThumbprint`
-- SharePoint On-Premise (NTLM handshake - more commonly used scenario):
-    - `username` - username without domain
-    - `password`
-    - `domain` / `workstation`
-- SharePoint Online (Add-In permissions):
-    - `clientId`
-    - `clientSecret`
-- SharePoint Online (SAML based with credentials - more commonly used scenario):
-    - `username` - user name for SP authentication [string, required]
-    - `password` - password [string, required]
-- ADFS user credantials:
-    - `username`
-    - `password`
-    - `relyingParty`
-    - `adfsUrl`
+- SharePoint 2013, 2016:
+  - Addin only permissions
+  - User credentials through the http ntlm handshake
+  - Form-based authentication (FBA)
+- SharePoint Online:
+  - Addin only permissions
+  - SAML based with user credentials
+  - ADFS user credentials (works with both SharePoint on-premise and Online)
 
 For more information please check node-sp-auth [credential options](https://github.com/s-KaiNet/node-sp-auth#params) and [wiki pages](https://github.com/s-KaiNet/node-sp-auth/wiki).
-Auth settings are stored inside `./config/_private.conf.js`.
+Auth settings are stored inside `./config/private.json`.
 
 ## Some additional info
 
 sp-rest-proxy works with PnP JS Core (not POST request, as there is an endpoint transformation during POST request in PnP JS Core):
 
 ![PnP JS Core + sp-rest-proxy](http://koltyakov.ru/images/pnp-sp-rest-proxy.png)
+
+## Use cases
+
+- Client side applications development with local serve, but real data from SharePoint
+- SharePoint Framework in local workbench with real data
+- Client applications integration test automation scenarios

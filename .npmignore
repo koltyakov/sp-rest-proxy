@@ -4,6 +4,7 @@
 /src
 /examples
 /docs
+/tmp
 .vscode
 npm-debug.log
 tslconfig.json

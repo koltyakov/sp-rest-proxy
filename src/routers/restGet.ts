@@ -35,8 +35,7 @@ export class RestGetRouter {
         Object.keys(req.headers).forEach((prop: string) => {
             if (ignoreHeaders.indexOf(prop.toLowerCase()) === -1) {
                 if (prop.toLowerCase() === 'accept' && req.headers[prop] !== '*/*') {
-                    // tslint:disable-next-line:no-string-literal
-                    requestHeadersPass['Accept'] = req.headers[prop];
+                    requestHeadersPass.Accept = req.headers[prop];
                 } else if (prop.toLowerCase() === 'content-type') {
                     requestHeadersPass['Content-Type'] = req.headers[prop];
                 } else {

@@ -6,3 +6,4 @@ config/integration/**/private.*.json
 debug.log
 npm-debug.*
 dist
+tmp

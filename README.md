@@ -47,9 +47,9 @@ yarn add sp-rest-proxy --dev
 const RestProxy = require('sp-rest-proxy');
 
 const settings = {
-    configPath: './config/_private.conf.json', // Location for SharePoint instance mapping and credentials
-    port: 8080,                                // Local server port
-    staticRoot: './static'                     // Root folder for static content
+    configPath: './config/private.json', // Location for SharePoint instance mapping and credentials
+    port: 8080,                          // Local server port
+    staticRoot: './static'               // Root folder for static content
 };
 
 const restProxy = new RestProxy(settings);

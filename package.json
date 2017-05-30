@@ -1,14 +1,13 @@
 {
   "name": "sp-rest-proxy",
   "description": "SharePoint REST API Proxy for Node.js and Express local serve",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "main": "./dist/index.js",
   "typings": "./dist/index",
   "scripts": {
     "serve": "gulp tsc && node ./dist/server",
     "ts-serve": "ts-node ./src/server",
     "build": "gulp tsc",
-    "publish": "gulp prepublish && npm publish",
     "test": "ts-node ./test/init && mocha --opts test/mocha.opts || ECHO."
   },
   "keywords": [

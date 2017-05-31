@@ -1,4 +1,3 @@
-import * as Promise from 'bluebird';
 import * as spauth from 'node-sp-auth';
 import * as spRequest from 'sp-request';
 import { ISPRequest } from 'sp-request';
@@ -16,7 +15,7 @@ export class ProxyUtils {
     }
 
     public getAuthOptions = (): Promise<any> => {
-        return spauth.getAuth(this.ctx.siteUrl, this.ctx.authOptions);
+        return <any>spauth.getAuth(this.ctx.siteUrl, this.ctx.authOptions);
     }
 
     public getCachedRequest = (spr: ISPRequest): ISPRequest => {

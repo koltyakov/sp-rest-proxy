@@ -5,9 +5,6 @@ import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as cors from 'cors';
 
-// import { getCaseInsensitiveProp } from '../utils';
-import { StaticRouter } from '../routers/static';
-
 import { generateGuid } from '../utils';
 import { IGatewayServerSettings, IProxySettings } from '../interfaces';
 import { Application } from 'express';
@@ -30,7 +27,7 @@ export class Server {
         this.proxy = proxy;
     }
 
-    public init() {
+    public init = () => {
         this.server.listen(this.settings.port || this.proxy.port);
         this.io.on('connection', (socket) => {
 
@@ -62,26 +59,16 @@ export class Server {
             //  CSOM/SOAP requests (XML)
             this.app.post('*/_vti_bin/*', this.restPostTransmitter);
 
-            let staticRouter = express.Router();
-            staticRouter.get(
-                '/*',
-                (new StaticRouter({
-                    siteUrl: '/gateway',
-                    authOptions: {
-                        username: 'Gateway mode',
-                        password: ''
-                    }
-                }, this.proxy)).router
-            );
+            // Static router
+            this.app.get('*', this.restGetTransmitter);
 
             this.app.use(bodyParser.urlencoded({ extended: true }));
             this.app.use(cors());
-            this.app.use('/', staticRouter);
 
         });
     }
 
-    private restGetTransmitter(req: express.Request, res: express.Response) {
+    private restGetTransmitter = (req: express.Request, res: express.Response) => {
         const transaction = generateGuid();
 
         if (!this.proxy.silentMode) {
@@ -97,8 +84,14 @@ export class Server {
                 } catch (ex) {
                     //
                 }
+                // res.status(statusCode);
+                // res.json(body);
+
                 res.status(statusCode);
-                res.json(body);
+                res.contentType(data.response.headers['content-type']);
+
+                res.send(body);
+
                 this.socket.removeListener('RESPONSE', responseCallback);
             }
         };
@@ -113,7 +106,7 @@ export class Server {
         this.io.emit('REQUEST', request);
     }
 
-    private restPostTransmitter(req: express.Request, res: express.Response) {
+    private restPostTransmitter = (req: express.Request, res: express.Response) => {
         const transaction = generateGuid();
 
         if (!this.proxy.silentMode) {

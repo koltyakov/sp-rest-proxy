@@ -33,8 +33,8 @@ export default class RestProxy {
             configPath: path.resolve(settings.configPath || './config/private.json'),
             hostname: settings.hostname || process.env.HOSTNAME || 'localhost',
             port: settings.port || process.env.PORT || 8080,
-            staticRoot: path.resolve(settings.staticRoot || path.join(__dirname, './static')),
-            staticLibPath: path.resolve(settings.staticLibPath || path.join(__dirname, './static/bower_components')),
+            staticRoot: path.resolve(settings.staticRoot || path.join(__dirname, '../static')),
+            staticLibPath: path.resolve(settings.staticLibPath || path.join(__dirname, '../static/bower_components')),
             debugOutput: settings.debugOutput || false,
             rawBodyLimitSize: settings.rawBodyLimitSize || '2mb',
             jsonPayloadLimitSize: settings.jsonPayloadLimitSize || '2mb',
@@ -53,8 +53,8 @@ export default class RestProxy {
     }
 
     // Server proxy main mode
-    public serveProxy(callback?: Function) { this.serve(callback); }
-    public serve(callback?: Function) {
+    public serveProxy = (callback?: Function) => { this.serve(callback); }
+    public serve = (callback?: Function) => {
         (new AuthConfig({
             configPath: this.settings.configPath,
             defaultConfigPath: this.settings.defaultConfigPath,
@@ -148,12 +148,12 @@ export default class RestProxy {
     }
 
     // Serve socket gateway server
-    public serveGateway(settings: IGatewayServerSettings) {
+    public serveGateway = (settings: IGatewayServerSettings) => {
         (new GatewayServer(settings, this.settings, this.app)).init();
     }
 
     // Serve socker gateway client
-    public serveClient(settings: IGatewayClientSettings) {
+    public serveClient = (settings: IGatewayClientSettings) => {
         (new GatewayClient(settings, this.settings)).init();
         this.serve();
     }

@@ -16,7 +16,7 @@ export class Client {
         this.proxy = proxy;
     }
 
-    public init() {
+    public init = () => {
         this.socket.on('REQUEST', (request) => {
             let endpoint = this.enpointUrl(request.url);
             console.log(`${request.method} request to ${endpoint}`);
@@ -33,7 +33,7 @@ export class Client {
         });
     }
 
-    private enpointUrl(relativeUrl: string): string {
+    private enpointUrl = (relativeUrl: string): string => {
         let hostname = this.proxy.hostname;
         let port = this.proxy.port;
         return `http://${hostname}:${port}${relativeUrl}`

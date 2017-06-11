@@ -45,22 +45,22 @@ export class Server {
             });
 
             // REST - GET requests (JSON)
-            this.app.get('*/_api/*', this.restGetTransmitter);
+            this.app.get('*/_api/*', this.getTransmitter);
 
             // REST - Files and attachments
-            this.app.post('*/_api/*(/attachmentfiles/add|/files/add)*', bodyParserRaw, this.restPostTransmitter);
+            this.app.post('*/_api/*(/attachmentfiles/add|/files/add)*', bodyParserRaw, this.postTransmitter);
 
             // REST - Batch requests
-            this.app.post('*/_api/[$]batch', bodyParserRaw, this.restPostTransmitter);
+            this.app.post('*/_api/[$]batch', bodyParserRaw, this.postTransmitter);
 
             // REST - POST requests (JSON)
-            this.app.post('*/_api/*', bodyParser.json({ limit: this.proxy.jsonPayloadLimitSize }), this.restPostTransmitter);
+            this.app.post('*/_api/*', bodyParser.json({ limit: this.proxy.jsonPayloadLimitSize }), this.postTransmitter);
 
             //  CSOM/SOAP requests (XML)
-            this.app.post('*/_vti_bin/*', this.restPostTransmitter);
+            this.app.post('*/_vti_bin/*', this.postTransmitter);
 
             // Static router
-            this.app.get('*', this.restGetTransmitter);
+            this.app.get('*', this.getTransmitter);
 
             this.app.use(bodyParser.urlencoded({ extended: true }));
             this.app.use(cors());
@@ -68,7 +68,7 @@ export class Server {
         });
     }
 
-    private restGetTransmitter = (req: express.Request, res: express.Response) => {
+    private getTransmitter = (req: express.Request, res: express.Response) => {
         const transaction = generateGuid();
 
         if (!this.proxy.silentMode) {
@@ -79,13 +79,12 @@ export class Server {
             if (data.transaction === transaction) {
                 let statusCode = data.response.statusCode;
                 let body = data.response.body;
+
                 try {
                     body = JSON.parse(body);
                 } catch (ex) {
                     //
                 }
-                // res.status(statusCode);
-                // res.json(body);
 
                 res.status(statusCode);
                 res.contentType(data.response.headers['content-type']);
@@ -106,7 +105,7 @@ export class Server {
         this.io.emit('REQUEST', request);
     }
 
-    private restPostTransmitter = (req: express.Request, res: express.Response) => {
+    private postTransmitter = (req: express.Request, res: express.Response) => {
         const transaction = generateGuid();
 
         if (!this.proxy.silentMode) {

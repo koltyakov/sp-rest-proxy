@@ -2,7 +2,7 @@ node_modules
 bower_components
 static/lib
 config/private.json
-config/integration/**/private.*.json
+config/**/private.*.json
 debug.log
 npm-debug.*
 dist

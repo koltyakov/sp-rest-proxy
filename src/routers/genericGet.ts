@@ -7,7 +7,7 @@ import { IProxyContext, IProxySettings } from '../interfaces';
 import { Request, Response, NextFunction } from 'express';
 import { ISPRequest } from 'sp-request';
 
-export class StaticRouter {
+export class GetRouter {
 
     private ctx: IProxyContext;
     private settings: IProxySettings;

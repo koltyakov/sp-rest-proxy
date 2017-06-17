@@ -13,7 +13,8 @@ import { RestPostRouter } from './routers/restPost';
 import { RestBatchRouter } from './routers/restBatch';
 import { CsomRouter } from './routers/csom';
 import { SoapRouter } from './routers/soap';
-import { StaticRouter } from './routers/static';
+import { PostRouter } from './routers/genericPost';
+import { GetRouter } from './routers/genericGet';
 
 import { Server as GatewayServer } from './gateway/server';
 import { Client as GatewayClient } from './gateway/client';
@@ -48,7 +49,8 @@ export default class RestProxy {
             apiRestRouter: express.Router(),
             apiCsomRouter: express.Router(),
             apiSoapRouter: express.Router(),
-            staticRouter: express.Router()
+            genericPostRouter: express.Router(),
+            genericGetRouter: express.Router()
         };
     }
 
@@ -116,10 +118,16 @@ export default class RestProxy {
                     (new SoapRouter(context, this.settings)).router
                 );
 
-                // Static local content
-                this.routers.staticRouter.get(
+                // Generic GET and static local content
+                this.routers.genericGetRouter.get(
                     '/*',
-                    (new StaticRouter(context, this.settings)).router
+                    (new GetRouter(context, this.settings)).router
+                );
+
+                // Generic POST
+                this.routers.genericPostRouter.post(
+                    '/*',
+                    (new PostRouter(context, this.settings)).router
                 );
 
                 this.app.use(bodyParser.urlencoded({ extended: true }));
@@ -127,8 +135,10 @@ export default class RestProxy {
                 this.app.use(cors());
                 this.app.use('*/_api', this.routers.apiRestRouter);
                 this.app.use('*/_vti_bin/client.svc/ProcessQuery', this.routers.apiCsomRouter);
-                this.app.use('*/_vti_bin', this.routers.apiSoapRouter);
-                this.app.use('/', this.routers.staticRouter);
+                this.app.use('*/_vti_bin/*.asmx', this.routers.apiSoapRouter);
+
+                this.app.use('/', this.routers.genericPostRouter);
+                this.app.use('/', this.routers.genericGetRouter);
 
                 let server = this.app.listen(this.settings.port, this.settings.hostname, () => {
                     if (!this.settings.silentMode) {

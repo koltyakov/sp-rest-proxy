@@ -61,7 +61,7 @@ export class PostRouter {
                     this.spr.post(endpointUrl, {
                         headers: headers,
                         body: postBody,
-                        ...options
+                        ...(<any>options)
                     })
                         .then((response: any) => {
                             if (this.settings.debugOutput) {

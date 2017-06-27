@@ -107,7 +107,7 @@ export class GetRouter {
 
         this.spr.get(endpointUrl, {
             headers: requestHeadersPass,
-            ...advanced
+            ...(<any>advanced)
         })
             .then((response: any) => {
                 if (!this.settings.silentMode) {

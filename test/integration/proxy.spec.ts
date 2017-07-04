@@ -285,7 +285,7 @@ describe(`Proxy tests`, () => {
 
                 });
 
-                // Add test to check if items were phisically created
+                // Add test to check if items were physically created
                 it('should create list items in batch', function(done: MochaDone): void {
                     this.timeout(30 * 1000);
 
@@ -343,7 +343,7 @@ describe(`Proxy tests`, () => {
 
                 });
 
-                // Add test to check if items were phisically updated
+                // Add test to check if items were physically updated
                 it('should update list items in batch', function(done: MochaDone): void {
                     this.timeout(30 * 1000);
 
@@ -409,7 +409,7 @@ describe(`Proxy tests`, () => {
 
                 });
 
-                // Add test to check if items were phisically deleted
+                // Add test to check if items were physically deleted
                 it('should delete list items in batch', function(done: MochaDone): void {
                     this.timeout(30 * 1000);
 

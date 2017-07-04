@@ -285,6 +285,7 @@ describe(`Proxy tests`, () => {
 
                 });
 
+                // Add test to check if items were phisically created
                 it('should create list items in batch', function(done: MochaDone): void {
                     this.timeout(30 * 1000);
 
@@ -297,7 +298,7 @@ describe(`Proxy tests`, () => {
 
                             const listItemEntityTypeFullName: string = response.data.d.ListItemEntityTypeFullName;
                             const boundary = `batch_${pnp.Util.getGUID()}`;
-                            const changeset = `changeset${pnp.Util.getGUID()}`;
+                            const changeset = `changeset_${pnp.Util.getGUID()}`;
 
                             const listEndpoint = `${proxyContext.siteUrl}/_api/web/lists/getByTitle('${testVariables.newListName}')/items`;
 
@@ -307,7 +308,7 @@ describe(`Proxy tests`, () => {
 
                                 ${dragons.map((dragon: string) => {
                                     return trimMultiline(`
-                                        --changeset_${changeset}
+                                        --${changeset}
                                         Content-Type: application/http
                                         Content-Transfer-Encoding: binary
 
@@ -317,9 +318,135 @@ describe(`Proxy tests`, () => {
 
                                         {"__metadata":{"type":"${listItemEntityTypeFullName}"},"Title":"${dragon}"}
                                     `);
-                                }).join('\n')}
+                                }).join('\n\n')}
 
-                                --changeset_${changeset}--
+                                --${changeset}--
+
+                                --${boundary}--
+                            `);
+
+                            return axios.post(
+                                `${proxyRootUri}/_api/$batch`,
+                                requestPayload, {
+                                    headers: {
+                                        'X-RequestDigest': getRequestDigest(),
+                                        'accept': 'application/json',
+                                        'content-type': `multipart/mixed; boundary=${boundary}`
+                                    }
+                                }
+                            );
+                        })
+                        .then(response => {
+                            done();
+                        })
+                        .catch(done);
+
+                });
+
+                // Add test to check if items were phisically updated
+                it('should update list items in batch', function(done: MochaDone): void {
+                    this.timeout(30 * 1000);
+
+                    let listUri = `${proxyRootUri}/_api/web/lists/getByTitle('${testVariables.newListName}')`;
+                    Promise.all([
+                        axios.get(`${listUri}/items?$select=Id,Title`, testVariables.headers.verbose),
+                        axios.get(`${listUri}?$select=ListItemEntityTypeFullName`, testVariables.headers.verbose)
+                    ])
+                        .then((response: any): any => {
+
+                            const listItemEntityTypeFullName: string = response[1].data.d.ListItemEntityTypeFullName;
+                            const boundary = `batch_${pnp.Util.getGUID()}`;
+                            const changeset = `changeset_n${pnp.Util.getGUID()}`;
+                            let items = response[0].data.d.results;
+
+                            if (items.length === 0) {
+                                return 'No items to update';
+                            }
+
+                            const listEndpoint = `${proxyContext.siteUrl}/_api/web/lists/getByTitle('${testVariables.newListName}')/items`;
+
+                            let requestPayload = trimMultiline(`
+                                --${boundary}
+                                Content-Type: multipart/mixed; boundary="${changeset}"
+
+                                ${items.map((item: any) => {
+                                    let body = `{"__metadata":{"type":"${listItemEntityTypeFullName}"},"Title":"${item.Title} _updated"}`;
+                                    return trimMultiline(`
+                                        --${changeset}
+                                        Content-Type: application/http
+                                        Content-Transfer-Encoding: binary
+
+                                        MERGE ${listEndpoint}(${item.Id}) HTTP/1.1
+                                        If-Match: *
+                                        Accept: application/json;
+                                        Content-Type: application/json;odata=verbose;charset=utf-8
+                                        Content-Length: ${body.length}
+
+                                        ${body}
+                                    `);
+                                }).join('\n\n')}
+
+                                --${changeset}--
+
+                                --${boundary}--
+                            `);
+
+                            return axios.post(
+                                `${proxyRootUri}/_api/$batch`,
+                                requestPayload, {
+                                    headers: {
+                                        'X-RequestDigest': getRequestDigest(),
+                                        'accept': 'application/json',
+                                        'content-type': `multipart/mixed; boundary=${boundary}`
+                                    }
+                                }
+                            );
+                        })
+                        .then(response => {
+                            done();
+                        })
+                        .catch(done);
+
+                });
+
+                // Add test to check if items were phisically deleted
+                it('should delete list items in batch', function(done: MochaDone): void {
+                    this.timeout(30 * 1000);
+
+                    let listUri = `${proxyRootUri}/_api/web/lists/getByTitle('${testVariables.newListName}')`;
+                    Promise.all([
+                        axios.get(`${listUri}/items?$select=Id,Title`, testVariables.headers.verbose),
+                        axios.get(`${listUri}?$select=ListItemEntityTypeFullName`, testVariables.headers.verbose)
+                    ])
+                        .then((response: any): any => {
+
+                            const listItemEntityTypeFullName: string = response[1].data.d.ListItemEntityTypeFullName;
+                            const boundary = `batch_${pnp.Util.getGUID()}`;
+                            const changeset = `changeset_${pnp.Util.getGUID()}`;
+                            let items = response[0].data.d.results;
+
+                            if (items.length === 0) {
+                                return 'No items to delete';
+                            }
+
+                            const listEndpoint = `${proxyContext.siteUrl}/_api/web/lists/getByTitle('${testVariables.newListName}')/items`;
+
+                            let requestPayload = trimMultiline(`
+                                --${boundary}
+                                Content-Type: multipart/mixed; boundary="${changeset}"
+
+                                ${items.map((item: any) => {
+                                    return trimMultiline(`
+                                        --${changeset}
+                                        Content-Type: application/http
+                                        Content-Transfer-Encoding: binary
+
+                                        DELETE ${listEndpoint}(${item.Id}) HTTP/1.1
+                                        If-Match: *
+                                    `);
+                                }).join('\n\n')}
+
+                                --${changeset}--
 
                                 --${boundary}--
                             `);

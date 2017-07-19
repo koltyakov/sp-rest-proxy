@@ -54,7 +54,7 @@ export class SoapRouter {
                             if (this.settings.debugOutput) {
                                 console.log(response.statusCode, response.body);
                             }
-                            res.send(response);
+                            res.send(response.body);
                             res.end();
                         });
                 })

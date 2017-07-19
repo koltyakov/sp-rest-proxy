@@ -47,6 +47,10 @@ export class RestBatchRouter {
         // reqBodyData = reqBodyData.replace(/ _api/g, ` ${endpointUrlStr.replace('/_api/$batch', '/')}_api`);
         // req.headers['Content-Length'] = reqBodyData.byteLength;
 
+        let regExpOrigin = new RegExp(req.headers.origin, 'g');
+        reqBodyData = reqBodyData.replace(regExpOrigin, this.ctx.siteUrl);
+        req.headers['Content-Length'] = reqBodyData.byteLength;
+
         if (!this.settings.silentMode) {
             console.log('Request body:', reqBodyData);
         }

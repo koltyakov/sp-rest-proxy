@@ -286,6 +286,63 @@ describe(`Proxy tests`, () => {
                 });
 
                 // Add test to check if items were physically created
+                it('should create list items in batch (local endpoints)', function(done: MochaDone): void {
+                    this.timeout(30 * 1000);
+
+                    let items = [ 'Batman', 'Iron man' ];
+
+                    let listUri = `${proxyRootUri}/_api/web/lists/getByTitle('${testVariables.newListName}')`;
+                    axios.get(`${listUri}?$select=ListItemEntityTypeFullName`, testVariables.headers.verbose)
+                        .then((response: any) => {
+
+                            const listItemEntityTypeFullName: string = response.data.d.ListItemEntityTypeFullName;
+                            const boundary = `batch_${pnp.Util.getGUID()}`;
+                            const changeset = `changeset_${pnp.Util.getGUID()}`;
+
+                            const listEndpoint = `${proxyRootUri}/_api/web/lists/getByTitle('${testVariables.newListName}')/items`;
+
+                            let requestPayload = trimMultiline(`
+                                --${boundary}
+                                Content-Type: multipart/mixed; boundary="${changeset}"
+
+                                ${items.map((item: string) => {
+                                    return trimMultiline(`
+                                        --${changeset}
+                                        Content-Type: application/http
+                                        Content-Transfer-Encoding: binary
+
+                                        POST ${listEndpoint} HTTP/1.1
+                                        Accept: application/json;
+                                        Content-Type: application/json;odata=verbose;charset=utf-8
+
+                                        {"__metadata":{"type":"${listItemEntityTypeFullName}"},"Title":"${item}"}
+                                    `);
+                                }).join('\n\n')}
+
+                                --${changeset}--
+
+                                --${boundary}--
+                            `);
+
+                            return axios.post(
+                                `${proxyRootUri}/_api/$batch`,
+                                requestPayload, {
+                                    headers: {
+                                        'X-RequestDigest': getRequestDigest(),
+                                        'accept': 'application/json',
+                                        'content-type': `multipart/mixed; boundary=${boundary}`
+                                    }
+                                }
+                            );
+                        })
+                        .then(response => {
+                            done();
+                        })
+                        .catch(done);
+
+                });
+
+                // Add test to check if items were physically created
                 it('should create list items in batch', function(done: MochaDone): void {
                     this.timeout(30 * 1000);
 
@@ -635,7 +692,7 @@ describe(`Proxy tests`, () => {
                     pnp.sp.web.select('Title').get()
                 ])
                     .then(response => {
-                        xmlStringToJson(response[0].data.body, (err: any, soapResp: any) => {
+                        xmlStringToJson(response[0].data, (err: any, soapResp: any) => {
                             if (err) {
                                 done(err);
                             } else {
@@ -685,7 +742,7 @@ describe(`Proxy tests`, () => {
                     pnp.sp.web.select('Title').get()
                 ])
                     .then(response => {
-                        let csomResp: any = JSON.parse(response[0].data.body)[4];
+                        let csomResp: any = response[0].data[4];
                         let pnpResp: any = response[1];
                         expect(csomResp.Title).to.be.equal(pnpResp.Title);
                         done();

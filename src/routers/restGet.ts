@@ -20,7 +20,9 @@ export class RestGetRouter {
         let endpointUrl = this.util.buildEndpointUrl(req.originalUrl);
         this.spr = this.util.getCachedRequest(this.spr);
 
-        console.log('\nGET: ' + endpointUrl);
+        if (!this.settings.silentMode) {
+            console.log('\nGET: ' + endpointUrl);
+        }
 
         let requestHeadersPass: any = {};
 
@@ -33,8 +35,7 @@ export class RestGetRouter {
         Object.keys(req.headers).forEach((prop: string) => {
             if (ignoreHeaders.indexOf(prop.toLowerCase()) === -1) {
                 if (prop.toLowerCase() === 'accept' && req.headers[prop] !== '*/*') {
-                    // tslint:disable-next-line:no-string-literal
-                    requestHeadersPass['Accept'] = req.headers[prop];
+                    requestHeadersPass.Accept = req.headers[prop];
                 } else if (prop.toLowerCase() === 'content-type') {
                     requestHeadersPass['Content-Type'] = req.headers[prop];
                 } else {

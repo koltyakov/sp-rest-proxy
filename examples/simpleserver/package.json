@@ -1,0 +1,15 @@
+{
+  "name": "simpleserver",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "server": "node ./server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "sp-rest-proxy": "^2.3.2"
+  }
+}

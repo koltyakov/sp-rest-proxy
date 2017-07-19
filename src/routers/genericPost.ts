@@ -4,7 +4,7 @@ import { ISPRequest } from 'sp-request';
 import { IAuthResponse } from 'node-sp-auth';
 import { Request, Response, NextFunction } from 'express';
 
-export class SoapRouter {
+export class PostRouter {
 
     private spr: ISPRequest;
     private ctx: IProxyContext;
@@ -25,37 +25,53 @@ export class SoapRouter {
             console.log('\nPOST: ' + endpointUrl);
         }
 
-        let soapBody = '';
+        let postBody = '';
         req.on('data', (chunk) => {
-            soapBody += chunk;
+            postBody += chunk;
         });
         req.on('end', () => {
             if (req.headers.origin) {
                 let regExpOrigin = new RegExp(req.headers.origin, 'g');
-                soapBody = soapBody.replace(regExpOrigin, this.ctx.siteUrl);
+                postBody = postBody.replace(regExpOrigin, this.ctx.siteUrl);
             }
+
+            let requestHeadersPass = {};
+            Object.keys(req.headers).forEach((prop: string) => {
+                if (prop.toLowerCase() === 'accept' && req.headers[prop] !== '*/*') {
+                    // tslint:disable-next-line:no-string-literal
+                    requestHeadersPass['Accept'] = req.headers[prop];
+                }
+                if (prop.toLowerCase() === 'content-type') {
+                    requestHeadersPass['Content-Type'] = req.headers[prop];
+                }
+            });
 
             this.util.getAuthOptions()
                 .then((opt: IAuthResponse) => {
                     let headers = {
                         ...opt.headers,
-                        'Accept': 'application/xml, text/xml, */*; q=0.01',
-                        'Content-Type': 'text/xml;charset="UTF-8"',
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'Content-Length': soapBody.length
+                        ...requestHeadersPass
+                    };
+
+                    let options = {
+                        json: false,
+                        processData: false
                     };
 
                     this.spr.post(endpointUrl, {
                         headers: headers,
-                        body: soapBody,
-                        json: false
+                        body: postBody,
+                        ...(<any>options)
                     })
                         .then((response: any) => {
                             if (this.settings.debugOutput) {
                                 console.log(response.statusCode, response.body);
                             }
+
+                            res.status(response.statusCode);
+                            res.contentType(response.headers['content-type']);
+
                             res.send(response.body);
-                            res.end();
                         });
                 })
                 .catch((err: any) => {

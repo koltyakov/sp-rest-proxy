@@ -2,16 +2,11 @@
     "compilerOptions": {
         "target": "es5",
         "module": "commonjs",
-        "lib": [ "es2015" ],
+        "lib": [ "es2015", "dom" ],
         "sourceMap": true,
         "declaration": true,
         "moduleResolution": "node",
         "noImplicitAny": false,
-        "removeComments": true,
-        "types": [
-            "bluebird",
-            "node",
-            "sp-request"
-        ]
+        "removeComments": true
     }
 }

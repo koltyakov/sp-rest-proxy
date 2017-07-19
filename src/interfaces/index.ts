@@ -12,13 +12,22 @@ export interface IProxySettings {
     jsonPayloadLimitSize?: string;
     debugOutput?: boolean;
     metadata?: any;
+    silentMode?: boolean;
 }
 
 export interface IProxyContext {
     siteUrl: string;
-    context: IAuthOptions;
+    authOptions?: IAuthOptions;
 }
 
 export interface IRouters {
     [routerName: string]: Router;
+}
+
+export interface IGatewayServerSettings {
+    port?: number;
+}
+
+export interface IGatewayClientSettings {
+    serverUrl: string;
 }

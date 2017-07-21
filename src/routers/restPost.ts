@@ -97,7 +97,8 @@ export class RestPostRouter {
                 return this.spr.post(endpointUrlStr, {
                     headers: requestHeadersPass,
                     body: reqBodyData,
-                    ...jsonOption
+                    ...jsonOption,
+                    agent: this.util.isUrlHttps(endpointUrlStr) ? this.settings.agent : undefined
                 });
             })
             .then((resp: any) => {

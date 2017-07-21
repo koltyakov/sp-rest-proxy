@@ -50,7 +50,8 @@ export class RestGetRouter {
         }
 
         this.spr.get(endpointUrl, {
-            headers: requestHeadersPass
+            headers: requestHeadersPass,
+            agent: this.util.isUrlHttps(endpointUrl) ? this.settings.agent : undefined
         })
             .then((response: any) => {
                 if (this.settings.debugOutput) {

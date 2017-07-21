@@ -28,6 +28,7 @@ export default class RestProxy {
     private app: express.Application;
     private settings: IProxySettings;
     private routers: IRouters;
+    private agent: https.Agent;
 
     constructor(settings: IProxySettings = {}) {
         this.settings = {

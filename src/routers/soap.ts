@@ -8,12 +8,14 @@ export class SoapRouter {
 
     private spr: ISPRequest;
     private ctx: IProxyContext;
+    private agent: any;
     private settings: IProxySettings;
     private util: ProxyUtils;
 
-    constructor(context: IProxyContext, settings: IProxySettings) {
+    constructor(context: IProxyContext, settings: IProxySettings, agent: any) {
         this.ctx = context;
         this.settings = settings;
+        this.agent = agent;
         this.util = new ProxyUtils(this.ctx);
     }
 
@@ -48,7 +50,8 @@ export class SoapRouter {
                     this.spr.post(endpointUrl, {
                         headers: headers,
                         body: soapBody,
-                        json: false
+                        json: false,
+                        agent: this.agent
                     })
                         .then((response: any) => {
                             if (this.settings.debugOutput) {

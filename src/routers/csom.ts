@@ -8,12 +8,14 @@ export class CsomRouter {
 
     private spr: ISPRequest;
     private ctx: IProxyContext;
+    private agent: any;
     private settings: IProxySettings;
     private util: ProxyUtils;
 
-    constructor(context: IProxyContext, settings: IProxySettings) {
+    constructor(context: IProxyContext, settings: IProxySettings, agent: any) {
         this.ctx = context;
         this.settings = settings;
+        this.agent = agent;
         this.util = new ProxyUtils(this.ctx);
     }
 
@@ -53,7 +55,8 @@ export class CsomRouter {
                     return this.spr.post(endpointUrl, {
                         headers: headers,
                         body: csomPackage,
-                        json: false
+                        json: false,
+                        agent: this.agent
                     });
                 })
                 .then((response: any) => {

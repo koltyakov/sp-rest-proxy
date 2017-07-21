@@ -8,12 +8,14 @@ export class PostRouter {
 
     private spr: ISPRequest;
     private ctx: IProxyContext;
+    private agent: any;
     private settings: IProxySettings;
     private util: ProxyUtils;
 
-    constructor(context: IProxyContext, settings: IProxySettings) {
+    constructor(context: IProxyContext, settings: IProxySettings, agent: any) {
         this.ctx = context;
         this.settings = settings;
+        this.agent = agent;
         this.util = new ProxyUtils(this.ctx);
     }
 
@@ -61,6 +63,7 @@ export class PostRouter {
                     this.spr.post(endpointUrl, {
                         headers: headers,
                         body: postBody,
+                        agent: this.agent,
                         ...(<any>options)
                     })
                         .then((response: any) => {

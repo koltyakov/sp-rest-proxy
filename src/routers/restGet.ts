@@ -7,12 +7,14 @@ export class RestGetRouter {
 
     private spr: ISPRequest;
     private ctx: IProxyContext;
+    private agent: any;
     private settings: IProxySettings;
     private util: ProxyUtils;
 
-    constructor(context: IProxyContext, settings: IProxySettings) {
+    constructor(context: IProxyContext, settings: IProxySettings, agent: any) {
         this.ctx = context;
         this.settings = settings;
+        this.agent = agent;
         this.util = new ProxyUtils(this.ctx);
     }
 
@@ -50,7 +52,8 @@ export class RestGetRouter {
         }
 
         this.spr.get(endpointUrl, {
-            headers: requestHeadersPass
+            headers: requestHeadersPass,
+            agent: this.agent
         })
             .then((response: any) => {
                 if (this.settings.debugOutput) {

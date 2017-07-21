@@ -11,13 +11,15 @@ export class GetRouter {
 
     private ctx: IProxyContext;
     private settings: IProxySettings;
+    private agent: any;
     private staticLibPathExists: boolean;
     private util: ProxyUtils;
     private spr: ISPRequest;
 
-    constructor(context: IProxyContext, settings: IProxySettings) {
+    constructor(context: IProxyContext, settings: IProxySettings, agent: any) {
         this.ctx = context;
         this.settings = settings;
+        this.agent = agent;
         this.staticLibPathExists = fs.existsSync(settings.staticLibPath);
         this.util = new ProxyUtils(this.ctx);
     }
@@ -101,7 +103,10 @@ export class GetRouter {
             endpointUrl = axdUrlArr[0].replace('://', '___').split('/')[0].replace('___', '://') +
                 '/ScriptResource.axd' + axdUrlArr[1];
 
-            request.get({ uri: endpointUrl }).pipe(res);
+            request.get({
+              uri: endpointUrl,
+              agent: this.agent
+            }).pipe(res);
             return;
         }
 

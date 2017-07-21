@@ -7,6 +7,7 @@ import * as bodyParser from 'body-parser';
 import * as cors from 'cors';
 import * as path from 'path';
 import * as fs from 'fs';
+import * as https from 'https';
 
 import { RestGetRouter } from './routers/restGet';
 import { RestPostRouter } from './routers/restPost';
@@ -77,24 +78,29 @@ export default class RestProxy {
                     }
                 });
 
+                let agent = new https.Agent({
+                  keepAlive: true,
+                  keepAliveMsecs: 10000
+                });
+
                 // REST - Files and attachments
                 this.routers.apiRestRouter.post(
                     '/*(/attachmentfiles/add|/files/add)*',
                     bodyParserRaw,
-                    (new RestPostRouter(context, this.settings)).router
+                    (new RestPostRouter(context, this.settings, agent)).router
                 );
 
                 // REST - Batch requests
                 this.routers.apiRestRouter.post(
                     '/[$]batch',
                     bodyParserRaw,
-                    (new RestBatchRouter(context, this.settings)).router
+                    (new RestBatchRouter(context, this.settings, agent)).router
                 );
 
                 // REST - GET requests (JSON)
                 this.routers.apiRestRouter.get(
                     '/*',
-                    (new RestGetRouter(context, this.settings)).router
+                    (new RestGetRouter(context, this.settings, agent)).router
                 );
 
                 // REST - POST requests (JSON)
@@ -103,31 +109,31 @@ export default class RestProxy {
                     bodyParser.json({
                         limit: this.settings.jsonPayloadLimitSize
                     }),
-                    (new RestPostRouter(context, this.settings)).router
+                    (new RestPostRouter(context, this.settings, agent)).router
                 );
 
                 //  CSOM requests (XML)
                 this.routers.apiCsomRouter.post(
                     '/*',
-                    (new CsomRouter(context, this.settings)).router
+                    (new CsomRouter(context, this.settings, agent)).router
                 );
 
                 //  SOAP requests (XML)
                 this.routers.apiSoapRouter.post(
                     '/*',
-                    (new SoapRouter(context, this.settings)).router
+                    (new SoapRouter(context, this.settings, agent)).router
                 );
 
                 // Generic GET and static local content
                 this.routers.genericGetRouter.get(
                     '/*',
-                    (new GetRouter(context, this.settings)).router
+                    (new GetRouter(context, this.settings, agent)).router
                 );
 
                 // Generic POST
                 this.routers.genericPostRouter.post(
                     '/*',
-                    (new PostRouter(context, this.settings)).router
+                    (new PostRouter(context, this.settings, agent)).router
                 );
 
                 this.app.use(bodyParser.urlencoded({ extended: true }));

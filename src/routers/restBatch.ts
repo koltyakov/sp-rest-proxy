@@ -7,12 +7,14 @@ export class RestBatchRouter {
 
     private spr: ISPRequest;
     private ctx: IProxyContext;
+    private agent: any;
     private settings: IProxySettings;
     private util: ProxyUtils;
 
-    constructor(context: IProxyContext, settings: IProxySettings) {
+    constructor(context: IProxyContext, settings: IProxySettings, agent: any) {
         this.ctx = context;
         this.settings = settings;
+        this.agent = agent;
         this.util = new ProxyUtils(this.ctx);
     }
 
@@ -98,7 +100,8 @@ export class RestBatchRouter {
                 return this.spr.post(endpointUrlStr, {
                     headers: requestHeadersPass,
                     body: reqBodyData,
-                    json: false
+                    json: false,
+                    agent: this.agent
                 });
             })
             .then((resp: any) => {

@@ -31,7 +31,7 @@ export default class RestProxy {
 
     constructor(settings: IProxySettings = {}) {
         this.settings = {
-            ...settings,
+            ...<any>settings,
             configPath: path.resolve(settings.configPath || './config/private.json'),
             hostname: settings.hostname || process.env.HOSTNAME || 'localhost',
             port: settings.port || process.env.PORT || 8080,

@@ -7,6 +7,7 @@ import * as bodyParser from 'body-parser';
 import * as cors from 'cors';
 import * as path from 'path';
 import * as fs from 'fs';
+import * as https from 'https';
 
 import { RestGetRouter } from './routers/restGet';
 import { RestPostRouter } from './routers/restPost';
@@ -40,7 +41,12 @@ export default class RestProxy {
             rawBodyLimitSize: settings.rawBodyLimitSize || '2mb',
             jsonPayloadLimitSize: settings.jsonPayloadLimitSize || '2mb',
             metadata: require(path.join(__dirname, '/../package.json')),
-            silentMode: typeof settings.silentMode !== 'undefined' ? settings.silentMode : false
+            silentMode: typeof settings.silentMode !== 'undefined' ? settings.silentMode : false,
+            agent: settings.agent || new https.Agent({
+                rejectUnauthorized: false,
+                keepAlive: true,
+                keepAliveMsecs: 10000
+            })
         };
 
         this.app = express();
@@ -55,7 +61,10 @@ export default class RestProxy {
     }
 
     // Server proxy main mode
-    public serveProxy = (callback?: Function) => { this.serve(callback); }
+    public serveProxy = (callback?: Function) => {
+        this.serve(callback);
+    }
+
     public serve = (callback?: Function) => {
         (new AuthConfig({
             configPath: this.settings.configPath,

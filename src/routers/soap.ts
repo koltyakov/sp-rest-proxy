@@ -48,7 +48,8 @@ export class SoapRouter {
                     this.spr.post(endpointUrl, {
                         headers: headers,
                         body: soapBody,
-                        json: false
+                        json: false,
+                        agent: this.util.isUrlHttps(endpointUrl) ? this.settings.agent : undefined
                     })
                         .then((response: any) => {
                             if (this.settings.debugOutput) {

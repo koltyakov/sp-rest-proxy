@@ -53,7 +53,8 @@ export class CsomRouter {
                     return this.spr.post(endpointUrl, {
                         headers: headers,
                         body: csomPackage,
-                        json: false
+                        json: false,
+                        agent: this.util.isUrlHttps(endpointUrl) ? this.settings.agent : undefined
                     });
                 })
                 .then((response: any) => {

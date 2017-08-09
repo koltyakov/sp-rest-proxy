@@ -101,13 +101,17 @@ export class GetRouter {
             endpointUrl = axdUrlArr[0].replace('://', '___').split('/')[0].replace('___', '://') +
                 '/ScriptResource.axd' + axdUrlArr[1];
 
-            request.get({ uri: endpointUrl }).pipe(res);
+            request.get({
+                uri: endpointUrl,
+                agent: this.util.isUrlHttps(endpointUrl) ? this.settings.agent : undefined
+            }).pipe(res);
             return;
         }
 
         this.spr.get(endpointUrl, {
             headers: requestHeadersPass,
-            ...(<any>advanced)
+            ...(<any>advanced),
+            agent: this.util.isUrlHttps(endpointUrl) ? this.settings.agent : undefined
         })
             .then((response: any) => {
                 if (!this.settings.silentMode) {

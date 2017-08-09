@@ -128,7 +128,7 @@ describe(`Proxy tests`, () => {
 
             });
 
-            it(`should get lists on web`, function(done: MochaDone): void {
+            it(`should get lists on the web`, function(done: MochaDone): void {
                 this.timeout(30 * 1000);
 
                 Promise.all([
@@ -146,7 +146,7 @@ describe(`Proxy tests`, () => {
 
             });
 
-            it('should create new list', function(done: MochaDone): void {
+            it('should create a new list', function(done: MochaDone): void {
                 this.timeout(30 * 1000);
 
                 axios.post(`${proxyRootUri}/_api/web/lists`, {
@@ -174,7 +174,7 @@ describe(`Proxy tests`, () => {
 
             });
 
-            it('should create list item', function(done: MochaDone): void {
+            it('should create a list item', function(done: MochaDone): void {
                 this.timeout(30 * 1000);
 
                 let listUri = `${proxyRootUri}/_api/web/lists/getByTitle('${testVariables.newListName}')`;
@@ -200,7 +200,7 @@ describe(`Proxy tests`, () => {
 
             });
 
-            it('should update list item', function(done: MochaDone): void {
+            it('should update a list item', function(done: MochaDone): void {
                 this.timeout(30 * 1000);
 
                 let listUri = `${proxyRootUri}/_api/web/lists/getByTitle('${testVariables.newListName}')`;
@@ -231,7 +231,7 @@ describe(`Proxy tests`, () => {
 
             });
 
-            it('should delete list item', function(done: MochaDone): void {
+            it('should delete a list item', function(done: MochaDone): void {
                 this.timeout(30 * 1000);
 
                 let listUri = `${proxyRootUri}/_api/web/lists/getByTitle('${testVariables.newListName}')`;
@@ -286,7 +286,7 @@ describe(`Proxy tests`, () => {
                 });
 
                 // Add test to check if items were physically created
-                it('should create list items in batch (local endpoints)', function(done: MochaDone): void {
+                it('should create list items in a batch (local endpoints)', function(done: MochaDone): void {
                     this.timeout(30 * 1000);
 
                     let items = [ 'Batman', 'Iron man' ];
@@ -343,7 +343,7 @@ describe(`Proxy tests`, () => {
                 });
 
                 // Add test to check if items were physically created
-                it('should create list items in batch', function(done: MochaDone): void {
+                it('should create list items in a batch', function(done: MochaDone): void {
                     this.timeout(30 * 1000);
 
                     let dragons = [ 'Jineoss',  'Zyna', 'Bothir', 'Jummerth', 'Irgonth', 'Kilbiag',
@@ -401,7 +401,7 @@ describe(`Proxy tests`, () => {
                 });
 
                 // Add test to check if items were physically updated
-                it('should update list items in batch', function(done: MochaDone): void {
+                it('should update list items in a batch', function(done: MochaDone): void {
                     this.timeout(30 * 1000);
 
                     let listUri = `${proxyRootUri}/_api/web/lists/getByTitle('${testVariables.newListName}')`;
@@ -467,7 +467,7 @@ describe(`Proxy tests`, () => {
                 });
 
                 // Add test to check if items were physically deleted
-                it('should delete list items in batch', function(done: MochaDone): void {
+                it('should delete list items in a batch', function(done: MochaDone): void {
                     this.timeout(30 * 1000);
 
                     let listUri = `${proxyRootUri}/_api/web/lists/getByTitle('${testVariables.newListName}')`;
@@ -571,7 +571,7 @@ describe(`Proxy tests`, () => {
 
             // TODO: Download attachment and compare with local one
 
-            it('should delete list', function(done: MochaDone): void {
+            it('should delete a list', function(done: MochaDone): void {
                 this.timeout(30 * 1000);
 
                 axios.post(`${proxyRootUri}/_api/web/lists/getByTitle('${testVariables.newListName}')`, null, {
@@ -590,7 +590,7 @@ describe(`Proxy tests`, () => {
 
             });
 
-            it('should create document library', function(done: MochaDone): void {
+            it('should create a document library', function(done: MochaDone): void {
                 this.timeout(30 * 1000);
 
                 axios.post(`${proxyRootUri}/_api/web/lists`, {
@@ -614,7 +614,7 @@ describe(`Proxy tests`, () => {
 
             });
 
-            it('should add document', function(done: MochaDone): void {
+            it('should add a document', function(done: MochaDone): void {
                 this.timeout(30 * 1000);
 
                 let attachmentFile: string = path.join(__dirname, './attachments/image.png');
@@ -645,7 +645,7 @@ describe(`Proxy tests`, () => {
 
             // TODO: Download documents and compare with local one
 
-            it('should delete document library', function(done: MochaDone): void {
+            it('should delete a document library', function(done: MochaDone): void {
                 this.timeout(30 * 1000);
 
                 axios.post(`${proxyRootUri}/_api/web/lists/getByTitle('${testVariables.newDocLibName}')`, null, {

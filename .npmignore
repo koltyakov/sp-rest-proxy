@@ -5,6 +5,7 @@
 /examples
 /docs
 /tmp
+/docker
 .vscode
 npm-debug.log
 tslconfig.json

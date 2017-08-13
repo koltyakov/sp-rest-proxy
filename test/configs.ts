@@ -6,6 +6,10 @@ export interface ITestSetup {
 
 export const TestsConfigs: ITestSetup[] = [
     {
+        environmentName: 'SharePoint 2016 (SSL)',
+        configPath: './config/integration/private.ssl.json',
+        legacy: false
+    }, {
         environmentName: 'SharePoint Online',
         configPath: './config/integration/private.spo.json',
         legacy: false

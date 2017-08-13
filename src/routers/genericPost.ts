@@ -31,7 +31,7 @@ export class PostRouter {
         });
         req.on('end', () => {
             if (req.headers.origin) {
-                let regExpOrigin = new RegExp(req.headers.origin, 'g');
+                let regExpOrigin = new RegExp(<any>req.headers.origin, 'g');
                 postBody = postBody.replace(regExpOrigin, this.ctx.siteUrl);
             }
 

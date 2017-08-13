@@ -159,3 +159,7 @@ sp-rest-proxy works with PnP JS Core (not POST request, as there is an endpoint 
 - Client side applications development with local serve, but real data from SharePoint
 - SharePoint Framework in local workbench with real data
 - Client applications integration test automation scenarios
+
+## Usage with Docker
+
+[Example](https://github.com/koltyakov/sp-rest-proxy/tree/master/docker)

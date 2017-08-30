@@ -1,7 +1,7 @@
 import * as spauth from 'node-sp-auth';
 import * as spRequest from 'sp-request';
 import { ISPRequest } from 'sp-request';
-import * as url from 'url';
+import { parse as urlParse } from 'url';
 
 import { IProxyContext } from '../interfaces';
 
@@ -36,7 +36,7 @@ export class ProxyUtils {
     }
 
     public buildEndpointUrl = (reqUrl: string) => {
-        let siteUrlParsed = url.parse(this.ctx.siteUrl);
+        let siteUrlParsed = urlParse(this.ctx.siteUrl);
         let reqPathName = '';
         if (reqUrl.indexOf(siteUrlParsed.pathname) === 0) {
             reqPathName = reqUrl;

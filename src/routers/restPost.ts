@@ -74,8 +74,8 @@ export class RestPostRouter {
 
                 requestHeadersPass = {
                     ...requestHeadersPass,
-                    'X-RequestDigest': digest,
-                    'content-length': reqBodyData.length
+                    'X-RequestDigest': digest
+                    // 'Content-Length': reqBodyData.length
                 };
 
                 if (
@@ -86,7 +86,7 @@ export class RestPostRouter {
                     reqBodyData = (req as any).buffer;
                     jsonOption.json = false;
                     jsonOption.processData = false;
-                    requestHeadersPass['content-length'] = reqBodyData.byteLength;
+                    requestHeadersPass['Content-Length'] = reqBodyData.byteLength;
                 }
 
                 if (this.settings.debugOutput) {

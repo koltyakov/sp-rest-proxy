@@ -20,17 +20,17 @@ const testVariables = {
     headers: {
         verbose: {
             headers: {
-                accept: 'application/json;odata=verbose'
+                Accept: 'application/json;odata=verbose'
             }
         },
         minimalmetadata: {
             headers: {
-                accept: 'application/json;odata=minimalmetadata'
+                Accept: 'application/json;odata=minimalmetadata'
             }
         },
         nometadata: {
             headers: {
-                accept: 'application/json;odata=nometadata'
+                Accept: 'application/json;odata=nometadata'
             }
         }
     }
@@ -75,7 +75,7 @@ describe(`Proxy tests`, () => {
                             return new PnpNode(proxyContext);
                         },
                         headers: {
-                            accept: 'application/json;odata=verbose'
+                            Accept: 'application/json;odata=verbose'
                         },
                         baseUrl: proxyContext.siteUrl
                     });
@@ -89,6 +89,23 @@ describe(`Proxy tests`, () => {
                 expressServer.close();
                 // console.log(`Proxy has been stopped (${testConfig.environmentName})`)
                 done();
+            });
+
+            it(`should get contextinfo`, function(done: MochaDone): void {
+                this.timeout(30 * 1000);
+
+                axios.post(`${proxyRootUri}/_api/contextinfo`, {}, {
+                    headers: {
+                        ...testVariables.headers.verbose,
+                        'Content-Type': 'application/json;odata=verbose'
+                    }
+                })
+                    .then(response => {
+                        // expect(response.data).to.have.property('FormDigestValue');
+                        done();
+                    })
+                    .catch(done);
+
             });
 
             it(`should get web's title`, function(done: MochaDone): void {
@@ -159,8 +176,8 @@ describe(`Proxy tests`, () => {
                 }, {
                     headers: {
                         'X-RequestDigest': getRequestDigest(),
-                        'accept': 'application/json;odata=verbose',
-                        'content-type': 'application/json;odata=verbose'
+                        'Accept': 'application/json;odata=verbose',
+                        'Content-Type': 'application/json;odata=verbose'
                     }
                 })
                     .then(response => {
@@ -187,8 +204,8 @@ describe(`Proxy tests`, () => {
                             }, {
                                 headers: {
                                     'X-RequestDigest': getRequestDigest(),
-                                    'accept': 'application/json;odata=verbose',
-                                    'content-type': 'application/json;odata=verbose'
+                                    'Accept': 'application/json;odata=verbose',
+                                    'Content-Type': 'application/json;odata=verbose'
                                 }
                             }
                         );
@@ -216,8 +233,8 @@ describe(`Proxy tests`, () => {
                             }, {
                                 headers: {
                                     'X-RequestDigest': getRequestDigest(),
-                                    'accept': 'application/json;odata=verbose',
-                                    'content-type': 'application/json;odata=verbose',
+                                    'Accept': 'application/json;odata=verbose',
+                                    'Content-Type': 'application/json;odata=verbose',
                                     'if-match': '*',
                                     'x-http-method': 'MERGE'
                                 }
@@ -241,8 +258,8 @@ describe(`Proxy tests`, () => {
                             `${listUri}/items(${response.data.d.results[0].Id})`, null, {
                                 headers: {
                                     'X-RequestDigest': getRequestDigest(),
-                                    'accept': 'application/json;odata=verbose',
-                                    'content-type': 'application/json;odata=verbose',
+                                    'Accept': 'application/json;odata=verbose',
+                                    'Content-Type': 'application/json;odata=verbose',
                                     'if-match': '*',
                                     'x-http-method': 'DELETE'
                                 }
@@ -329,8 +346,8 @@ describe(`Proxy tests`, () => {
                                 requestPayload, {
                                     headers: {
                                         'X-RequestDigest': getRequestDigest(),
-                                        'accept': 'application/json',
-                                        'content-type': `multipart/mixed; boundary=${boundary}`
+                                        'Accept': 'application/json',
+                                        'Content-Type': `multipart/mixed; boundary=${boundary}`
                                     }
                                 }
                             );
@@ -387,8 +404,8 @@ describe(`Proxy tests`, () => {
                                 requestPayload, {
                                     headers: {
                                         'X-RequestDigest': getRequestDigest(),
-                                        'accept': 'application/json',
-                                        'content-type': `multipart/mixed; boundary=${boundary}`
+                                        'Accept': 'application/json',
+                                        'Content-Type': `multipart/mixed; boundary=${boundary}`
                                     }
                                 }
                             );
@@ -453,8 +470,8 @@ describe(`Proxy tests`, () => {
                                 requestPayload, {
                                     headers: {
                                         'X-RequestDigest': getRequestDigest(),
-                                        'accept': 'application/json',
-                                        'content-type': `multipart/mixed; boundary=${boundary}`
+                                        'Accept': 'application/json',
+                                        'Content-Type': `multipart/mixed; boundary=${boundary}`
                                     }
                                 }
                             );
@@ -513,8 +530,8 @@ describe(`Proxy tests`, () => {
                                 requestPayload, {
                                     headers: {
                                         'X-RequestDigest': getRequestDigest(),
-                                        'accept': 'application/json',
-                                        'content-type': `multipart/mixed; boundary=${boundary}`
+                                        'Accept': 'application/json',
+                                        'Content-Type': `multipart/mixed; boundary=${boundary}`
                                     }
                                 }
                             );
@@ -541,8 +558,8 @@ describe(`Proxy tests`, () => {
                             }, {
                                 headers: {
                                     'X-RequestDigest': getRequestDigest(),
-                                    'accept': 'application/json;odata=verbose',
-                                    'content-type': 'application/json;odata=verbose'
+                                    'Accept': 'application/json;odata=verbose',
+                                    'Content-Type': 'application/json;odata=verbose'
                                 }
                             }
                         );
@@ -556,8 +573,8 @@ describe(`Proxy tests`, () => {
                              fileBuffer, {
                                 headers: {
                                     'X-RequestDigest': getRequestDigest(),
-                                    'accept': 'application/json',
-                                    'content-type': 'application/json;odata=verbose;charset=utf-8'
+                                    'Accept': 'application/json',
+                                    'Content-Type': 'application/json;odata=verbose;charset=utf-8'
                                 }
                             }
                         );
@@ -577,8 +594,8 @@ describe(`Proxy tests`, () => {
                 axios.post(`${proxyRootUri}/_api/web/lists/getByTitle('${testVariables.newListName}')`, null, {
                     headers: {
                         'X-RequestDigest': getRequestDigest(),
-                        'accept': 'application/json;odata=verbose',
-                        'content-type': 'application/json;odata=verbose',
+                        'Accept': 'application/json;odata=verbose',
+                        'Content-Type': 'application/json;odata=verbose',
                         'if-match': '*',
                         'x-http-method': 'DELETE'
                     }
@@ -603,8 +620,8 @@ describe(`Proxy tests`, () => {
                 }, {
                     headers: {
                         'X-RequestDigest': getRequestDigest(),
-                        'accept': 'application/json;odata=verbose',
-                        'content-type': 'application/json;odata=verbose'
+                        'Accept': 'application/json;odata=verbose',
+                        'Content-Type': 'application/json;odata=verbose'
                     }
                 })
                     .then(response => {
@@ -631,8 +648,8 @@ describe(`Proxy tests`, () => {
                     methodUri, fileBuffer, {
                         headers: {
                             'X-RequestDigest': getRequestDigest(),
-                            'accept': 'application/json',
-                            'content-type': 'application/json;odata=verbose;charset=utf-8'
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json;odata=verbose;charset=utf-8'
                         }
                     }
                 )
@@ -651,8 +668,8 @@ describe(`Proxy tests`, () => {
                 axios.post(`${proxyRootUri}/_api/web/lists/getByTitle('${testVariables.newDocLibName}')`, null, {
                     headers: {
                         'X-RequestDigest': getRequestDigest(),
-                        'accept': 'application/json;odata=verbose',
-                        'content-type': 'application/json;odata=verbose',
+                        'Accept': 'application/json;odata=verbose',
+                        'Content-Type': 'application/json;odata=verbose',
                         'if-match': '*',
                         'x-http-method': 'DELETE'
                     }

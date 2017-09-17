@@ -1,6 +1,6 @@
 'use strict';
 
-import { AuthConfig } from 'node-sp-auth-config';
+import { AuthConfig, IAuthConfigSettings } from 'node-sp-auth-config';
 import { Request, Response, NextFunction } from 'express';
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
@@ -30,9 +30,10 @@ export default class RestProxy {
     private routers: IRouters;
 
     constructor(settings: IProxySettings = {}) {
+        let authConfigSettings: IAuthConfigSettings = settings.authConfigSettings || {};
+
         this.settings = {
             ...<any>settings,
-            configPath: path.resolve(settings.configPath || './config/private.json'),
             hostname: settings.hostname || process.env.HOSTNAME || 'localhost',
             port: settings.port || process.env.PORT || 8080,
             staticRoot: path.resolve(settings.staticRoot || path.join(__dirname, '../static')),
@@ -46,7 +47,14 @@ export default class RestProxy {
                 rejectUnauthorized: false,
                 keepAlive: true,
                 keepAliveMsecs: 10000
-            })
+            }),
+            authConfigSettings: {
+                ...authConfigSettings,
+                configPath: path.resolve(authConfigSettings.configPath || settings.configPath || './config/private.json'),
+                defaultConfigPath: authConfigSettings.defaultConfigPath || settings.defaultConfigPath,
+                encryptPassword: typeof authConfigSettings.encryptPassword !== 'undefined' ? authConfigSettings.encryptPassword : true,
+                saveConfigOnDisk: typeof authConfigSettings.saveConfigOnDisk !== 'undefined' ? authConfigSettings.saveConfigOnDisk : true
+            }
         };
 
         this.app = express();
@@ -66,12 +74,7 @@ export default class RestProxy {
     }
 
     public serve = (callback?: Function) => {
-        (new AuthConfig({
-            configPath: this.settings.configPath,
-            defaultConfigPath: this.settings.defaultConfigPath,
-            encryptPassword: true,
-            saveConfigOnDisk: true
-        }))
+        (new AuthConfig(this.settings.authConfigSettings))
             .getContext()
             .then((context: IProxyContext): void => {
 

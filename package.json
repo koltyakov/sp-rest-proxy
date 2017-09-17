@@ -8,7 +8,8 @@
     "serve": "ts-node ./src/server",
     "build": "gulp tsc",
     "test": "ts-node ./test/init && mocha --opts test/mocha.opts || ECHO.",
-    "upgrade": "ncu --upgrade --upgradeAll && yarn upgrade"
+    "upgrade": "ncu --upgrade --upgradeAll && yarn upgrade",
+    "docker": "ts-node ./docker/scripts/publish"
   },
   "keywords": [
     "sharepoint",

@@ -86,8 +86,8 @@ export class RestBatchRouter {
 
                 requestHeadersPass = {
                     ...requestHeadersPass,
-                    'X-RequestDigest': requestHeadersPass['X-RequestDigest'] || digest,
-                    'Content-Length': requestHeadersPass['Content-Length'] || reqBodyData.byteLength
+                    'X-RequestDigest': requestHeadersPass['X-RequestDigest'] || digest
+                    // 'Content-Length': requestHeadersPass['Content-Length'] || reqBodyData.byteLength
                 };
 
                 if (this.settings.debugOutput) {

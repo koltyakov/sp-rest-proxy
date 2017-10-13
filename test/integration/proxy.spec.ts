@@ -71,13 +71,15 @@ describe(`Proxy tests`, () => {
 
                     // Init PnP JS Core for Node.js
                     pnp.setup({
-                        fetchClientFactory: () => {
-                            return new PnpNode(proxyContext);
-                        },
-                        headers: {
-                            Accept: 'application/json;odata=verbose'
-                        },
-                        baseUrl: proxyContext.siteUrl
+                        sp: {
+                            fetchClientFactory: () => {
+                                return new PnpNode(proxyContext);
+                            },
+                            headers: {
+                                Accept: 'application/json;odata=verbose'
+                            },
+                            baseUrl: proxyContext.siteUrl
+                        }
                     });
 
                     done();

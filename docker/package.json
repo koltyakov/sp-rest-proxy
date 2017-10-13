@@ -1,6 +1,6 @@
 {
   "name": "sp-rest-proxy-docker",
-  "version": "2.3.8",
+  "version": "2.4.0",
   "description": "sp-rest-proxy for docker",
   "main": "./server.js",
   "scripts": {

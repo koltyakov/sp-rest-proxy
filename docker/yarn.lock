@@ -1052,9 +1052,9 @@ sp-request@^2.1.0:
     request "^2.81.0"
     request-promise "^4.2.1"
 
-sp-rest-proxy@^2.3.7:
-  version "2.3.7"
-  resolved "https://registry.yarnpkg.com/sp-rest-proxy/-/sp-rest-proxy-2.3.7.tgz#c21958fa391cf9244075ed7ce94906f683d64299"
+sp-rest-proxy@^2.3.9:
+  version "2.3.9"
+  resolved "https://registry.yarnpkg.com/sp-rest-proxy/-/sp-rest-proxy-2.3.9.tgz#8a013e6458868e63251f494fa23743d0647ac3ec"
   dependencies:
     body-parser "^1.17.2"
     cors "^2.8.4"

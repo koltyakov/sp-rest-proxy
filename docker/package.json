@@ -16,6 +16,6 @@
   "author": "Andrew Koltyakov (andrew.koltyakov@gmail.com)",
   "license": "MIT",
   "dependencies": {
-    "sp-rest-proxy": "^2.3.8"
+    "sp-rest-proxy": "^2.4.0"
   }
 }

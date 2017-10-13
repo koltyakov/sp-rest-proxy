@@ -33,7 +33,7 @@
     "cors": "^2.8.4",
     "express": "^4.16.2",
     "node-sp-auth": "^2.2.9",
-    "node-sp-auth-config": "^2.0.8",
+    "node-sp-auth-config": "^2.0.9",
     "socket.io": "^2.0.3",
     "sp-request": "^2.1.0"
   },

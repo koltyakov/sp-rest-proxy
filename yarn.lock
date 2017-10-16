@@ -84,9 +84,9 @@
   version "2.2.43"
   resolved "https://registry.yarnpkg.com/@types/mocha/-/mocha-2.2.43.tgz#03c54589c43ad048cbcbfd63999b55d0424eec27"
 
-"@types/node@*", "@types/node@^8.0.34":
-  version "8.0.34"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.34.tgz#55f801fa2ddb2a40dd6dfc15ecfe1dde9c129fe9"
+"@types/node@*", "@types/node@^8.0.37":
+  version "8.0.37"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.37.tgz#d5b1bbc942915f20f4d83ea04a2aba1df7ac9d5f"
 
 "@types/node@^6.0.45":
   version "6.0.89"
@@ -99,7 +99,14 @@
     "@types/bluebird" "*"
     "@types/request" "*"
 
-"@types/request@*", "@types/request@0.0.31":
+"@types/request@*":
+  version "2.0.5"
+  resolved "https://registry.yarnpkg.com/@types/request/-/request-2.0.5.tgz#ba831498ada794b19278065690d88c26900783d6"
+  dependencies:
+    "@types/form-data" "*"
+    "@types/node" "*"
+
+"@types/request@0.0.31":
   version "0.0.31"
   resolved "https://registry.yarnpkg.com/@types/request/-/request-0.0.31.tgz#e9e77661f76c596a6fd0edba622005667171baeb"
   dependencies:
@@ -666,9 +673,13 @@ detect-newline@2.X:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/detect-newline/-/detect-newline-2.1.0.tgz#f41f1c10be4b00e87b5f13da680759f2c5bfd3e2"
 
-diff@3.3.1, diff@^3.1.0, diff@^3.2.0:
+diff@3.3.1:
   version "3.3.1"
   resolved "https://registry.yarnpkg.com/diff/-/diff-3.3.1.tgz#aa8567a6eed03c531fc89d3f711cd0e5259dec75"
+
+diff@^3.1.0, diff@^3.2.0:
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/diff/-/diff-3.4.0.tgz#b1d85507daf3964828de54b37d0d73ba67dda56c"
 
 duplexer2@0.0.2:
   version "0.0.2"
@@ -2081,17 +2092,7 @@ node-fetch@^1.7.3:
     encoding "^0.1.11"
     is-stream "^1.0.1"
 
-node-sp-auth-config@^2.0.2, node-sp-auth-config@^2.0.5:
-  version "2.0.8"
-  resolved "https://registry.yarnpkg.com/node-sp-auth-config/-/node-sp-auth-config-2.0.8.tgz#bda1a23b73def15cdba7a85a08c2239842406120"
-  dependencies:
-    colors "^1.1.2"
-    cpass "^2.0.1"
-    inquirer "^3.3.0"
-    mkdirp "^0.5.1"
-    node-sp-auth "^2.2.9"
-
-node-sp-auth-config@^2.0.9:
+node-sp-auth-config@^2.0.2, node-sp-auth-config@^2.0.5, node-sp-auth-config@^2.0.9:
   version "2.0.9"
   resolved "https://registry.yarnpkg.com/node-sp-auth-config/-/node-sp-auth-config-2.0.9.tgz#00898d2225aa66007be16846456dff8f37791406"
   dependencies:

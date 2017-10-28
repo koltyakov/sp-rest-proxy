@@ -6,7 +6,7 @@
 import RestProxy from '../src/RestProxy';
 
 (new RestProxy({
-    configPath: './config/private.json'
+  configPath: './config/private.json'
 })).serveGateway({
-    port: 9867
+  port: 9867
 });

@@ -1,12 +1,12 @@
 {
-    "compilerOptions": {
-        "target": "es5",
-        "module": "commonjs",
-        "lib": [ "es2015", "dom" ],
-        "sourceMap": true,
-        "declaration": true,
-        "moduleResolution": "node",
-        "noImplicitAny": false,
-        "removeComments": true
-    }
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "lib": [ "es2017", "dom" ],
+    "sourceMap": true,
+    "declaration": true,
+    "moduleResolution": "node",
+    "noImplicitAny": false,
+    "removeComments": true
+  }
 }

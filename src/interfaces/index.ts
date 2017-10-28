@@ -4,35 +4,35 @@ import { Router } from 'express';
 import * as https from 'https';
 
 export interface IProxySettings {
-    hostname?: string;
-    port?: number;
-    staticRoot?: string;
-    staticLibPath?: string;
-    rawBodyLimitSize?: string;
-    jsonPayloadLimitSize?: string;
-    debugOutput?: boolean;
-    metadata?: any;
-    silentMode?: boolean;
-    agent?: https.Agent;
+  hostname?: string;
+  port?: number;
+  staticRoot?: string;
+  staticLibPath?: string;
+  rawBodyLimitSize?: string;
+  jsonPayloadLimitSize?: string;
+  debugOutput?: boolean;
+  metadata?: any;
+  silentMode?: boolean;
+  agent?: https.Agent;
 
-    authConfigSettings?: IAuthConfigSettings;
-    configPath?: string; // Legacy
-    defaultConfigPath?: string; // Legacy
+  authConfigSettings?: IAuthConfigSettings;
+  configPath?: string; // Legacy
+  defaultConfigPath?: string; // Legacy
 }
 
 export interface IProxyContext {
-    siteUrl: string;
-    authOptions?: IAuthOptions;
+  siteUrl: string;
+  authOptions?: IAuthOptions;
 }
 
 export interface IRouters {
-    [routerName: string]: Router;
+  [routerName: string]: Router;
 }
 
 export interface IGatewayServerSettings {
-    port?: number;
+  port?: number;
 }
 
 export interface IGatewayClientSettings {
-    serverUrl: string;
+  serverUrl: string;
 }

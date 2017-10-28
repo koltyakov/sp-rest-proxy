@@ -1,0 +1,4 @@
+{
+  "extends": "standard",
+  "indent": ["error", 2]
+}

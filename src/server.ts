@@ -1,8 +1,8 @@
 import RestProxy from './RestProxy';
 
 const settings = {
-    configPath: './config/private.json',
-    port: 8080
+  configPath: './config/private.json',
+  port: 8080
 };
 
 const restProxy = new RestProxy(settings);

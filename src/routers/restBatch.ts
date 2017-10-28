@@ -5,113 +5,113 @@ import { Request, Response, NextFunction } from 'express';
 
 export class RestBatchRouter {
 
-    private spr: ISPRequest;
-    private ctx: IProxyContext;
-    private settings: IProxySettings;
-    private util: ProxyUtils;
+  private spr: ISPRequest;
+  private ctx: IProxyContext;
+  private settings: IProxySettings;
+  private util: ProxyUtils;
 
-    constructor(context: IProxyContext, settings: IProxySettings) {
-        this.ctx = context;
-        this.settings = settings;
-        this.util = new ProxyUtils(this.ctx);
+  constructor (context: IProxyContext, settings: IProxySettings) {
+    this.ctx = context;
+    this.settings = settings;
+    this.util = new ProxyUtils(this.ctx);
+  }
+
+  public router = (request: Request, response: Response, next?: NextFunction) => {
+    let endpointUrl = this.util.buildEndpointUrl(request.originalUrl);
+
+    if (!this.settings.silentMode) {
+      console.log('\POST (batch): ' + endpointUrl);
     }
 
-    public router = (request: Request, response: Response, next?: NextFunction) => {
-        let endpointUrl = this.util.buildEndpointUrl(request.originalUrl);
+    let reqBody = '';
 
-        if (!this.settings.silentMode) {
-            console.log('\POST (batch): ' + endpointUrl);
-        }
+    if (request.body) {
+      reqBody = request.body;
+      this.processBatchRequest(reqBody, request, response);
+    } else {
+      request.on('data', (chunk) => {
+        reqBody += chunk;
+      });
+      request.on('end', () => {
+        this.processBatchRequest(reqBody, request, response);
+      });
+    }
+  }
 
-        let reqBody = '';
+  private processBatchRequest = (reqBodyData: any, req: Request, res: Response) => {
+    let endpointUrlStr = this.util.buildEndpointUrl(req.originalUrl);
 
-        if (request.body) {
-            reqBody = request.body;
-            this.processBatchRequest(reqBody, request, response);
-        } else {
-            request.on('data', (chunk) => {
-                reqBody += chunk;
-            });
-            request.on('end', () => {
-                this.processBatchRequest(reqBody, request, response);
-            });
-        }
+    reqBodyData = (req as any).rawBody;
+
+    // Hack for PnP-JS-Core temporary testing approach
+    // reqBodyData = reqBodyData.replace(/ _api/g, ` ${endpointUrlStr.replace('/_api/$batch', '/')}_api`);
+    // req.headers['Content-Length'] = reqBodyData.byteLength;
+
+    let regExpOrigin = new RegExp(req.headers.origin as any, 'g');
+    reqBodyData = reqBodyData.replace(regExpOrigin, this.ctx.siteUrl);
+    req.headers['Content-Length'] = reqBodyData.byteLength;
+
+    if (!this.settings.silentMode) {
+      console.log('Request body:', reqBodyData);
     }
 
-    private processBatchRequest = (reqBodyData: any, req: Request, res: Response) => {
-        let endpointUrlStr = this.util.buildEndpointUrl(req.originalUrl);
+    this.spr = this.util.getCachedRequest(this.spr);
 
-        reqBodyData = (req as any).rawBody;
+    this.spr.requestDigest((endpointUrlStr).split('/_api')[0])
+      .then((digest: string) => {
+        let requestHeadersPass: any = {};
 
-        // Hack for PnP-JS-Core temporary testing approach
-        // reqBodyData = reqBodyData.replace(/ _api/g, ` ${endpointUrlStr.replace('/_api/$batch', '/')}_api`);
-        // req.headers['Content-Length'] = reqBodyData.byteLength;
+        let ignoreHeaders = [
+          'host', 'referer', 'origin',
+          'if-none-match', 'connection', 'cache-control', 'user-agent',
+          'accept-encoding', 'x-requested-with', 'accept-language'
+        ];
 
-        let regExpOrigin = new RegExp(<any>req.headers.origin, 'g');
-        reqBodyData = reqBodyData.replace(regExpOrigin, this.ctx.siteUrl);
-        req.headers['Content-Length'] = reqBodyData.byteLength;
+        Object.keys(req.headers).forEach((prop: string) => {
+          if (ignoreHeaders.indexOf(prop.toLowerCase()) === -1) {
+            if (prop.toLowerCase() === 'accept' && req.headers[prop] !== '*/*') {
+              // tslint:disable-next-line:no-string-literal
+              requestHeadersPass['Accept'] = req.headers[prop];
+            } else if (prop.toLowerCase() === 'content-type') {
+              requestHeadersPass['Content-Type'] = req.headers[prop];
+            } else if (prop.toLowerCase() === 'x-requestdigest') {
+              // requestHeadersPass['X-RequestDigest'] = req.headers[prop]; // Temporary commented
+            } else if (prop.toLowerCase() === 'content-length') {
+              requestHeadersPass['Content-Length'] = req.headers[prop];
+            } else {
+              requestHeadersPass[prop] = req.headers[prop];
+            }
+          }
+        });
 
-        if (!this.settings.silentMode) {
-            console.log('Request body:', reqBodyData);
+        requestHeadersPass = {
+          ...requestHeadersPass,
+          'X-RequestDigest': requestHeadersPass['X-RequestDigest'] || digest
+          // 'Content-Length': requestHeadersPass['Content-Length'] || reqBodyData.byteLength
+        };
+
+        if (this.settings.debugOutput) {
+          console.log('\nHeaders:');
+          console.log(JSON.stringify(requestHeadersPass, null, 2));
         }
 
-        this.spr = this.util.getCachedRequest(this.spr);
-
-        this.spr.requestDigest((endpointUrlStr).split('/_api')[0])
-            .then((digest: string) => {
-                let requestHeadersPass: any = {};
-
-                let ignoreHeaders = [
-                    'host', 'referer', 'origin',
-                    'if-none-match', 'connection', 'cache-control', 'user-agent',
-                    'accept-encoding', 'x-requested-with', 'accept-language'
-                ];
-
-                Object.keys(req.headers).forEach((prop: string) => {
-                    if (ignoreHeaders.indexOf(prop.toLowerCase()) === -1) {
-                        if (prop.toLowerCase() === 'accept' && req.headers[prop] !== '*/*') {
-                            // tslint:disable-next-line:no-string-literal
-                            requestHeadersPass['Accept'] = req.headers[prop];
-                        } else if (prop.toLowerCase() === 'content-type') {
-                            requestHeadersPass['Content-Type'] = req.headers[prop];
-                        } else if (prop.toLowerCase() === 'x-requestdigest') {
-                            // requestHeadersPass['X-RequestDigest'] = req.headers[prop]; // Temporary commented
-                        } else if (prop.toLowerCase() === 'content-length') {
-                            requestHeadersPass['Content-Length'] = req.headers[prop];
-                        } else {
-                            requestHeadersPass[prop] = req.headers[prop];
-                        }
-                    }
-                });
-
-                requestHeadersPass = {
-                    ...requestHeadersPass,
-                    'X-RequestDigest': requestHeadersPass['X-RequestDigest'] || digest
-                    // 'Content-Length': requestHeadersPass['Content-Length'] || reqBodyData.byteLength
-                };
-
-                if (this.settings.debugOutput) {
-                    console.log('\nHeaders:');
-                    console.log(JSON.stringify(requestHeadersPass, null, 2));
-                }
-
-                return this.spr.post(endpointUrlStr, {
-                    headers: requestHeadersPass,
-                    body: reqBodyData,
-                    json: false,
-                    agent: this.util.isUrlHttps(endpointUrlStr) ? this.settings.agent : undefined
-                });
-            })
-            .then((resp: any) => {
-                if (this.settings.debugOutput) {
-                    console.log(resp.statusCode, resp.body);
-                }
-                res.status(resp.statusCode);
-                res.send(resp.body);
-            })
-            .catch((err: any) => {
-                res.status(err.statusCode >= 100 && err.statusCode < 600 ? err.statusCode : 500);
-                res.send(err.message);
-            });
-    }
+        return this.spr.post(endpointUrlStr, {
+          headers: requestHeadersPass,
+          body: reqBodyData,
+          json: false,
+          agent: this.util.isUrlHttps(endpointUrlStr) ? this.settings.agent : undefined
+        });
+      })
+      .then((resp: any) => {
+        if (this.settings.debugOutput) {
+          console.log(resp.statusCode, resp.body);
+        }
+        res.status(resp.statusCode);
+        res.send(resp.body);
+      })
+      .catch((err: any) => {
+        res.status(err.statusCode >= 100 && err.statusCode < 600 ? err.statusCode : 500);
+        res.send(err.message);
+      });
+  }
 }

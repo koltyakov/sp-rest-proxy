@@ -1,100 +1,102 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Item Attachments Basic Test</title>
-    <meta name="viewport" content="width=device-width, maximum-scale=1, user-scalable=no" />
 
-    <link rel="shortcut icon" href="/img/favicon.ico" type="image/vnd.microsoft.icon" id="favicon">
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/es6-promise/4.0.5/es6-promise.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.1/fetch.min.js"></script>
-    <script type="text/javascript" src="https://cdn.rawgit.com/SharePoint/PnP-JS-Core/master/dist/pnp.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.js"></script>
+<head>
+  <title>Item Attachments Basic Test</title>
+  <meta name="viewport" content="width=device-width, maximum-scale=1, user-scalable=no" />
+
+  <link rel="shortcut icon" href="/img/favicon.ico" type="image/vnd.microsoft.icon" id="favicon">
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/es6-promise/4.0.5/es6-promise.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.1/fetch.min.js"></script>
+  <script type="text/javascript" src="https://cdn.rawgit.com/SharePoint/PnP-JS-Core/master/dist/pnp.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.js"></script>
 
 </head>
+
 <body>
 
-    <h2>Create item and add attachment</h2>
-    <input id="item-attachments" type="file" />
-    <pre id="item-attachments-out"></pre>
+  <h2>Create item and add attachment</h2>
+  <input id="item-attachments" type="file" />
+  <pre id="item-attachments-out"></pre>
 
-    <h2>Upload document to Document library</h2>
-    <input id="document-upload" type="file" />
-    <pre id="document-upload-out"></pre>
+  <h2>Upload document to Document library</h2>
+  <input id="document-upload" type="file" />
+  <pre id="document-upload-out"></pre>
 
-    <script>
-        var _spPageContextInfo = _spPageContextInfo || {};
-        _spPageContextInfo.webServerRelativeUrl = "/";
+  <script>
+    var _spPageContextInfo = _spPageContextInfo || {};
+    _spPageContextInfo.webServerRelativeUrl = "/";
 
-        var getFileBuffer = function(file) {
-            var deferred = $.Deferred();
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                deferred.resolve(e.target.result);
-            }
-            reader.onerror = function(e) {
-                deferred.reject(e.target.error);
-            }
-            reader.readAsArrayBuffer(file);
-            return deferred.promise();
-        };
+    var getFileBuffer = function (file) {
+      var deferred = $.Deferred();
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        deferred.resolve(e.target.result);
+      }
+      reader.onerror = function (e) {
+        deferred.reject(e.target.error);
+      }
+      reader.readAsArrayBuffer(file);
+      return deferred.promise();
+    };
 
-        $(function() {
-            var listTitle = 'AttachmentsTest';
-            $("#item-attachments").change(function() {
-                var file = $(this)[0].files[0];
-                getFileBuffer(file).then(function(buffer) {
-                    $pnp.sp.web.lists.select('Title').get()
-                        .then(function(lists) {
-                            return lists.filter(function(list) {
-                                return list.Title === listTitle;
-                            });
-                        })
-                        .then(function(lists) {
-                            if (lists.length === 0) {
-                                return $pnp.sp.web.lists.add(listTitle);
-                            } else {
-                                return lists[0];
-                            }
-                        })
-                        .then(function(list) {
-                            return $pnp.sp.web.lists.getByTitle(listTitle).items.add({
-                                Title: file.name
-                            });
-                        })
-                        .then(function(itemObject) {
-                            return itemObject.item.attachmentFiles
-                                .add(file.name, buffer);
-                        })
-                        .then(function(result) {
-                            $('#tem-attachments-out').text(JSON.stringify(result, null, 2));
-                        })
-                        .catch(function(error) {
-                            $('#tem-attachments-out').text(JSON.stringify(error, null, 2));
-                        });
-                });
-            });
-
-            var docLibPath = '/Shared Documents';
-            $("#document-upload").change(function() {
-                var file = $(this)[0].files[0];
-                getFileBuffer(file).then(function(buffer) {
-                    $pnp.sp.web.select('ServerRelativeUrl').get()
-                        .then(function(web) {
-                            return $pnp.sp.web
-                                .getFolderByServerRelativeUrl(web.ServerRelativeUrl + docLibPath)
-                                .files.add(file.name, buffer, true);
-                        })
-                        .then(function(result) {
-                            $('#document-upload-out').text(JSON.stringify(result, null, 2));
-                        })
-                        .catch(function(error) {
-                            $('#document-upload-out').text(JSON.stringify(error, null, 2));
-                        });
-                });
+    $(function () {
+      var listTitle = 'AttachmentsTest';
+      $("#item-attachments").change(function () {
+        var file = $(this)[0].files[0];
+        getFileBuffer(file).then(function (buffer) {
+          $pnp.sp.web.lists.select('Title').get()
+            .then(function (lists) {
+              return lists.filter(function (list) {
+                return list.Title === listTitle;
+              });
+            })
+            .then(function (lists) {
+              if (lists.length === 0) {
+                return $pnp.sp.web.lists.add(listTitle);
+              } else {
+                return lists[0];
+              }
+            })
+            .then(function (list) {
+              return $pnp.sp.web.lists.getByTitle(listTitle).items.add({
+                Title: file.name
+              });
+            })
+            .then(function (itemObject) {
+              return itemObject.item.attachmentFiles
+                .add(file.name, buffer);
+            })
+            .then(function (result) {
+              $('#tem-attachments-out').text(JSON.stringify(result, null, 2));
+            })
+            .catch(function (error) {
+              $('#tem-attachments-out').text(JSON.stringify(error, null, 2));
             });
         });
+      });
 
-    </script>
+      var docLibPath = '/Shared Documents';
+      $("#document-upload").change(function () {
+        var file = $(this)[0].files[0];
+        getFileBuffer(file).then(function (buffer) {
+          $pnp.sp.web.select('ServerRelativeUrl').get()
+            .then(function (web) {
+              return $pnp.sp.web
+                .getFolderByServerRelativeUrl(web.ServerRelativeUrl + docLibPath)
+                .files.add(file.name, buffer, true);
+            })
+            .then(function (result) {
+              $('#document-upload-out').text(JSON.stringify(result, null, 2));
+            })
+            .catch(function (error) {
+              $('#document-upload-out').text(JSON.stringify(error, null, 2));
+            });
+        });
+      });
+    });
+  </script>
 
 </body>
+
 </html>

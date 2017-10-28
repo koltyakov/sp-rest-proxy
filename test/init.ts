@@ -4,7 +4,7 @@ import * as colors from 'colors';
 
 import { TestsConfigs } from './configs';
 
-async function checkOrPromptForIntegrationConfigCreds(): Promise<void> {
+async function checkOrPromptForIntegrationConfigCreds (): Promise<void> {
 
   let configs = [];
 

@@ -1,17 +1,14 @@
 import { expect } from 'chai';
 import * as mocha from 'mocha';
-import axios from 'axios';
 import * as path from 'path';
 import * as fs from 'fs';
-import { AxiosResponse } from 'axios';
+import { default as axios, AxiosResponse } from 'axios';
 import * as pnp from 'sp-pnp-js';
 import { parseString as xmlStringToJson } from 'xml2js';
 import { PnpNode, IPnpNodeSettings } from 'sp-pnp-node';
 
-import RestProxy from '../../src/RestProxy';
-
+import { default as RestProxy, IProxySettings, IProxyContext } from '../../src/RestProxy';
 import { trimMultiline } from '../../src/utils';
-import { IProxySettings, IProxyContext } from '../../src/RestProxy';
 import { TestsConfigs } from '../configs';
 
 const testVariables = {
@@ -176,12 +173,12 @@ describe(`Proxy tests`, () => {
           ContentTypesEnabled: false,
           BaseTemplate: 100
         }, {
-            headers: {
-              'X-RequestDigest': getRequestDigest(),
-              'Accept': 'application/json;odata=verbose',
-              'Content-Type': 'application/json;odata=verbose'
-            }
-          })
+          headers: {
+            'X-RequestDigest': getRequestDigest(),
+            'Accept': 'application/json;odata=verbose',
+            'Content-Type': 'application/json;odata=verbose'
+          }
+        })
           .then(response => {
             return pnp.sp.web.lists.getByTitle(testVariables.newListName).select('Title').get();
           })
@@ -620,12 +617,12 @@ describe(`Proxy tests`, () => {
           ContentTypesEnabled: false,
           BaseTemplate: 101
         }, {
-            headers: {
-              'X-RequestDigest': getRequestDigest(),
-              'Accept': 'application/json;odata=verbose',
-              'Content-Type': 'application/json;odata=verbose'
-            }
-          })
+          headers: {
+            'X-RequestDigest': getRequestDigest(),
+            'Accept': 'application/json;odata=verbose',
+            'Content-Type': 'application/json;odata=verbose'
+          }
+        })
           .then(response => {
             done();
           })

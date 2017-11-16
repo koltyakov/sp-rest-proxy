@@ -5,16 +5,6 @@ export interface ITestSetup {
 }
 
 export const TestsConfigs: ITestSetup[] = [
-  // {
-  //     environmentName: 'SharePoint 2016 (SSL)',
-  //     configPath: './config/integration/private.ssl.json',
-  //     legacy: false
-  // },
-  // {
-  //     environmentName: 'SharePoint 2013 (TMG/HTTPS)',
-  //     configPath: './config/integration/private.tmg.json',
-  //     legacy: true
-  // },
   {
     environmentName: 'SharePoint Online',
     configPath: './config/integration/private.spo.json',

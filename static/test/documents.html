@@ -27,6 +27,14 @@
     var _spPageContextInfo = _spPageContextInfo || {};
     _spPageContextInfo.webServerRelativeUrl = "/";
 
+    $pnp.setup({
+      sp: {
+        headers: {
+          Accept: 'application/json;odata=verbose'
+        }
+      }
+    });
+
     var getFileBuffer = function (file) {
       var deferred = $.Deferred();
       var reader = new FileReader();
@@ -82,6 +90,7 @@
         getFileBuffer(file).then(function (buffer) {
           $pnp.sp.web.select('ServerRelativeUrl').get()
             .then(function (web) {
+              console.log(web);
               return $pnp.sp.web
                 .getFolderByServerRelativeUrl(web.ServerRelativeUrl + docLibPath)
                 .files.add(file.name, buffer, true);

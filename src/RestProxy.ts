@@ -91,6 +91,8 @@ export default class RestProxy {
           }
         });
 
+        let bodyParserUrlencoded = bodyParser.urlencoded({ extended: true });
+
         // REST - Files and attachments
         this.routers.apiRestRouter.post(
           '/*(/attachmentfiles/add|/files/add)*',
@@ -123,12 +125,14 @@ export default class RestProxy {
         //  CSOM requests (XML)
         this.routers.apiCsomRouter.post(
           '/*',
+          bodyParserUrlencoded,
           (new CsomRouter(context, this.settings)).router
         );
 
         //  SOAP requests (XML)
         this.routers.apiSoapRouter.post(
           '/*',
+          bodyParserUrlencoded,
           (new SoapRouter(context, this.settings)).router
         );
 
@@ -141,10 +145,9 @@ export default class RestProxy {
         // Generic POST
         this.routers.genericPostRouter.post(
           '/*',
+          bodyParserUrlencoded,
           (new PostRouter(context, this.settings)).router
         );
-
-        this.app.use(bodyParser.urlencoded({ extended: true }));
 
         this.app.use(cors());
         this.app.use('*/_api', this.routers.apiRestRouter);

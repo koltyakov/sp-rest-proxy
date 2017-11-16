@@ -106,7 +106,11 @@ export class RestPostRouter {
           console.log(resp.statusCode, resp.body);
         }
         res.status(resp.statusCode);
-        res.json(resp.body);
+        if (typeof resp.body === 'string') {
+          res.json(JSON.parse(resp.body));
+        } else {
+          res.json(resp.body);
+        }
       })
       .catch((err: any) => {
         res.status(err.statusCode >= 100 && err.statusCode < 600 ? err.statusCode : 500);

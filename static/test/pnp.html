@@ -17,6 +17,15 @@
   <ul id="lists">Loading...</ul>
 
   <script>
+
+    $pnp.setup({
+      sp: {
+        headers: {
+          Accept: 'application/json;odata=verbose'
+        }
+      }
+    });
+
     var _spPageContextInfo = _spPageContextInfo || {};
     _spPageContextInfo.webServerRelativeUrl = "/";
     $pnp.sp.web.lists.get().then(function (lists) {
@@ -25,6 +34,7 @@
           return '<li>' + l.Title + '</li>';
         }).join("");
     });
+
   </script>
 
 </body>

@@ -17,17 +17,17 @@ const testVariables = {
   headers: {
     verbose: {
       headers: {
-        Accept: 'application/json;odata=verbose'
+        'Accept': 'application/json;odata=verbose'
       }
     },
     minimalmetadata: {
       headers: {
-        Accept: 'application/json;odata=minimalmetadata'
+        'Accept': 'application/json;odata=minimalmetadata'
       }
     },
     nometadata: {
       headers: {
-        Accept: 'application/json;odata=nometadata'
+        'Accept': 'application/json;odata=nometadata'
       }
     }
   }
@@ -95,12 +95,12 @@ describe(`Proxy tests`, () => {
 
         axios.post(`${proxyRootUri}/_api/contextinfo`, {}, {
           headers: {
-            ...testVariables.headers.verbose,
+            ...testVariables.headers.verbose.headers,
             'Content-Type': 'application/json;odata=verbose'
           }
         })
           .then(response => {
-            // expect(response.data).to.have.property('FormDigestValue');
+            expect(response.data.d.GetContextWebInformation).to.have.property('FormDigestValue');
             done();
           })
           .catch(done);
@@ -318,27 +318,27 @@ describe(`Proxy tests`, () => {
               const listEndpoint = `${proxyRootUri}/_api/web/lists/getByTitle('${testVariables.newListName}')/items`;
 
               let requestPayload = trimMultiline(`
-                                --${boundary}
-                                Content-Type: multipart/mixed; boundary="${changeset}"
+                --${boundary}
+                Content-Type: multipart/mixed; boundary="${changeset}"
 
-                                ${items.map((item: string) => {
+                ${items.map((item: string) => {
                   return trimMultiline(`
-                                        --${changeset}
-                                        Content-Type: application/http
-                                        Content-Transfer-Encoding: binary
+                    --${changeset}
+                    Content-Type: application/http
+                    Content-Transfer-Encoding: binary
 
-                                        POST ${listEndpoint} HTTP/1.1
-                                        Accept: application/json;
-                                        Content-Type: application/json;odata=verbose;charset=utf-8
+                    POST ${listEndpoint} HTTP/1.1
+                    Accept: application/json;
+                    Content-Type: application/json;odata=verbose;charset=utf-8
 
-                                        {"__metadata":{"type":"${listItemEntityTypeFullName}"},"Title":"${item}"}
-                                    `);
+                    {"__metadata":{"type":"${listItemEntityTypeFullName}"},"Title":"${item}"}
+                  `);
                 }).join('\n\n')}
 
-                                --${changeset}--
+                --${changeset}--
 
-                                --${boundary}--
-                            `);
+                --${boundary}--
+              `);
 
               return axios.post(
                 `${proxyRootUri}/_api/$batch`,
@@ -376,27 +376,27 @@ describe(`Proxy tests`, () => {
               const listEndpoint = `${proxyContext.siteUrl}/_api/web/lists/getByTitle('${testVariables.newListName}')/items`;
 
               let requestPayload = trimMultiline(`
-                                --${boundary}
-                                Content-Type: multipart/mixed; boundary="${changeset}"
+                --${boundary}
+                Content-Type: multipart/mixed; boundary="${changeset}"
 
-                                ${dragons.map((dragon: string) => {
+                ${dragons.map((dragon: string) => {
                   return trimMultiline(`
-                                        --${changeset}
-                                        Content-Type: application/http
-                                        Content-Transfer-Encoding: binary
+                    --${changeset}
+                    Content-Type: application/http
+                    Content-Transfer-Encoding: binary
 
-                                        POST ${listEndpoint} HTTP/1.1
-                                        Accept: application/json;
-                                        Content-Type: application/json;odata=verbose;charset=utf-8
+                    POST ${listEndpoint} HTTP/1.1
+                    Accept: application/json;
+                    Content-Type: application/json;odata=verbose;charset=utf-8
 
-                                        {"__metadata":{"type":"${listItemEntityTypeFullName}"},"Title":"${dragon}"}
-                                    `);
+                    {"__metadata":{"type":"${listItemEntityTypeFullName}"},"Title":"${dragon}"}
+                  `);
                 }).join('\n\n')}
 
-                                --${changeset}--
+                --${changeset}--
 
-                                --${boundary}--
-                            `);
+                --${boundary}--
+              `);
 
               return axios.post(
                 `${proxyRootUri}/_api/$batch`,
@@ -439,30 +439,30 @@ describe(`Proxy tests`, () => {
               const listEndpoint = `${proxyContext.siteUrl}/_api/web/lists/getByTitle('${testVariables.newListName}')/items`;
 
               let requestPayload = trimMultiline(`
-                                --${boundary}
-                                Content-Type: multipart/mixed; boundary="${changeset}"
+                --${boundary}
+                Content-Type: multipart/mixed; boundary="${changeset}"
 
-                                ${items.map((item: any) => {
+                ${items.map((item: any) => {
                   let body = `{"__metadata":{"type":"${listItemEntityTypeFullName}"},"Title":"${item.Title} _updated"}`;
                   return trimMultiline(`
-                                        --${changeset}
-                                        Content-Type: application/http
-                                        Content-Transfer-Encoding: binary
+                    --${changeset}
+                    Content-Type: application/http
+                    Content-Transfer-Encoding: binary
 
-                                        MERGE ${listEndpoint}(${item.Id}) HTTP/1.1
-                                        If-Match: *
-                                        Accept: application/json;
-                                        Content-Type: application/json;odata=verbose;charset=utf-8
-                                        Content-Length: ${body.length}
+                    MERGE ${listEndpoint}(${item.Id}) HTTP/1.1
+                    If-Match: *
+                    Accept: application/json;
+                    Content-Type: application/json;odata=verbose;charset=utf-8
+                    Content-Length: ${body.length}
 
-                                        ${body}
-                                    `);
+                    ${body}
+                  `);
                 }).join('\n\n')}
 
-                                --${changeset}--
+                --${changeset}--
 
-                                --${boundary}--
-                            `);
+                --${boundary}--
+              `);
 
               return axios.post(
                 `${proxyRootUri}/_api/$batch`,
@@ -505,24 +505,24 @@ describe(`Proxy tests`, () => {
               const listEndpoint = `${proxyContext.siteUrl}/_api/web/lists/getByTitle('${testVariables.newListName}')/items`;
 
               let requestPayload = trimMultiline(`
-                                --${boundary}
-                                Content-Type: multipart/mixed; boundary="${changeset}"
+                --${boundary}
+                Content-Type: multipart/mixed; boundary="${changeset}"
 
-                                ${items.map((item: any) => {
+                ${items.map((item: any) => {
                   return trimMultiline(`
-                                        --${changeset}
-                                        Content-Type: application/http
-                                        Content-Transfer-Encoding: binary
+                    --${changeset}
+                    Content-Type: application/http
+                    Content-Transfer-Encoding: binary
 
-                                        DELETE ${listEndpoint}(${item.Id}) HTTP/1.1
-                                        If-Match: *
-                                    `);
+                    DELETE ${listEndpoint}(${item.Id}) HTTP/1.1
+                    If-Match: *
+                  `);
                 }).join('\n\n')}
 
-                                --${changeset}--
+                --${changeset}--
 
-                                --${boundary}--
-                            `);
+                --${boundary}--
+              `);
 
               return axios.post(
                 `${proxyRootUri}/_api/$batch`,
@@ -572,7 +572,7 @@ describe(`Proxy tests`, () => {
               fileBuffer, {
                 headers: {
                   'X-RequestDigest': getRequestDigest(),
-                  'Accept': 'application/json',
+                  'Accept': 'application/json;odata=verbose',
                   'Content-Type': 'application/json;odata=verbose;charset=utf-8'
                 }
               }
@@ -647,7 +647,7 @@ describe(`Proxy tests`, () => {
           methodUri, fileBuffer, {
             headers: {
               'X-RequestDigest': getRequestDigest(),
-              'Accept': 'application/json',
+              'Accept': 'application/json;odata=verbose',
               'Content-Type': 'application/json;odata=verbose;charset=utf-8'
             }
           }
@@ -684,17 +684,17 @@ describe(`Proxy tests`, () => {
         this.timeout(30 * 1000);
 
         const soapPackage = trimMultiline(`
-                    <?xml version="1.0" encoding="utf-8"?>
-                        <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-                            xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
-                        <soap:Body>
-                            <GetWeb xmlns="http://schemas.microsoft.com/sharepoint/soap/">
-                                <webUrl>${proxyContext.siteUrl}</webUrl>
-                            </GetWeb>
-                        </soap:Body>
-                    </soap:Envelope>
-                `);
+          <?xml version="1.0" encoding="utf-8"?>
+            <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+              xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+            <soap:Body>
+              <GetWeb xmlns="http://schemas.microsoft.com/sharepoint/soap/">
+                <webUrl>${proxyContext.siteUrl}</webUrl>
+              </GetWeb>
+            </soap:Body>
+          </soap:Envelope>
+        `);
 
         Promise.all([
           axios.post(`${proxyRootUri}/_vti_bin/Webs.asmx`, soapPackage, {
@@ -728,22 +728,22 @@ describe(`Proxy tests`, () => {
         this.timeout(30 * 1000);
 
         const csomPackage = trimMultiline(`
-                    <Request xmlns="http://schemas.microsoft.com/sharepoint/clientquery/2009"
-                        SchemaVersion="15.0.0.0" LibraryVersion="15.0.0.0" ApplicationName="Javascript Library">
-                        <Actions>
-                            <ObjectPath Id="16" ObjectPathId="15" />
-                            <Query Id="17" ObjectPathId="15">
-                                <Query SelectAllProperties="true">
-                                    <Properties />
-                                </Query>
-                            </Query>
-                        </Actions>
-                        <ObjectPaths>
-                            <Property Id="15" ParentId="0" Name="Web" />
-                            <StaticProperty Id="0" TypeId="{3747adcd-a3c3-41b9-bfab-4a64dd2f1e0a}" Name="Current" />
-                        </ObjectPaths>
-                    </Request>
-                `);
+          <Request xmlns="http://schemas.microsoft.com/sharepoint/clientquery/2009"
+            SchemaVersion="15.0.0.0" LibraryVersion="15.0.0.0" ApplicationName="Javascript Library">
+            <Actions>
+              <ObjectPath Id="16" ObjectPathId="15" />
+              <Query Id="17" ObjectPathId="15">
+                <Query SelectAllProperties="true">
+                  <Properties />
+                </Query>
+              </Query>
+            </Actions>
+          <ObjectPaths>
+              <Property Id="15" ParentId="0" Name="Web" />
+              <StaticProperty Id="0" TypeId="{3747adcd-a3c3-41b9-bfab-4a64dd2f1e0a}" Name="Current" />
+            </ObjectPaths>
+          </Request>
+        `);
 
         Promise.all([
           axios.post(`${proxyRootUri}/_vti_bin/client.svc/ProcessQuery`, csomPackage, {

@@ -149,11 +149,8 @@ export default class RestProxy {
           (new PostRouter(context, this.settings)).router
         );
 
-<<<<<<< HEAD
-=======
         // this.app.use(bodyParser.urlencoded({ extended: true }));
 
->>>>>>> dev
         this.app.use(cors());
         this.app.use('*/_api', this.routers.apiRestRouter);
         this.app.use('*/_vti_bin/client.svc/ProcessQuery', this.routers.apiCsomRouter);

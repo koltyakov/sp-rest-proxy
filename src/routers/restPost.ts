@@ -106,10 +106,7 @@ export class RestPostRouter {
           console.log(resp.statusCode, resp.body);
         }
         res.status(resp.statusCode);
-<<<<<<< HEAD
-=======
-        // res.json(resp.body);
->>>>>>> dev
+
         if (typeof resp.body === 'string') {
           res.json(JSON.parse(resp.body));
         } else {

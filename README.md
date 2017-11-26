@@ -151,7 +151,7 @@ Auth settings are stored inside `./config/private.json`.
 
 ## Some additional info
 
-sp-rest-proxy works with PnP JS Core (not POST request, as there is an endpoint transformation during POST request in PnP JS Core):
+sp-rest-proxy works with PnP JS Core (check out [brief notice](https://github.com/koltyakov/sp-rest-proxy/issues/26) how to configure).
 
 ![PnP JS Core + sp-rest-proxy](http://koltyakov.ru/images/pnp-sp-rest-proxy.png)
 

@@ -10,10 +10,16 @@ Allows performing API calls to local Express application with forwarding the que
 
 This concept was created to show how it could be easy to implements real world data communications for SharePoint Framework local serve mode during web parts debug without deployment to SharePoint tenant.
 
+## Supports SPFx and PnP JS Core
+
 ## Supported SharePoint versions
 - SharePoint Online
 - SharePoint 2013
 - SharePoint 2016
+
+## Development paradigms
+- SPA development ([Angular](http://johnliu.net/blog/2017/9/angular-4-sharepoint-on-premises-localhost-development-and-sp-rest-proxy), [React](https://www.linkedin.com/pulse/getting-started-react-local-development-sharepoint-andrew-koltyakov/), Vue.js, etc.) in serve mode against real data for On-Prem and Online
+- [SharePoint Framework with local workbench](https://www.linkedin.com/pulse/local-spfx-workbench-against-real-sharepoint-api-andrew-koltyakov/)
 
 ## Support proxying
 - REST API
@@ -33,7 +39,7 @@ Socket proxying allows to forward API from behind NAT (experimental).
 1\. Install NPM module in the project:
 
 ```bash
-npm install --save-dev sp-rest-proxy
+npm install sp-rest-proxy --save-dev
 ```
 
 or
@@ -149,11 +155,15 @@ The proxy provides wizard-like approach for building and managing config files f
 For more information please check node-sp-auth [credential options](https://github.com/s-KaiNet/node-sp-auth#params) and [wiki pages](https://github.com/s-KaiNet/node-sp-auth/wiki).
 Auth settings are stored inside `./config/private.json`.
 
-## Some additional info
+## PnP JS Core
 
 sp-rest-proxy works with PnP JS Core (check out [brief notice](https://github.com/koltyakov/sp-rest-proxy/issues/26) how to configure).
 
 ![PnP JS Core + sp-rest-proxy](http://koltyakov.ru/images/pnp-sp-rest-proxy.png)
+
+## SharePoint Framework
+
+[Blog post article with setting up SPFx and Proxy](https://www.linkedin.com/pulse/local-spfx-workbench-against-real-sharepoint-api-andrew-koltyakov/)
 
 ## Use cases
 

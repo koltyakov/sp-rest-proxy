@@ -1,0 +1,11 @@
+{
+  "$schema": "https://dev.office.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "spfx-proxy-example-client-side-solution",
+    "id": "cfa5b419-c6be-4b45-94bd-86d335076f87",
+    "version": "1.0.0.0"
+  },
+  "paths": {
+    "zippedPackage": "solution/spfx-proxy-example.sppkg"
+  }
+}

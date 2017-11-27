@@ -1,8 +1,10 @@
 import RestProxy from './RestProxy';
+import { IProxySettings } from './interfaces';
 
-const settings = {
+const settings: IProxySettings = {
   configPath: './config/private.json',
-  port: 8080
+  port: 8080,
+  protocol: 'https'
   // debugOutput: true
 };
 

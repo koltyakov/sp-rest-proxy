@@ -37,6 +37,15 @@ const getRequestDigest = (): string => {
   return '__proxy_can_do_it_without_digest';
 };
 
+// import CertificateStore from '@microsoft/gulp-core-build-serve/lib/CertificateStore';
+// const protocol: any = {
+//   protocol: 'https',
+//   ssl: {
+//     cert: CertificateStore.instance.certificateData,
+//     key: CertificateStore.instance.keyData
+//   }
+// };
+
 describe(`Proxy tests`, () => {
 
   for (let testConfig of TestsConfigs) {
@@ -53,18 +62,22 @@ describe(`Proxy tests`, () => {
       before('Start Proxy', function (done: any): void {
         this.timeout(30 * 1000);
 
+        process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
         (new RestProxy({
           configPath: testConfig.configPath,
           staticRoot: './static',
           rawBodyLimitSize: '4MB',
-          silentMode: true
-        })).serve((server: any, context: IProxyContext, settings: IProxySettings) => {
+          silentMode: true,
+          protocol: 'https'
+          // ...(protocol || {})
+        })).serve((server, context, settings) => {
           expressServer = server;
           proxyContext = context;
           proxySettings = settings;
 
           webRelativeUrl = `/${proxyContext.siteUrl.replace('://', '').split('/').slice(1, 100).join('/')}`;
-          proxyRootUri = `http://${settings.hostname}:${settings.port}${webRelativeUrl}`;
+          proxyRootUri = `${!settings.protocol ? 'http' : settings.protocol}://${settings.hostname}:${settings.port}${webRelativeUrl}`;
 
           // Init PnP JS Core for Node.js
           pnp.setup({
@@ -128,7 +141,7 @@ describe(`Proxy tests`, () => {
       it(`should work with shorthand URIs`, function (done: MochaDone): void {
         this.timeout(30 * 1000);
 
-        let shorthandUri: string = `http://${proxySettings.hostname}:${proxySettings.port}`;
+        let shorthandUri: string = `${!proxySettings.protocol ? 'http' : proxySettings.protocol}://${proxySettings.hostname}:${proxySettings.port}`;
 
         Promise.all([
           axios.get(`${shorthandUri}/_api/web?$select=Title`, testVariables.headers.verbose),

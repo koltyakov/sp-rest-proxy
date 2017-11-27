@@ -9,6 +9,7 @@ import * as cors from 'cors';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as https from 'https';
+import * as http from 'http';
 
 import { RestGetRouter } from './routers/restGet';
 import { RestPostRouter } from './routers/restPost';
@@ -22,7 +23,8 @@ import { Server as GatewayServer } from './gateway/server';
 import { Client as GatewayClient } from './gateway/client';
 
 import { IProxySettings, IProxyContext, IRouters,
-         IGatewayServerSettings, IGatewayClientSettings
+         IGatewayServerSettings, IGatewayClientSettings,
+         IProxyCallback
 } from './interfaces';
 
 export default class RestProxy {
@@ -71,11 +73,11 @@ export default class RestProxy {
   }
 
   // Server proxy main mode
-  public serveProxy = (callback?: Function) => {
+  public serveProxy = (callback?: IProxyCallback) => {
     this.serve(callback);
   }
 
-  public serve = (callback?: Function) => {
+  public serve = (callback?: IProxyCallback) => {
     (new AuthConfig(this.settings.authConfigSettings))
       .getContext()
       .then((context: IProxyContext): void => {
@@ -159,16 +161,44 @@ export default class RestProxy {
         this.app.use('/', this.routers.genericPostRouter);
         this.app.use('/', this.routers.genericGetRouter);
 
-        let server = this.app.listen(this.settings.port, this.settings.hostname, () => {
-          if (!this.settings.silentMode) {
-            console.log(`SharePoint REST Proxy has been started on http://${this.settings.hostname}:${this.settings.port}`);
+        const upCallback = (server: https.Server | http.Server, context: IProxyContext, settings: IProxySettings, callback?: IProxyCallback) => {
+          if (!settings.silentMode) {
+            console.log(
+              `SharePoint REST Proxy has been started on ` +
+              `${!settings.protocol ? 'http' : settings.protocol}://` +
+              `${settings.hostname}:${settings.port}`);
           }
 
           // After proxy is started callback
           if (callback && typeof callback === 'function') {
-            callback(server, context, this.settings);
+            callback(server, context, settings);
           }
-        });
+        };
+
+        let server: http.Server | https.Server;
+        if (this.settings.protocol === 'https') {
+          if (typeof this.settings.ssl === 'undefined') {
+            // console.log('Error: No SSL settings provided!');
+            // return;
+            this.settings.ssl = {
+              cert: path.join(__dirname, './../ssl/cert.crt'),
+              key: path.join(__dirname, './../ssl/key.pem')
+            };
+          }
+          let options: https.ServerOptions = {
+            cert: fs.existsSync(this.settings.ssl.cert) ? fs.readFileSync(this.settings.ssl.cert) : this.settings.ssl.cert,
+            key: fs.existsSync(this.settings.ssl.key) ? fs.readFileSync(this.settings.ssl.key) : this.settings.ssl.key
+          };
+          server = https.createServer(options, this.app);
+        } else {
+          server = require('http').Server(this.app);
+        }
+
+        if (server) {
+          server.listen(this.settings.port, this.settings.hostname, () => {
+            upCallback(server, context, this.settings, callback);
+          });
+        }
 
       })
       .catch((err: any) => {

@@ -11,30 +11,22 @@ export class GetRouter {
 
   private ctx: IProxyContext;
   private settings: IProxySettings;
-  private staticLibPathExists: boolean;
   private util: ProxyUtils;
   private spr: ISPRequest;
 
   constructor (context: IProxyContext, settings: IProxySettings) {
     this.ctx = context;
     this.settings = settings;
-    this.staticLibPathExists = fs.existsSync(settings.staticLibPath);
     this.util = new ProxyUtils(this.ctx);
   }
 
   public router = (req: Request, res: Response, next?: NextFunction) => {
-    let url = '';
-
-    if (this.staticLibPathExists) {
-      url = '/index.html';
-    } else {
-      url = '/index-cdn.html';
-    }
+    let staticIndexUrl = '/index.html';
 
     if (req.url !== '/') {
-      url = req.url;
+      staticIndexUrl = req.url;
     } else {
-      let pageContent = String(fs.readFileSync(path.join(this.settings.staticRoot, url)));
+      let pageContent = String(fs.readFileSync(path.join(this.settings.staticRoot, staticIndexUrl)));
       pageContent = pageContent.replace('##proxyVersion#', this.settings.metadata.version);
       res.send(pageContent);
       return;
@@ -48,8 +40,8 @@ export class GetRouter {
       return;
     }
 
-    if (fs.existsSync(path.join(this.settings.staticRoot, url))) {
-      res.sendFile(path.join(this.settings.staticRoot, url));
+    if (fs.existsSync(path.join(this.settings.staticRoot, staticIndexUrl))) {
+      res.sendFile(path.join(this.settings.staticRoot, staticIndexUrl));
       return;
     }
 

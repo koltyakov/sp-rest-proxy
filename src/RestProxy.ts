@@ -41,7 +41,6 @@ export default class RestProxy {
       hostname: settings.hostname || process.env.HOSTNAME || 'localhost',
       port: settings.port || process.env.PORT || 8080,
       staticRoot: path.resolve(settings.staticRoot || path.join(__dirname, '../static')),
-      staticLibPath: path.resolve(settings.staticLibPath || path.join(__dirname, '../static/bower_components')),
       debugOutput: settings.debugOutput || false,
       rawBodyLimitSize: settings.rawBodyLimitSize || '2mb',
       jsonPayloadLimitSize: settings.jsonPayloadLimitSize || '2mb',

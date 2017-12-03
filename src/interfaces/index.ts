@@ -11,7 +11,6 @@ export interface IProxySettings {
   port?: number;
 
   staticRoot?: string;
-  staticLibPath?: string;
   rawBodyLimitSize?: string;
   jsonPayloadLimitSize?: string;
   debugOutput?: boolean;

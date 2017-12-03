@@ -10,5 +10,5 @@
 npm-debug.log
 tslconfig.json
 tslint.json
-jsconfig.json
-.eslintrc.js
+.eslintrc
+.editorconfig

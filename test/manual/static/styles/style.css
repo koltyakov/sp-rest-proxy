@@ -1,0 +1,64 @@
+.navbar-header {
+  width: 100%;
+  color: #1b95e0;
+}
+
+.requestResutls,
+.requestError {
+  margin-right: 0;
+  margin-left: 0;
+  background-color: #fff;
+  border: 1px solid;
+  border-color: #ddd;
+  border-width: 1px;
+  border-radius: 4px;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  padding: 30px 10px 10px 10px;
+}
+
+.requestResutls:after,
+.requestError:after {
+  position: absolute;
+  top: 10px;
+  left: 25px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #959595;
+  letter-spacing: 1px;
+  content: "Response result:";
+}
+
+.requestError {
+  border-color: red;
+}
+
+.requestError:after {
+  content: "Response error:";
+  color: red;
+}
+
+.row.resultsArea {
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+.page-header {
+  margin-bottom: 0;
+}
+
+a:hover {
+  text-decoration: none;
+}
+
+.row.info {
+  margin-bottom: 15px;
+}
+
+a#api-reference {
+  float: right;
+}
+
+label.info-lable {
+  width: 100px;
+}

@@ -13,21 +13,25 @@ This concept was created to show how it could be easy to implements real world d
 ## Supports SPFx and PnP JS Core
 
 ## Supported SharePoint versions
+
 - SharePoint Online
 - SharePoint 2013
 - SharePoint 2016
 
 ## Development paradigms
+
 - SPA development ([Angular](http://johnliu.net/blog/2017/9/angular-4-sharepoint-on-premises-localhost-development-and-sp-rest-proxy), [React](https://www.linkedin.com/pulse/getting-started-react-local-development-sharepoint-andrew-koltyakov/), Vue.js, etc.) in serve mode against real data for On-Prem and Online
 - [SharePoint Framework with local workbench](https://www.linkedin.com/pulse/local-spfx-workbench-against-real-sharepoint-api-andrew-koltyakov/)
 
 ## Support proxying
+
 - REST API
 - CSOM requests
 - SOAP web services
 - Static resources
 
 ## Proxy modes
+
 - API Proxy server
 - Socket gateway server
 - Socket gateway client
@@ -125,7 +129,7 @@ npm run ts-serve
 
 Prompts credentials for a SharePoint site.
 
-6\. Navigate to http://localhost:8080 (or whatever in settings)
+6\. Navigate to `http://localhost:8080` (or whatever in settings)
 
 7\. Ajax REST calls as if you were in SharePoint site page context:
 

@@ -117,7 +117,11 @@ export class GetRouter {
       })
       .catch((err: any) => {
         res.status(err.statusCode >= 100 && err.statusCode < 600 ? err.statusCode : 500);
-        res.send(err.message);
+        if (err.response && err.response.body) {
+          res.json(err.response.body);
+        } else {
+          res.send(err.message);
+        }
       });
 
   }

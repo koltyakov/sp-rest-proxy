@@ -1,6 +1,6 @@
 !/dist
 /test
-/config/private.json
+/config
 /src
 /examples
 /docs

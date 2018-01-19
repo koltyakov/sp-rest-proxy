@@ -8,7 +8,7 @@
 
 Allows performing API calls to local Express application with forwarding the queries to a remote SharePoint instance.
 
-This concept was created to show how it could be easy to implements real world data communications for SharePoint Framework local serve mode during web parts debug without deployment to SharePoint tenant.
+Original concept of the proxy was created to show how it could be easy to implements real world data communications for SharePoint Framework local serve mode during web parts debug without deployment to SharePoint tenant. Now the tool is used with multiple teams for modern front-end solutions [rapid development](https://github.com/koltyakov/sp-rest-proxy#development-paradigms).
 
 ## Supports SPFx and PnP JS Core
 

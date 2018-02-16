@@ -22,6 +22,7 @@ Original concept of the proxy was created to show how it could be easy to implem
 
 - SPA development ([Angular](http://johnliu.net/blog/2017/9/angular-4-sharepoint-on-premises-localhost-development-and-sp-rest-proxy), [React](https://www.linkedin.com/pulse/getting-started-react-local-development-sharepoint-andrew-koltyakov/), Vue.js, etc.) in serve mode against real data for On-Prem and Online
 - [SharePoint Framework with local workbench](https://www.linkedin.com/pulse/local-spfx-workbench-against-real-sharepoint-api-andrew-koltyakov/)
+- [SharePoint AddIns development](https://github.com/koltyakov/sp-rest-proxy/issues/41)
 
 ## Supports proxying
 

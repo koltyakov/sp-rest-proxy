@@ -33,9 +33,9 @@
     "body-parser": "^1.18.2",
     "cors": "^2.8.4",
     "express": "^4.16.2",
-    "node-sp-auth-config": "^2.1.1",
+    "node-sp-auth-config": "^2.4.4",
     "socket.io": "^2.0.4",
-    "sp-request": "^2.1.2"
+    "sp-request": "^2.1.3"
   },
   "devDependencies": {
     "@microsoft/gulp-core-build-serve": "^3.1.14",

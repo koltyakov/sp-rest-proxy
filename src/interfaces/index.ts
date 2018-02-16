@@ -21,6 +21,8 @@ export interface IProxySettings {
   authConfigSettings?: IAuthConfigSettings;
   configPath?: string; // Legacy
   defaultConfigPath?: string; // Legacy
+
+  processBatchMultipartBody?: (body: string) => string;
 }
 
 export interface ISSLConf {

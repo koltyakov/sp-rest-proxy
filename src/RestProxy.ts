@@ -42,8 +42,8 @@ export default class RestProxy {
       port: settings.port || process.env.PORT || 8080,
       staticRoot: path.resolve(settings.staticRoot || path.join(__dirname, '../static')),
       debugOutput: settings.debugOutput || false,
-      rawBodyLimitSize: settings.rawBodyLimitSize || '2mb',
-      jsonPayloadLimitSize: settings.jsonPayloadLimitSize || '2mb',
+      rawBodyLimitSize: settings.rawBodyLimitSize || '10MB',
+      jsonPayloadLimitSize: settings.jsonPayloadLimitSize || '2MB',
       metadata: require(path.join(__dirname, '/../package.json')),
       silentMode: typeof settings.silentMode !== 'undefined' ? settings.silentMode : false,
       agent: settings.agent || new https.Agent({

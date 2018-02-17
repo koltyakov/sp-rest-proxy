@@ -96,7 +96,13 @@ export default class RestProxy {
 
         // REST - Files and attachments
         this.routers.apiRestRouter.post(
-          '/*(/attachmentfiles/add|/files/add)*',
+          `/*(${[
+            '/attachmentfiles/add',
+            '/files/add',
+            '/startUpload',
+            '/continueUpload',
+            '/finishUpload'
+          ].join('|')})*`,
           bodyParserRaw,
           (new RestPostRouter(context, this.settings)).router
         );

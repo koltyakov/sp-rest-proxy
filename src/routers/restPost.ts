@@ -79,12 +79,17 @@ export class RestPostRouter {
 
         if (
           endpointUrlStr.toLowerCase().indexOf('/attachmentfiles/add') !== -1 ||
-          endpointUrlStr.toLowerCase().indexOf('/files/add') !== -1
+          endpointUrlStr.toLowerCase().indexOf('/files/add') !== -1 ||
+          endpointUrlStr.toLowerCase().indexOf('/startupload') !== -1 ||
+          endpointUrlStr.toLowerCase().indexOf('/continueupload') !== -1 ||
+          endpointUrlStr.toLowerCase().indexOf('/finishupload') !== -1
         ) {
           reqBodyData = (req as any).buffer;
           jsonOption.json = false;
           jsonOption.processData = false;
-          requestHeadersPass['Content-Length'] = reqBodyData.byteLength;
+          if (reqBodyData) {
+            requestHeadersPass['Content-Length'] = reqBodyData.byteLength;
+          }
         }
 
         if (this.settings.debugOutput) {

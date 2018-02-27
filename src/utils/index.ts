@@ -37,11 +37,20 @@ export class ProxyUtils {
   }
 
   public buildEndpointUrl = (reqUrl: string) => {
-    let siteUrlParsed = urlParse(this.ctx.siteUrl);
-    let reqPathName = '';
-    if (reqUrl.indexOf(siteUrlParsed.pathname) === 0) {
-      reqPathName = reqUrl;
-    } else {
+    const siteUrlParsed = urlParse(this.ctx.siteUrl);
+    let reqPathName = reqUrl;
+
+    const baseUrlArr = siteUrlParsed.pathname.split('/');
+    const reqUrlArr = reqUrl.split('?')[0].split('/');
+
+    let similarity = 0;
+    const len = baseUrlArr.length > reqUrlArr.length ?
+      reqUrlArr.length : baseUrlArr.length;
+    for (let i = 0; i < len; i += 1) {
+      similarity += baseUrlArr[i] === reqUrlArr[i] ? 1 : 0;
+    }
+
+    if (similarity < 2) {
       reqPathName = (`${siteUrlParsed.pathname}/${reqUrl}`).replace(/\/\//g, '/');
     }
     return `${siteUrlParsed.protocol}//${siteUrlParsed.host}${reqPathName}`;

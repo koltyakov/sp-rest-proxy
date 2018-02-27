@@ -1,0 +1,18 @@
+{
+  "files.exclude": {
+    "node_modules/": true,
+    "dist/": true,
+    "yarn.lock": true,
+    "tmp/": true,
+    ".github": true,
+    ".vscode": true
+  },
+  "files.trimTrailingWhitespace": true,
+  "editor.tabSize": 2,
+  "editor.autoIndent": true,
+  "window.zoomLevel": 0,
+  "git.enableSmartCommit": true,
+  "git.confirmSync": false,
+  "git.autofetch": true,
+  "explorer.confirmDragAndDrop": false
+}

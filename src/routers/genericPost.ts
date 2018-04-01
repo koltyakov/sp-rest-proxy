@@ -44,6 +44,9 @@ export class PostRouter {
         if (prop.toLowerCase() === 'content-type') {
           requestHeadersPass['Content-Type'] = req.headers[prop];
         }
+        if (prop.toLowerCase() === 'slug') {
+          requestHeadersPass['Slug'] = req.headers[prop];
+        }
       });
 
       this.util.getAuthOptions()

@@ -58,7 +58,7 @@ export class PostRouter {
             processData: false
           };
 
-          this.spr.post(endpointUrl, {
+          return this.spr.post(endpointUrl, {
             headers: headers,
             body: postBody,
             ...options as any,
@@ -73,6 +73,9 @@ export class PostRouter {
               res.contentType(response.headers['content-type']);
 
               res.send(response.body);
+            })
+            .catch((err: any) => {
+              throw(err);
             });
         })
         .catch((err: any) => {

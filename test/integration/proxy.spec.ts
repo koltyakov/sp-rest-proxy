@@ -751,7 +751,7 @@ describe(`Proxy tests`, () => {
                 </Query>
               </Query>
             </Actions>
-          <ObjectPaths>
+            <ObjectPaths>
               <Property Id="15" ParentId="0" Name="Web" />
               <StaticProperty Id="0" TypeId="{3747adcd-a3c3-41b9-bfab-4a64dd2f1e0a}" Name="Current" />
             </ObjectPaths>

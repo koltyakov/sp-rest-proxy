@@ -22,9 +22,13 @@ import { GetRouter } from './routers/genericGet';
 import { Server as GatewayServer } from './gateway/server';
 import { Client as GatewayClient } from './gateway/client';
 
-import { IProxySettings, IProxyContext, IRouters,
-         IGatewayServerSettings, IGatewayClientSettings,
-         IProxyCallback
+import {
+  IProxySettings,
+  IProxyContext,
+  IRouters,
+  IGatewayServerSettings,
+  IGatewayClientSettings,
+  IProxyCallback
 } from './interfaces';
 
 export default class RestProxy {
@@ -224,4 +228,9 @@ export default class RestProxy {
 
 }
 
-export { IProxySettings, IProxyContext, IGatewayClientSettings, IGatewayServerSettings } from './interfaces';
+export {
+  IProxySettings,
+  IProxyContext,
+  IGatewayClientSettings,
+  IGatewayServerSettings
+} from './interfaces';

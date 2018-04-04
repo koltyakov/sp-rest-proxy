@@ -59,9 +59,9 @@ yarn add sp-rest-proxy --dev
 const RestProxy = require('sp-rest-proxy');
 
 const settings = {
-    configPath: './config/private.json', // Location for SharePoint instance mapping and credentials
-    port: 8080,                          // Local server port
-    staticRoot: './static'               // Root folder for static content
+  configPath: './config/private.json', // Location for SharePoint instance mapping and credentials
+  port: 8080,                          // Local server port
+  staticRoot: './static'               // Root folder for static content
 };
 
 const restProxy = new RestProxy(settings);
@@ -74,7 +74,7 @@ restProxy.serve();
 
 ```json
 "scripts": {
-    "serve": "node ./server.js"
+  "serve": "node ./server.js"
 }
 ```
 
@@ -165,6 +165,41 @@ Auth settings are stored inside `./config/private.json`.
 sp-rest-proxy works with PnP JS Core (check out [brief notice](https://github.com/koltyakov/sp-rest-proxy/issues/26) how to configure).
 
 ![PnP JS Core + sp-rest-proxy](http://koltyakov.ru/images/pnp-sp-rest-proxy.png)
+
+### Load page context helper
+
+sp-rest-proxy includes helper method for configuring page context - `loadPageContext`.
+
+```typescript
+import { loadPageContext } from 'sp-rest-proxy/dist/utils/env';
+import { Web } from '@pnp/sp';
+
+// loadPageContext - gets correct URL in localhost and SP environments
+loadPageContext().then(async _ => {
+
+  // In both localhost and published to SharePoint page
+  // `_spPageContextInfo` will contain correct info for vital props
+
+  // PnPjs's Web object should be created in the following way
+  const web = new Web(_spPageContextInfo.webAbsoluteUrl);
+
+  // Then goes ordinary PnPjs code
+  const batch = web.createBatch();
+
+  const list = web.getList(`${_spPageContextInfo.webServerRelativeUrl}/List/ListName`);
+  const entityName = await list.getListItemEntityTypeFullName();
+
+  [1, 2, 3, 4].forEach(el => {
+    list.items.inBatch(batch).add({
+      Title: `${el}`
+    }, entityName);
+  });
+
+  await batch.execute();
+  console.log('Done');
+
+}).catch(log);
+```
 
 ## SharePoint Framework
 

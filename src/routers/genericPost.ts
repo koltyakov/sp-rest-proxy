@@ -81,7 +81,7 @@ export class PostRouter {
           }
 
           res.status(response.statusCode);
-          res.contentType(response.headers['content-type']||'');
+          res.contentType(response.headers['content-type'] || '');
 
           res.send(response.body);
         })

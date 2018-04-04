@@ -45,19 +45,19 @@ export class SoapRouter {
             'Content-Length': soapBody.length
           };
 
-          this.spr.post(endpointUrl, {
+          return this.spr.post(endpointUrl, {
             headers: headers,
             body: soapBody,
             json: false,
             agent: this.util.isUrlHttps(endpointUrl) ? this.settings.agent : undefined
-          })
-            .then((response: any) => {
-              if (this.settings.debugOutput) {
-                console.log(response.statusCode, response.body);
-              }
-              res.send(response.body);
-              res.end();
-            });
+          });
+        })
+        .then((response: any) => {
+          if (this.settings.debugOutput) {
+            console.log(response.statusCode, response.body);
+          }
+          res.send(response.body);
+          res.end();
         })
         .catch((err: any) => {
           res.status(err.statusCode);

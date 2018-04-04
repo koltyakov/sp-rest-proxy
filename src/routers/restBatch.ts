@@ -51,7 +51,10 @@ export class RestBatchRouter {
       const origin = this.ctx.siteUrl.replace('://', '___').split('/')[0].replace('___', '://');
       reqBodyData = reqBodyData.split('\n').map(line => {
         if (regExp.test(line)) {
-          let [method, endpoint, version] = line.split(' ');
+          const parts = line.split(' ');
+          const method = parts.shift();
+          const version = parts.pop();
+          let endpoint = parts.join(' ');
           endpoint = `${origin}/${endpoint.replace('://', '___').split('/').splice(1, 100).join('/')}`;
           line = `${method} ${endpoint} ${version}`;
         }

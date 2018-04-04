@@ -19,11 +19,11 @@
     normalize-path "^2.0.1"
     through2 "^2.0.3"
 
-"@microsoft/gulp-core-build-serve@^3.2.24":
-  version "3.2.24"
-  resolved "https://registry.yarnpkg.com/@microsoft/gulp-core-build-serve/-/gulp-core-build-serve-3.2.24.tgz#73b87cc11006a816ae0ec0bc6de116b8da0bcde0"
+"@microsoft/gulp-core-build-serve@^3.2.26":
+  version "3.2.26"
+  resolved "https://registry.yarnpkg.com/@microsoft/gulp-core-build-serve/-/gulp-core-build-serve-3.2.26.tgz#a44254b537a4d523169d75387cccc968c804cfdb"
   dependencies:
-    "@microsoft/gulp-core-build" "3.7.2"
+    "@microsoft/gulp-core-build" "3.7.4"
     "@types/node" "8.5.8"
     colors "~1.2.1"
     deasync "~0.1.7"
@@ -35,11 +35,11 @@
     node-forge "~0.7.1"
     sudo "~1.0.3"
 
-"@microsoft/gulp-core-build@3.7.2":
-  version "3.7.2"
-  resolved "https://registry.yarnpkg.com/@microsoft/gulp-core-build/-/gulp-core-build-3.7.2.tgz#fd884857e441ac27f75ed41c19d1b42f943fad4a"
+"@microsoft/gulp-core-build@3.7.4":
+  version "3.7.4"
+  resolved "https://registry.yarnpkg.com/@microsoft/gulp-core-build/-/gulp-core-build-3.7.4.tgz#ede50e3918b677282d64866510f10ba70a8b2cd5"
   dependencies:
-    "@microsoft/node-core-library" "1.0.0"
+    "@microsoft/node-core-library" "1.2.0"
     "@types/assertion-error" "1.0.30"
     "@types/chai" "3.4.34"
     "@types/chalk" "0.4.31"
@@ -86,9 +86,9 @@
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@microsoft/microsoft-graph-types/-/microsoft-graph-types-1.1.0.tgz#08646e469247a4144c715161a1081387ade7cd3b"
 
-"@microsoft/node-core-library@1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@microsoft/node-core-library/-/node-core-library-1.0.0.tgz#c703bff050b7254cea462498f660212f0796b013"
+"@microsoft/node-core-library@1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@microsoft/node-core-library/-/node-core-library-1.2.0.tgz#98a7fdc437639e95958c9dc0b1718ebb197ec6f3"
   dependencies:
     "@types/fs-extra" "0.0.37"
     "@types/node" "8.5.8"
@@ -245,9 +245,9 @@
   version "6.0.92"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-6.0.92.tgz#e7f721ae282772e12ba2579968c00d9cce422c5d"
 
-"@types/node@^9.6.1":
-  version "9.6.1"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-9.6.1.tgz#e2d374ef15b315b48e7efc308fa1a7cd51faa06c"
+"@types/node@^9.6.2":
+  version "9.6.2"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-9.6.2.tgz#e49ac1adb458835e95ca6487bc20f916b37aff23"
 
 "@types/orchestrator@*", "@types/orchestrator@0.0.30":
   version "0.0.30"

@@ -48,6 +48,12 @@ export class PostRouter {
         if (prop.toLowerCase() === 'slug') {
           requestHeadersPass['Slug'] = req.headers[prop];
         }
+        if (prop.toLowerCase() === 'if-match') {
+          requestHeadersPass['If-Match'] = req.headers[prop];
+        }
+        if (prop.toLowerCase() === 'x-http-method') {
+          requestHeadersPass['X-HTTP-Method'] = req.headers[prop];
+        }
       });
 
       this.util.getAuthOptions()
@@ -75,7 +81,7 @@ export class PostRouter {
           }
 
           res.status(response.statusCode);
-          res.contentType(response.headers['content-type']);
+          res.contentType(response.headers['content-type']||'');
 
           res.send(response.body);
         })

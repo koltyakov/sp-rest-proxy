@@ -3,7 +3,8 @@ import * as mocha from 'mocha';
 import * as path from 'path';
 import * as fs from 'fs';
 import { default as axios, AxiosResponse } from 'axios';
-import * as pnp from 'sp-pnp-js';
+import { sp } from '@pnp/sp';
+import { Util } from '@pnp/common';
 import { parseString as xmlStringToJson } from 'xml2js';
 import { PnpNode, IPnpNodeSettings } from 'sp-pnp-node';
 
@@ -17,17 +18,17 @@ const testVariables = {
   headers: {
     verbose: {
       headers: {
-        'Accept': 'application/json;odata=verbose'
+        Accept: 'application/json;odata=verbose'
       }
     },
     minimalmetadata: {
       headers: {
-        'Accept': 'application/json;odata=minimalmetadata'
+        Accept: 'application/json;odata=minimalmetadata'
       }
     },
     nometadata: {
       headers: {
-        'Accept': 'application/json;odata=nometadata'
+        Accept: 'application/json;odata=nometadata'
       }
     }
   }
@@ -48,7 +49,7 @@ const getRequestDigest = (): string => {
 
 describe(`Proxy tests`, () => {
 
-  for (let testConfig of TestsConfigs) {
+  for (const testConfig of TestsConfigs) {
 
     describe(`Run tests in ${testConfig.environmentName}`, () => {
 
@@ -67,7 +68,7 @@ describe(`Proxy tests`, () => {
         (new RestProxy({
           configPath: testConfig.configPath,
           staticRoot: './static',
-          rawBodyLimitSize: '4MB',
+          // rawBodyLimitSize: '4MB',
           silentMode: true,
           protocol: 'https'
           // ...(protocol || {})
@@ -80,7 +81,7 @@ describe(`Proxy tests`, () => {
           proxyRootUri = `${!settings.protocol ? 'http' : settings.protocol}://${settings.hostname}:${settings.port}${webRelativeUrl}`;
 
           // Init PnP JS Core for Node.js
-          pnp.setup({
+          sp.setup({
             sp: {
               fetchClientFactory: () => {
                 return new PnpNode(proxyContext);
@@ -104,7 +105,7 @@ describe(`Proxy tests`, () => {
       });
 
       it(`should get contextinfo`, function (done: MochaDone): void {
-        this.timeout(30 * 1000);
+        this.timeout(60 * 1000);
 
         axios.post(`${proxyRootUri}/_api/contextinfo`, {}, {
           headers: {
@@ -125,7 +126,7 @@ describe(`Proxy tests`, () => {
 
         Promise.all([
           axios.get(`${proxyRootUri}/_api/web?$select=Title`, testVariables.headers.verbose),
-          pnp.sp.web.select('Title').get()
+          sp.web.select('Title').get()
         ])
           .then(response => {
             const proxyResp: AxiosResponse = response[0];
@@ -141,11 +142,11 @@ describe(`Proxy tests`, () => {
       it(`should work with shorthand URIs`, function (done: MochaDone): void {
         this.timeout(30 * 1000);
 
-        let shorthandUri: string = `${!proxySettings.protocol ? 'http' : proxySettings.protocol}://${proxySettings.hostname}:${proxySettings.port}`;
+        const shorthandUri: string = `${!proxySettings.protocol ? 'http' : proxySettings.protocol}://${proxySettings.hostname}:${proxySettings.port}`;
 
         Promise.all([
           axios.get(`${shorthandUri}/_api/web?$select=Title`, testVariables.headers.verbose),
-          pnp.sp.web.select('Title').get()
+          sp.web.select('Title').get()
         ])
           .then(response => {
             const proxyResp: AxiosResponse = response[0];
@@ -162,7 +163,7 @@ describe(`Proxy tests`, () => {
 
         Promise.all([
           axios.get(`${proxyRootUri}/_api/web/lists?$select=Title`, testVariables.headers.verbose),
-          pnp.sp.web.lists.select('Title').get()
+          sp.web.lists.select('Title').get()
         ])
           .then(response => {
             const proxyResp: AxiosResponse = response[0];
@@ -193,7 +194,7 @@ describe(`Proxy tests`, () => {
           }
         })
           .then(response => {
-            return pnp.sp.web.lists.getByTitle(testVariables.newListName).select('Title').get();
+            return sp.web.lists.getByTitle(testVariables.newListName).select('Title').get();
           })
           .then(response => {
             expect(response.Title).to.equal(testVariables.newListName);
@@ -206,7 +207,7 @@ describe(`Proxy tests`, () => {
       it('should create a list item', function (done: MochaDone): void {
         this.timeout(30 * 1000);
 
-        let listUri = `${proxyRootUri}/_api/web/lists/getByTitle('${testVariables.newListName}')`;
+        const listUri = `${proxyRootUri}/_api/web/lists/getByTitle('${testVariables.newListName}')`;
         axios.get(`${listUri}?$select=ListItemEntityTypeFullName`, testVariables.headers.verbose)
           .then((response: any) => {
             return axios.post(
@@ -222,9 +223,7 @@ describe(`Proxy tests`, () => {
               }
             );
           })
-          .then(response => {
-            done();
-          })
+          .then(_ => done())
           .catch(done);
 
       });
@@ -232,7 +231,7 @@ describe(`Proxy tests`, () => {
       it('should update a list item', function (done: MochaDone): void {
         this.timeout(30 * 1000);
 
-        let listUri = `${proxyRootUri}/_api/web/lists/getByTitle('${testVariables.newListName}')`;
+        const listUri = `${proxyRootUri}/_api/web/lists/getByTitle('${testVariables.newListName}')`;
         Promise.all([
           axios.get(`${listUri}?$select=ListItemEntityTypeFullName`, testVariables.headers.verbose),
           axios.get(`${listUri}/items?$select=Id&$top=1`, testVariables.headers.verbose)
@@ -253,9 +252,7 @@ describe(`Proxy tests`, () => {
               }
             );
           })
-          .then(response => {
-            done();
-          })
+          .then(_ => done())
           .catch(done);
 
       });
@@ -263,7 +260,7 @@ describe(`Proxy tests`, () => {
       it('should delete a list item', function (done: MochaDone): void {
         this.timeout(30 * 1000);
 
-        let listUri = `${proxyRootUri}/_api/web/lists/getByTitle('${testVariables.newListName}')`;
+        const listUri = `${proxyRootUri}/_api/web/lists/getByTitle('${testVariables.newListName}')`;
         axios.get(`${listUri}/items?$select=Id&$top=1`, testVariables.headers.verbose)
           .then((response: any) => {
             return axios.post(
@@ -278,9 +275,7 @@ describe(`Proxy tests`, () => {
               }
             );
           })
-          .then(response => {
-            done();
-          })
+          .then(_ => done())
           .catch(done);
 
       });
@@ -318,19 +313,19 @@ describe(`Proxy tests`, () => {
         it('should create list items in a batch (local endpoints)', function (done: MochaDone): void {
           this.timeout(30 * 1000);
 
-          let items = ['Batman', 'Iron man'];
+          const items = ['Batman', 'Iron man'];
 
-          let listUri = `${proxyRootUri}/_api/web/lists/getByTitle('${testVariables.newListName}')`;
+          const listUri = `${proxyRootUri}/_api/web/lists/getByTitle('${testVariables.newListName}')`;
           axios.get(`${listUri}?$select=ListItemEntityTypeFullName`, testVariables.headers.verbose)
             .then((response: any) => {
 
               const listItemEntityTypeFullName: string = response.data.d.ListItemEntityTypeFullName;
-              const boundary = `batch_${pnp.Util.getGUID()}`;
-              const changeset = `changeset_${pnp.Util.getGUID()}`;
+              const boundary = `batch_${Util.getGUID()}`;
+              const changeset = `changeset_${Util.getGUID()}`;
 
               const listEndpoint = `${proxyRootUri}/_api/web/lists/getByTitle('${testVariables.newListName}')/items`;
 
-              let requestPayload = trimMultiline(`
+              const requestPayload = trimMultiline(`
                 --${boundary}
                 Content-Type: multipart/mixed; boundary="${changeset}"
 
@@ -364,9 +359,7 @@ describe(`Proxy tests`, () => {
                 }
               );
             })
-            .then(response => {
-              done();
-            })
+            .then(_ => done())
             .catch(done);
 
         });
@@ -375,20 +368,20 @@ describe(`Proxy tests`, () => {
         it('should create list items in a batch', function (done: MochaDone): void {
           this.timeout(30 * 1000);
 
-          let dragons = ['Jineoss', 'Zyna', 'Bothir', 'Jummerth', 'Irgonth', 'Kilbiag',
+          const dragons = ['Jineoss', 'Zyna', 'Bothir', 'Jummerth', 'Irgonth', 'Kilbiag',
             'Berget', 'Lord', 'Podocrurth', 'Jiembyntet', 'Rilrayrarth'];
 
-          let listUri = `${proxyRootUri}/_api/web/lists/getByTitle('${testVariables.newListName}')`;
+          const listUri = `${proxyRootUri}/_api/web/lists/getByTitle('${testVariables.newListName}')`;
           axios.get(`${listUri}?$select=ListItemEntityTypeFullName`, testVariables.headers.verbose)
             .then((response: any) => {
 
               const listItemEntityTypeFullName: string = response.data.d.ListItemEntityTypeFullName;
-              const boundary = `batch_${pnp.Util.getGUID()}`;
-              const changeset = `changeset_${pnp.Util.getGUID()}`;
+              const boundary = `batch_${Util.getGUID()}`;
+              const changeset = `changeset_${Util.getGUID()}`;
 
               const listEndpoint = `${proxyContext.siteUrl}/_api/web/lists/getByTitle('${testVariables.newListName}')/items`;
 
-              let requestPayload = trimMultiline(`
+              const requestPayload = trimMultiline(`
                 --${boundary}
                 Content-Type: multipart/mixed; boundary="${changeset}"
 
@@ -422,9 +415,7 @@ describe(`Proxy tests`, () => {
                 }
               );
             })
-            .then(response => {
-              done();
-            })
+            .then(_ => done())
             .catch(done);
 
         });
@@ -433,7 +424,7 @@ describe(`Proxy tests`, () => {
         it('should update list items in a batch', function (done: MochaDone): void {
           this.timeout(30 * 1000);
 
-          let listUri = `${proxyRootUri}/_api/web/lists/getByTitle('${testVariables.newListName}')`;
+          const listUri = `${proxyRootUri}/_api/web/lists/getByTitle('${testVariables.newListName}')`;
           Promise.all([
             axios.get(`${listUri}/items?$select=Id,Title`, testVariables.headers.verbose),
             axios.get(`${listUri}?$select=ListItemEntityTypeFullName`, testVariables.headers.verbose)
@@ -441,9 +432,9 @@ describe(`Proxy tests`, () => {
             .then((response: any): any => {
 
               const listItemEntityTypeFullName: string = response[1].data.d.ListItemEntityTypeFullName;
-              const boundary = `batch_${pnp.Util.getGUID()}`;
-              const changeset = `changeset_n${pnp.Util.getGUID()}`;
-              let items = response[0].data.d.results;
+              const boundary = `batch_${Util.getGUID()}`;
+              const changeset = `changeset_n${Util.getGUID()}`;
+              const items = response[0].data.d.results;
 
               if (items.length === 0) {
                 return 'No items to update';
@@ -451,12 +442,12 @@ describe(`Proxy tests`, () => {
 
               const listEndpoint = `${proxyContext.siteUrl}/_api/web/lists/getByTitle('${testVariables.newListName}')/items`;
 
-              let requestPayload = trimMultiline(`
+              const requestPayload = trimMultiline(`
                 --${boundary}
                 Content-Type: multipart/mixed; boundary="${changeset}"
 
                 ${items.map((item: any) => {
-                  let body = `{"__metadata":{"type":"${listItemEntityTypeFullName}"},"Title":"${item.Title} _updated"}`;
+                  const body = `{"__metadata":{"type":"${listItemEntityTypeFullName}"},"Title":"${item.Title} _updated"}`;
                   return trimMultiline(`
                     --${changeset}
                     Content-Type: application/http
@@ -488,9 +479,7 @@ describe(`Proxy tests`, () => {
                 }
               );
             })
-            .then(response => {
-              done();
-            })
+            .then(_ => done())
             .catch(done);
 
         });
@@ -499,7 +488,7 @@ describe(`Proxy tests`, () => {
         it('should delete list items in a batch', function (done: MochaDone): void {
           this.timeout(30 * 1000);
 
-          let listUri = `${proxyRootUri}/_api/web/lists/getByTitle('${testVariables.newListName}')`;
+          const listUri = `${proxyRootUri}/_api/web/lists/getByTitle('${testVariables.newListName}')`;
           Promise.all([
             axios.get(`${listUri}/items?$select=Id,Title`, testVariables.headers.verbose),
             axios.get(`${listUri}?$select=ListItemEntityTypeFullName`, testVariables.headers.verbose)
@@ -507,9 +496,9 @@ describe(`Proxy tests`, () => {
             .then((response: any): any => {
 
               const listItemEntityTypeFullName: string = response[1].data.d.ListItemEntityTypeFullName;
-              const boundary = `batch_${pnp.Util.getGUID()}`;
-              const changeset = `changeset_${pnp.Util.getGUID()}`;
-              let items = response[0].data.d.results;
+              const boundary = `batch_${Util.getGUID()}`;
+              const changeset = `changeset_${Util.getGUID()}`;
+              const items = response[0].data.d.results;
 
               if (items.length === 0) {
                 return 'No items to delete';
@@ -517,7 +506,7 @@ describe(`Proxy tests`, () => {
 
               const listEndpoint = `${proxyContext.siteUrl}/_api/web/lists/getByTitle('${testVariables.newListName}')/items`;
 
-              let requestPayload = trimMultiline(`
+              const requestPayload = trimMultiline(`
                 --${boundary}
                 Content-Type: multipart/mixed; boundary="${changeset}"
 
@@ -548,9 +537,7 @@ describe(`Proxy tests`, () => {
                 }
               );
             })
-            .then(response => {
-              done();
-            })
+            .then(_ => done())
             .catch(done);
 
         });
@@ -560,7 +547,7 @@ describe(`Proxy tests`, () => {
       it(`should add item's attachment`, function (done: MochaDone): void {
         this.timeout(30 * 1000);
 
-        let listUri = `${proxyRootUri}/_api/web/lists/getByTitle('${testVariables.newListName}')`;
+        const listUri = `${proxyRootUri}/_api/web/lists/getByTitle('${testVariables.newListName}')`;
         axios.get(`${listUri}?$select=ListItemEntityTypeFullName`, testVariables.headers.verbose)
           .then((response: any) => {
             return axios.post(
@@ -577,9 +564,9 @@ describe(`Proxy tests`, () => {
             );
           })
           .then(response => {
-            let attachmentFile: string = path.join(__dirname, './attachments/image.png');
-            let fileName: string = `${path.parse(attachmentFile).name}${path.parse(attachmentFile).ext}`;
-            let fileBuffer: Buffer = fs.readFileSync(attachmentFile);
+            const attachmentFile: string = path.join(__dirname, './attachments/image.png');
+            const fileName: string = `${path.parse(attachmentFile).name}${path.parse(attachmentFile).ext}`;
+            const fileBuffer: Buffer = fs.readFileSync(attachmentFile);
             return axios.post(
               `${listUri}/items(${response.data.d.Id})/AttachmentFiles/add(FileName='${fileName}')`,
               fileBuffer, {
@@ -591,9 +578,7 @@ describe(`Proxy tests`, () => {
               }
             );
           })
-          .then(response => {
-            done();
-          })
+          .then(_ => done())
           .catch(done);
 
       });
@@ -612,9 +597,7 @@ describe(`Proxy tests`, () => {
             'x-http-method': 'DELETE'
           }
         })
-          .then(response => {
-            done();
-          })
+          .then(_ => done())
           .catch(done);
 
       });
@@ -636,9 +619,7 @@ describe(`Proxy tests`, () => {
             'Content-Type': 'application/json;odata=verbose'
           }
         })
-          .then(response => {
-            done();
-          })
+          .then(_ => done())
           .catch(done);
 
       });
@@ -646,13 +627,13 @@ describe(`Proxy tests`, () => {
       it('should add a document', function (done: MochaDone): void {
         this.timeout(30 * 1000);
 
-        let attachmentFile: string = path.join(__dirname, './attachments/image.png');
-        let fileName: string = `${path.parse(attachmentFile).name}${path.parse(attachmentFile).ext}`;
-        let fileBuffer: Buffer = fs.readFileSync(attachmentFile);
+        const attachmentFile: string = path.join(__dirname, './attachments/image.png');
+        const fileName: string = `${path.parse(attachmentFile).name}${path.parse(attachmentFile).ext}`;
+        const fileBuffer: Buffer = fs.readFileSync(attachmentFile);
 
-        let docLibFolder: string = `${webRelativeUrl}/${testVariables.newDocLibName}`;
+        const docLibFolder: string = `${webRelativeUrl}/${testVariables.newDocLibName}`;
 
-        let methodUri = `${proxyRootUri}/_api/web/` +
+        const methodUri = `${proxyRootUri}/_api/web/` +
           `getFolderByServerRelativeUrl('${docLibFolder}')` +
           `/files/add(overwrite=true,url='${fileName}')`;
 
@@ -665,9 +646,7 @@ describe(`Proxy tests`, () => {
             }
           }
         )
-          .then(response => {
-            done();
-          })
+          .then(_ => done())
           .catch(done);
 
       });
@@ -686,9 +665,7 @@ describe(`Proxy tests`, () => {
             'x-http-method': 'DELETE'
           }
         })
-          .then(response => {
-            done();
-          })
+          .then(_ => done())
           .catch(done);
 
       });
@@ -718,16 +695,16 @@ describe(`Proxy tests`, () => {
               'Content-Length': soapPackage.length
             }
           }),
-          pnp.sp.web.select('Title').get()
+          sp.web.select('Title').get()
         ])
           .then(response => {
             xmlStringToJson(response[0].data, (err: any, soapResp: any) => {
               if (err) {
                 done(err);
               } else {
-                let webData = soapResp['soap:Envelope']['soap:Body'][0]
+                const webData = soapResp['soap:Envelope']['soap:Body'][0]
                   .GetWebResponse[0].GetWebResult[0].Web[0].$;
-                let pnpResp: any = response[1];
+                const pnpResp: any = response[1];
                 expect(webData.Title).to.be.equal(pnpResp.Title);
                 done();
               }
@@ -768,11 +745,11 @@ describe(`Proxy tests`, () => {
               'Content-Length': csomPackage.length
             }
           }),
-          pnp.sp.web.select('Title').get()
+          sp.web.select('Title').get()
         ])
           .then(response => {
-            let csomResp: any = response[0].data[4];
-            let pnpResp: any = response[1];
+            const csomResp: any = response[0].data[4];
+            const pnpResp: any = response[1];
             expect(csomResp.Title).to.be.equal(pnpResp.Title);
             done();
           })

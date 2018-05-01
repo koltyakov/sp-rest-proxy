@@ -48,14 +48,14 @@ export class RestBatchRouter {
       reqBodyData = transform(reqBodyData);
     } else {
       const regExp = new RegExp('^(POST|GET) https?://localhost(:[0-9]+)?/', 'i');
-      const origin = this.ctx.siteUrl.replace('://', '___').split('/')[0].replace('___', '://');
+      const origin = this.ctx.siteUrl.split('/').splice(0, 3).join('/');
       reqBodyData = reqBodyData.split('\n').map(line => {
         if (regExp.test(line)) {
           const parts = line.split(' ');
           const method = parts.shift();
           const version = parts.pop();
           let endpoint = parts.join(' ');
-          endpoint = `${origin}/${endpoint.replace('://', '___').split('/').splice(1, 100).join('/')}`;
+          endpoint = `${origin}/${endpoint.split('/').splice(3, 100).join('/')}`;
           line = `${method} ${endpoint} ${version}`;
         }
         return line;

@@ -90,7 +90,7 @@ export class GetRouter {
 
     if (endpointUrl.indexOf('/ScriptResource.axd') !== -1) {
       let axdUrlArr = endpointUrl.split('/ScriptResource.axd');
-      endpointUrl = axdUrlArr[0].replace('://', '___').split('/')[0].replace('___', '://') +
+      endpointUrl = axdUrlArr[0].split('/').splice(0, 3).join('/') +
         '/ScriptResource.axd' + axdUrlArr[1];
 
       request.get({

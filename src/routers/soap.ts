@@ -18,7 +18,7 @@ export class SoapRouter {
   }
 
   public router = (req: Request, res: Response, next?: NextFunction) => {
-    let endpointUrl = this.util.buildEndpointUrl(req.originalUrl);
+    const endpointUrl = this.util.buildEndpointUrl(req.originalUrl);
     this.spr = this.util.getCachedRequest(this.spr);
 
     if (!this.settings.silentMode) {
@@ -31,13 +31,13 @@ export class SoapRouter {
     });
     req.on('end', () => {
       if (req.headers.origin) {
-        let regExpOrigin = new RegExp(req.headers.origin as any, 'g');
+        const regExpOrigin = new RegExp(req.headers.origin as any, 'g');
         soapBody = soapBody.replace(regExpOrigin, this.ctx.siteUrl);
       }
 
       this.util.getAuthOptions()
         .then((opt: IAuthResponse) => {
-          let headers = {
+          const headers = {
             ...opt.headers,
             'Accept': 'application/xml, text/xml, */*; q=0.01',
             'Content-Type': 'text/xml;charset="UTF-8"',

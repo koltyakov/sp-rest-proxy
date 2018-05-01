@@ -17,16 +17,16 @@ export class RestGetRouter {
   }
 
   public router = (req: Request, res: Response, next?: NextFunction) => {
-    let endpointUrl = this.util.buildEndpointUrl(req.originalUrl);
+    const endpointUrl = this.util.buildEndpointUrl(req.originalUrl);
     this.spr = this.util.getCachedRequest(this.spr);
 
     if (!this.settings.silentMode) {
       console.log('\nGET: ' + endpointUrl);
     }
 
-    let requestHeadersPass: any = {};
+    const requestHeadersPass: any = {};
 
-    let ignoreHeaders = [
+    const ignoreHeaders = [
       'host', 'referer', 'origin',
       'if-none-match', 'connection', 'cache-control', 'user-agent',
       'accept-encoding', 'x-requested-with', 'accept-language'

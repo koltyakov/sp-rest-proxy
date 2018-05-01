@@ -18,14 +18,14 @@ export class CsomRouter {
   }
 
   public router = (req: Request, res: Response, next?: NextFunction) => {
-    let endpointUrl = this.util.buildEndpointUrl(req.originalUrl);
+    const endpointUrl = this.util.buildEndpointUrl(req.originalUrl);
     this.spr = this.util.getCachedRequest(this.spr);
 
     if (!this.settings.silentMode) {
       console.log('\nPOST: ' + endpointUrl);
     }
 
-    let regExpOrigin = new RegExp(req.headers.origin as any, 'g');
+    const regExpOrigin = new RegExp(req.headers.origin as any, 'g');
     let csomPackage = '';
     req.on('data', (chunk) => {
       csomPackage += chunk;
@@ -38,10 +38,10 @@ export class CsomRouter {
       ])
         .then((response: any) => {
 
-          let digest: string = response[0];
-          let opt: IAuthResponse = response[1];
+          const digest: string = response[0];
+          const opt: IAuthResponse = response[1];
 
-          let headers = {
+          const headers = {
             ...opt.headers,
             'Accept': '*/*',
             'Content-Type': 'text/xml',

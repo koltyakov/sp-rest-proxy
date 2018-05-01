@@ -36,7 +36,7 @@ export class ProxyUtils {
     return url.indexOf('http:') === 0 || url.indexOf('https:') === 0;
   }
 
-  public buildEndpointUrl = (reqUrl: string) => {
+  public buildEndpointUrl = (reqUrl: string): string => {
     const siteUrlParsed = urlParse(this.ctx.siteUrl);
     let reqPathName = reqUrl;
 

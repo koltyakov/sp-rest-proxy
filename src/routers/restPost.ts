@@ -17,7 +17,7 @@ export class RestPostRouter {
   }
 
   public router = (request: Request, response: Response, next?: NextFunction) => {
-    let endpointUrl = this.util.buildEndpointUrl(request.originalUrl);
+    const endpointUrl = this.util.buildEndpointUrl(request.originalUrl);
 
     if (!this.settings.silentMode) {
       console.log('\nPOST: ' + endpointUrl);
@@ -39,7 +39,7 @@ export class RestPostRouter {
   }
 
   private processPostRequest = (reqBodyData: any, req: Request, res: Response) => {
-    let endpointUrlStr = this.util.buildEndpointUrl(req.originalUrl);
+    const endpointUrlStr = this.util.buildEndpointUrl(req.originalUrl);
 
     if (!this.settings.silentMode) {
       console.log('Request body:', reqBodyData);
@@ -50,10 +50,10 @@ export class RestPostRouter {
     this.spr.requestDigest((endpointUrlStr).split('/_api')[0])
       .then((digest: string) => {
         let requestHeadersPass: any = {};
-        let jsonOption: any = {
+        const jsonOption: any = {
           json: true
         };
-        let ignoreHeaders = [
+        const ignoreHeaders = [
           'host', 'referer', 'origin',
           'if-none-match', 'connection', 'cache-control', 'user-agent',
           'accept-encoding', 'x-requested-with', 'accept-language'

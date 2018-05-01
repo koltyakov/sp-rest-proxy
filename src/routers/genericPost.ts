@@ -18,7 +18,7 @@ export class PostRouter {
   }
 
   public router = (req: Request, res: Response, next?: NextFunction) => {
-    let endpointUrl = this.util.buildEndpointUrl(req.originalUrl);
+    const endpointUrl = this.util.buildEndpointUrl(req.originalUrl);
     this.spr = this.util.getCachedRequest(this.spr);
 
     if (!this.settings.silentMode) {
@@ -31,11 +31,11 @@ export class PostRouter {
     });
     req.on('end', () => {
       if (req.headers.origin) {
-        let regExpOrigin = new RegExp(req.headers.origin as any, 'g');
+        const regExpOrigin = new RegExp(req.headers.origin as any, 'g');
         postBody = postBody.replace(regExpOrigin, this.ctx.siteUrl);
       }
 
-      let requestHeadersPass = {};
+      const requestHeadersPass = {};
       Object.keys(req.headers).forEach((prop: string) => {
         if (prop.toLowerCase() === 'accept' && req.headers[prop] !== '*/*') {
           // tslint:disable-next-line:no-string-literal
@@ -58,12 +58,12 @@ export class PostRouter {
 
       this.util.getAuthOptions()
         .then((opt: IAuthResponse) => {
-          let headers = {
+          const headers = {
             ...opt.headers,
             ...requestHeadersPass
           };
 
-          let options = {
+          const options = {
             json: false,
             processData: false
           };

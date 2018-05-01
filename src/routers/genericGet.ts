@@ -53,9 +53,9 @@ export class GetRouter {
       console.log('\nGET: ' + endpointUrl);
     }
 
-    let requestHeadersPass: any = {};
+    const requestHeadersPass: any = {};
 
-    let ignoreHeaders = [
+    const ignoreHeaders = [
       'host', 'referer', 'origin', 'accept-encoding', 'connection', 'if-none-match'
     ];
 
@@ -76,13 +76,13 @@ export class GetRouter {
       console.log(JSON.stringify(requestHeadersPass, null, 2));
     }
 
-    let advanced = {
+    const advanced = {
       json: false,
       processData: false,
       encoding: null
     };
 
-    let ext = endpointUrl.split('?')[0].split('.').pop().toLowerCase();
+    const ext = endpointUrl.split('?')[0].split('.').pop().toLowerCase();
     if (['js', 'css', 'aspx', 'css', 'html', 'json', 'axd'].indexOf(ext) !== -1) {
       delete advanced.encoding;
       requestHeadersPass.Accept = 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8';

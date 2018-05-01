@@ -97,29 +97,35 @@
     jju "~1.3.0"
     z-schema "~3.18.3"
 
-"@pnp/common@^1.0.3":
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/@pnp/common/-/common-1.0.3.tgz#c590ee4869ced5fa8e289e80546f0f86317b9d1b"
+"@pnp/common@^1.0.4":
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/@pnp/common/-/common-1.0.4.tgz#ab5d70a08f5cd7e32efe65face7cc60f380bc430"
   dependencies:
-    tslib "1.8.1"
+    "@types/adal-angular" "1.0.0"
+    adal-angular "1.0.17"
+    tslib "1.9.0"
 
-"@pnp/logging@^1.0.3":
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/@pnp/logging/-/logging-1.0.3.tgz#013ba264888e63776174398c031700ee744e88dd"
+"@pnp/logging@^1.0.4":
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/@pnp/logging/-/logging-1.0.4.tgz#f32ebaaff5521742b527e0f32a8f8ae89bed11b4"
   dependencies:
-    tslib "1.8.1"
+    tslib "1.9.0"
 
-"@pnp/odata@^1.0.3":
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/@pnp/odata/-/odata-1.0.3.tgz#ca43f76e7b198483a097ad243098ae8bf769c2a3"
+"@pnp/odata@^1.0.4":
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/@pnp/odata/-/odata-1.0.4.tgz#05ee507aba2e3e7e0f0e4f2e667ac179db61697c"
   dependencies:
-    tslib "1.8.1"
+    tslib "1.9.0"
 
-"@pnp/sp@^1.0.3":
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/@pnp/sp/-/sp-1.0.3.tgz#25f8919076d44bda70cee93b35c38d741fedcdc8"
+"@pnp/sp@^1.0.4":
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/@pnp/sp/-/sp-1.0.4.tgz#dd7fc10eb25b61a0313dd64b392da98dc7eab2af"
   dependencies:
-    tslib "1.8.1"
+    tslib "1.9.0"
+
+"@types/adal-angular@1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@types/adal-angular/-/adal-angular-1.0.0.tgz#e9f80829c6cb4604be8335c1812ab2532a13ef12"
 
 "@types/assertion-error@1.0.30":
   version "1.0.30"
@@ -413,6 +419,10 @@ acorn@^4.0.4:
 acorn@^5.0.3:
   version "5.2.1"
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-5.2.1.tgz#317ac7821826c22c702d66189ab8359675f135d7"
+
+adal-angular@1.0.17:
+  version "1.0.17"
+  resolved "https://registry.yarnpkg.com/adal-angular/-/adal-angular-1.0.17.tgz#6e936e0e41f91d3b2a88e7ffca9c2f6f6f562cc4"
 
 after@0.8.2:
   version "0.8.2"
@@ -5779,17 +5789,13 @@ ts-node@^5.0.1:
     source-map-support "^0.5.3"
     yn "^2.0.0"
 
-tslib@1.8.1:
-  version "1.8.1"
-  resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.8.1.tgz#6946af2d1d651a7b1863b531d6e5afa41aa44eac"
+tslib@1.9.0, tslib@^1.8.0:
+  version "1.9.0"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.9.0.tgz#e37a86fda8cbbaf23a057f473c9f4dc64e5fc2e8"
 
 tslib@^1.0.0, tslib@^1.7.1:
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.8.0.tgz#dc604ebad64bcbf696d613da6c954aa0e7ea1eb6"
-
-tslib@^1.8.0:
-  version "1.9.0"
-  resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.9.0.tgz#e37a86fda8cbbaf23a057f473c9f4dc64e5fc2e8"
 
 tslint-config-standard@^7.0.0:
   version "7.0.0"

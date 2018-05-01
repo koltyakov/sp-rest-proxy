@@ -17,7 +17,7 @@ export class RestBatchRouter {
   }
 
   public router = (request: Request, response: Response, next?: NextFunction) => {
-    let endpointUrl = this.util.buildEndpointUrl(request.originalUrl);
+    const endpointUrl = this.util.buildEndpointUrl(request.originalUrl);
 
     if (!this.settings.silentMode) {
       console.log('\POST (batch): ' + endpointUrl);
@@ -39,7 +39,7 @@ export class RestBatchRouter {
   }
 
   private processBatchRequest = (reqBodyData: any, req: Request, res: Response) => {
-    let endpointUrlStr = this.util.buildEndpointUrl(req.originalUrl);
+    const endpointUrlStr = this.util.buildEndpointUrl(req.originalUrl);
 
     reqBodyData = (req as any).rawBody;
 
@@ -73,7 +73,7 @@ export class RestBatchRouter {
       .then((digest: string) => {
         let requestHeadersPass: any = {};
 
-        let ignoreHeaders = [
+        const ignoreHeaders = [
           'host', 'referer', 'origin',
           'if-none-match', 'connection', 'cache-control', 'user-agent',
           'accept-encoding', 'x-requested-with', 'accept-language'

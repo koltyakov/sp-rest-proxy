@@ -62,6 +62,9 @@ export class RestGetRouter {
         if (typeof response.body['odata.nextLink'] === 'string') {
           response.body['odata.nextLink'] = this.util.buildProxyEndpointUrl(response.body['odata.nextLink']);
         }
+        if (response.body.d && typeof response.body.d.__next === 'string') {
+          response.body.d.__next = this.util.buildProxyEndpointUrl(response.body.d.__next);
+        }
 
         res.status(response.statusCode);
         res.json(response.body);

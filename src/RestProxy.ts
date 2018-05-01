@@ -42,6 +42,7 @@ export default class RestProxy {
 
     this.settings = {
       ...settings as any,
+      protocol: typeof settings.protocol !== 'undefined' ? settings.protocol : 'http',
       hostname: settings.hostname || process.env.HOSTNAME || 'localhost',
       port: settings.port || process.env.PORT || 8080,
       staticRoot: path.resolve(settings.staticRoot || path.join(__dirname, '../static')),
@@ -83,6 +84,12 @@ export default class RestProxy {
   public serve = (callback?: IProxyCallback) => {
     (new AuthConfig(this.settings.authConfigSettings))
       .getContext()
+      .then(context => {
+        return {
+          ...context,
+          proxyHostUrl: `${this.settings.protocol}://${this.settings.hostname}:${this.settings.port}`
+        } as IProxyContext;
+      })
       .then((context: IProxyContext): void => {
 
         let bodyParserRaw = bodyParser.raw({
@@ -172,10 +179,7 @@ export default class RestProxy {
 
         const upCallback = (server: https.Server | http.Server, context: IProxyContext, settings: IProxySettings, callback?: IProxyCallback) => {
           if (!settings.silentMode) {
-            console.log(
-              `SharePoint REST Proxy has been started on ` +
-              `${!settings.protocol ? 'http' : settings.protocol}://` +
-              `${settings.hostname}:${settings.port}`);
+            console.log(`SharePoint REST Proxy has been started on ${context.proxyHostUrl}`);
           }
 
           // After proxy is started callback

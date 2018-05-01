@@ -32,6 +32,7 @@ export interface ISSLConf {
 
 export interface IProxyContext {
   siteUrl: string;
+  proxyHostUrl: string;
   authOptions?: IAuthOptions;
 }
 

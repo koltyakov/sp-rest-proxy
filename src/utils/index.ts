@@ -56,6 +56,15 @@ export class ProxyUtils {
     return `${siteUrlParsed.protocol}//${siteUrlParsed.host}${reqPathName}`;
   }
 
+  public buildProxyEndpointUrl = (reqUrl: string): string => {
+    let proxyUrl = reqUrl;
+    const spHostUrl = this.ctx.siteUrl.split('/').splice(0, 3).join('/');
+    if (proxyUrl.toLowerCase().indexOf(spHostUrl.toLowerCase()) === 0) {
+      proxyUrl = proxyUrl.replace(new RegExp(spHostUrl, 'i'), this.ctx.proxyHostUrl);
+    }
+    return proxyUrl;
+  }
+
 }
 
 export const generateGuid = (): string => {

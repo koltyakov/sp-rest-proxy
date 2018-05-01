@@ -57,6 +57,12 @@ export class RestGetRouter {
         if (this.settings.debugOutput) {
           console.log(response.statusCode, response.body);
         }
+
+        // Paged collections patch
+        if (typeof response.body['odata.nextLink'] === 'string') {
+          response.body['odata.nextLink'] = this.util.buildProxyEndpointUrl(response.body['odata.nextLink']);
+        }
+
         res.status(response.statusCode);
         res.json(response.body);
       })

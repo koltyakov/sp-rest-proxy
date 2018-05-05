@@ -10,6 +10,8 @@
 
 Original concept of the proxy was created to show how it could be easy to implements real world data communications for SharePoint Framework local serve mode during web parts debug without deployment to SharePoint tenant. Now the tool is used with multiple teams for modern front-end solutions [rapid development](https://github.com/koltyakov/sp-rest-proxy#development-paradigms).
 
+![In a nutshell](./docs/img/high-level-scheme.png)
+
 ## Supports SPFx and PnP JS Core
 
 ## Supported SharePoint versions

@@ -160,9 +160,9 @@ The proxy provides wizard-like approach for building and managing config files f
 For more information please check node-sp-auth [credential options](https://github.com/s-KaiNet/node-sp-auth#params) and [wiki pages](https://github.com/s-KaiNet/node-sp-auth/wiki).
 Auth settings are stored inside `./config/private.json`.
 
-## PnP JS Core
+## PnPjs
 
-sp-rest-proxy works with PnP JS Core (check out [brief notice](https://github.com/koltyakov/sp-rest-proxy/issues/26) how to configure).
+sp-rest-proxy works with PnPjs (check out [brief notice](https://github.com/koltyakov/sp-rest-proxy/issues/26) how to configure).
 
 ![PnP JS Core + sp-rest-proxy](http://koltyakov.ru/images/pnp-sp-rest-proxy.png)
 
@@ -200,6 +200,23 @@ loadPageContext().then(async _ => {
 
 }).catch(log);
 ```
+
+## JSOM (SharePoint JavaScript Object Model)
+
+JSOM can be used in local development mode with sp-rest-proxy with some additional setup.
+
+The local development workbench page should contain JSOM init scripts:
+
+```html
+<script type="text/javascript" src="/_layouts/15/1033/initstrings.js"></script>
+<script type="text/javascript" src="/_layouts/15/init.js"></script>
+<script type="text/javascript" src="/_layouts/15/msajaxbundle.js"></script>
+<script type="text/javascript" src="/_layouts/15/sp.core.js"></script>
+<script type="text/javascript" src="/_layouts/15/sp.runtime.js"></script>
+<script type="text/javascript" src="/_layouts/15/sp.js"></script>
+```
+
+Check out the [example](https://github.com/koltyakov/sp-rest-proxy/blob/master/test/manual/static/jsom.html).
 
 ## SharePoint Framework
 

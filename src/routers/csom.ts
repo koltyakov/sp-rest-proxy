@@ -46,8 +46,7 @@ export class CsomRouter {
             'Accept': '*/*',
             'Content-Type': 'text/xml',
             'X-Requested-With': 'XMLHttpRequest',
-            'X-RequestDigest': digest,
-            'Content-Length': csomPackage.length
+            'X-RequestDigest': digest
           };
 
           return this.spr.post(endpointUrl, {
@@ -63,7 +62,14 @@ export class CsomRouter {
           }
           res.status(resp.statusCode);
           if (typeof resp.body === 'string') {
-            res.json(JSON.parse(resp.body));
+            try {
+              const result = JSON.parse(resp.body);
+              res.json(result);
+            } catch (ex) {
+              res.status(resp.statusCode);
+              res.send(resp.body);
+              res.end();
+            }
           } else {
             res.json(resp.body);
           }

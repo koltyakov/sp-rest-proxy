@@ -53,6 +53,7 @@ export class ProxyUtils {
     if (similarity < 2) {
       reqPathName = (`${siteUrlParsed.pathname}/${reqUrl}`).replace(/\/\//g, '/');
     }
+    reqPathName = reqPathName.replace(/\/\//g, '/');
     return `${siteUrlParsed.protocol}//${siteUrlParsed.host}${reqPathName}`;
   }
 

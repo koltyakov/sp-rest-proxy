@@ -212,7 +212,7 @@ The local development workbench page should contain JSOM init scripts:
 ```html
 <script type="text/javascript" src="/_layouts/15/1033/initstrings.js"></script>
 <script type="text/javascript" src="/_layouts/15/init.js"></script>
-<script type="text/javascript" src="/_layouts/15/msajaxbundle.js"></script>
+<script type="text/javascript" src="/_layouts/15/MicrosoftAjax.js"></script>
 <script type="text/javascript" src="/_layouts/15/sp.core.js"></script>
 <script type="text/javascript" src="/_layouts/15/sp.runtime.js"></script>
 <script type="text/javascript" src="/_layouts/15/sp.js"></script>

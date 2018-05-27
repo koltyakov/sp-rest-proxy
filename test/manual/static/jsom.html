@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>JSOM Basic Test</title>
+  <meta name="viewport" content="width=device-width, maximum-scale=1, user-scalable=no" />
+
+  <link rel="shortcut icon" href="/img/favicon.ico" type="image/vnd.microsoft.icon" id="favicon">
+
+  <script type="text/javascript" src="/_layouts/15/1033/initstrings.js"></script>
+  <script type="text/javascript" src="/_layouts/15/init.js"></script>
+  <script type="text/javascript" src="/_layouts/15/msajaxbundle.js"></script>
+  <script type="text/javascript" src="/_layouts/15/sp.core.js"></script>
+  <script type="text/javascript" src="/_layouts/15/sp.runtime.js"></script>
+  <script type="text/javascript" src="/_layouts/15/sp.js"></script>
+
+</head>
+
+<body>
+  <h1 id="title">Lists on the web:</h1>
+  <ul id="lists">Loading...</ul>
+
+  <script>
+
+    ExecuteOrDelayUntilBodyLoaded(function() {
+
+      var ctx = SP.ClientContext.get_current();
+      var web = ctx.get_web();
+      var lists = web.get_lists();
+
+      ctx.load(lists, 'Include(Title)');
+      ctx.executeQueryAsync(
+        function() {
+          document.getElementById('lists').innerHTML =
+            lists.get_data().map(function (l) {
+              return '<li>' + l.get_title() + '</li>';
+            }).join('');
+        },
+        function(sender, args) {
+          console.log(args.get_message());
+        }
+      );
+
+    });
+
+  </script>
+
+</body>
+
+</html>

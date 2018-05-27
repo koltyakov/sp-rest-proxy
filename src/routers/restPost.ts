@@ -97,6 +97,11 @@ export class RestPostRouter {
           console.log(JSON.stringify(requestHeadersPass, null, 2));
         }
 
+        // JSOM empty object
+        if (typeof reqBodyData === 'object' && Object.keys(reqBodyData).length === 0) {
+          reqBodyData = '{}';
+        }
+
         return this.spr.post(endpointUrlStr, {
           headers: requestHeadersPass,
           body: reqBodyData,
@@ -109,7 +114,6 @@ export class RestPostRouter {
           console.log(resp.statusCode, resp.body);
         }
         res.status(resp.statusCode);
-
         if (typeof resp.body === 'string') {
           res.json(JSON.parse(resp.body));
         } else {

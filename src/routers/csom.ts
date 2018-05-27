@@ -57,12 +57,16 @@ export class CsomRouter {
             agent: this.util.isUrlHttps(endpointUrl) ? this.settings.agent : undefined
           });
         })
-        .then((response: any) => {
+        .then((resp: any) => {
           if (this.settings.debugOutput) {
-            console.log(response.statusCode, response.body);
+            console.log(resp.statusCode, resp.body);
           }
-          res.send(response.body);
-          res.end();
+          res.status(resp.statusCode);
+          if (typeof resp.body === 'string') {
+            res.json(JSON.parse(resp.body));
+          } else {
+            res.json(resp.body);
+          }
         })
         .catch((err: any) => {
           res.status(err.statusCode);

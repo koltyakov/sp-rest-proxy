@@ -8,7 +8,7 @@
   <link rel="shortcut icon" href="/img/favicon.ico" type="image/vnd.microsoft.icon" id="favicon">
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/es6-promise/4.0.5/es6-promise.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.1/fetch.min.js"></script>
-  <script type="text/javascript" src="https://cdn.rawgit.com/SharePoint/PnP-JS-Core/master/dist/pnp.js"></script>
+  <script type="text/javascript" src="https://unpkg.com/@pnp/pnpjs@beta/dist/pnpjs.es5.umd.bundle.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.js"></script>
 
 </head>
@@ -27,7 +27,7 @@
     var _spPageContextInfo = _spPageContextInfo || {};
     _spPageContextInfo.webServerRelativeUrl = "/";
 
-    $pnp.setup({
+    pnp.setup({
       sp: {
         headers: {
           Accept: 'application/json;odata=verbose'
@@ -53,7 +53,7 @@
       $("#item-attachments").change(function () {
         var file = $(this)[0].files[0];
         getFileBuffer(file).then(function (buffer) {
-          $pnp.sp.web.lists.select('Title').get()
+          pnp.sp.web.lists.select('Title').get()
             .then(function (lists) {
               return lists.filter(function (list) {
                 return list.Title === listTitle;
@@ -61,13 +61,13 @@
             })
             .then(function (lists) {
               if (lists.length === 0) {
-                return $pnp.sp.web.lists.add(listTitle);
+                return pnp.sp.web.lists.add(listTitle);
               } else {
                 return lists[0];
               }
             })
             .then(function (list) {
-              return $pnp.sp.web.lists.getByTitle(listTitle).items.add({
+              return pnp.sp.web.lists.getByTitle(listTitle).items.add({
                 Title: file.name
               });
             })
@@ -88,10 +88,10 @@
       $("#document-upload").change(function () {
         var file = $(this)[0].files[0];
         getFileBuffer(file).then(function (buffer) {
-          $pnp.sp.web.select('ServerRelativeUrl').get()
+          pnp.sp.web.select('ServerRelativeUrl').get()
             .then(function (web) {
               console.log(web);
-              return $pnp.sp.web
+              return pnp.sp.web
                 .getFolderByServerRelativeUrl(web.ServerRelativeUrl + docLibPath)
                 .files.add(file.name, buffer, true);
             })

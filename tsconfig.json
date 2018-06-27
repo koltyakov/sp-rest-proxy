@@ -2,12 +2,24 @@
   "compilerOptions": {
     "target": "es5",
     "module": "commonjs",
-    "lib": [ "es2017", "dom" ],
+    "lib": ["es2017", "dom"],
     "sourceMap": true,
     "declaration": true,
     "moduleResolution": "node",
     "noImplicitAny": false,
     "removeComments": true,
-    "skipLibCheck": true
-  }
+    "newLine": "LF",
+    "skipLibCheck": true,
+    "types": ["node", "sharepoint"],
+    "outDir": "dist"
+  },
+  "include": [
+    "src/**/*.ts",
+    "test/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "test"
+  ]
 }

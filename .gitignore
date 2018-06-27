@@ -1,9 +1,5 @@
-node_modules
-bower_components
-static/lib
-config/private.json
-config/**/private.*.json
+node_modules/
+config/**/private.*
+dist/
 debug.log
 npm-debug.*
-dist
-tmp

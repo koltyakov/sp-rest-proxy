@@ -193,7 +193,7 @@ describe(`Proxy tests`, () => {
             'Content-Type': 'application/json;odata=verbose'
           }
         })
-          .then(response => {
+          .then(_ => {
             return sp.web.lists.getByTitle(testVariables.newListName).select('Title').get();
           })
           .then(response => {
@@ -246,12 +246,55 @@ describe(`Proxy tests`, () => {
                   'X-RequestDigest': getRequestDigest(),
                   'Accept': 'application/json;odata=verbose',
                   'Content-Type': 'application/json;odata=verbose',
-                  'if-match': '*',
-                  'x-http-method': 'MERGE'
+                  'If-Match': '*',
+                  'X-HTTP-Method': 'MERGE'
                 }
               }
             );
           })
+          .then(_ => done())
+          .catch(done);
+
+      });
+
+      it('should update a list item using PATCH', function (done: MochaDone): void {
+        this.timeout(30 * 1000);
+
+        const listUri = `${proxyRootUri}/_api/web/lists/getByTitle('${testVariables.newListName}')`;
+        Promise.all([
+          axios.get(`${listUri}?$select=ListItemEntityTypeFullName`, testVariables.headers.verbose),
+          axios.get(`${listUri}/items?$select=Id&$top=1`, testVariables.headers.verbose)
+        ])
+          .then((response: any) => {
+            return axios.patch(
+              `${listUri}/items(${response[1].data.d.results[0].Id})`, {
+                __metadata: { type: response[0].data.d.ListItemEntityTypeFullName },
+                Title: 'Updated item'
+              }, {
+                headers: {
+                  'X-RequestDigest': getRequestDigest(),
+                  'Accept': 'application/json;odata=verbose',
+                  'Content-Type': 'application/json;odata=verbose',
+                  'If-Match': '*',
+                  'X-HTTP-Method': 'MERGE'
+                }
+              }
+            );
+          })
+          .then(_ => done())
+          .catch(done);
+
+      });
+
+      it('should get list items using legacy REST', function (done: MochaDone): void {
+        this.timeout(30 * 1000);
+
+        axios.get(`${proxyRootUri}/_vti_bin/ListData.svc/${testVariables.newListName.replace(/ /g, '')}`, {
+          headers: {
+            'Accept': 'application/json;odata=verbose',
+            'Content-Type': 'application/json;odata=verbose'
+          }
+        })
           .then(_ => done())
           .catch(done);
 
@@ -269,8 +312,8 @@ describe(`Proxy tests`, () => {
                   'X-RequestDigest': getRequestDigest(),
                   'Accept': 'application/json;odata=verbose',
                   'Content-Type': 'application/json;odata=verbose',
-                  'if-match': '*',
-                  'x-http-method': 'DELETE'
+                  'If-Match': '*',
+                  'X-HTTP-Method': 'DELETE'
                 }
               }
             );
@@ -593,8 +636,8 @@ describe(`Proxy tests`, () => {
             'X-RequestDigest': getRequestDigest(),
             'Accept': 'application/json;odata=verbose',
             'Content-Type': 'application/json;odata=verbose',
-            'if-match': '*',
-            'x-http-method': 'DELETE'
+            'If-Match': '*',
+            'X-HTTP-Method': 'DELETE'
           }
         })
           .then(_ => done())
@@ -661,8 +704,8 @@ describe(`Proxy tests`, () => {
             'X-RequestDigest': getRequestDigest(),
             'Accept': 'application/json;odata=verbose',
             'Content-Type': 'application/json;odata=verbose',
-            'if-match': '*',
-            'x-http-method': 'DELETE'
+            'If-Match': '*',
+            'X-HTTP-Method': 'DELETE'
           }
         })
           .then(_ => done())

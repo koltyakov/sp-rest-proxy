@@ -140,6 +140,27 @@ export default class RestProxy {
           (new RestPostRouter(context, this.settings)).router
         );
 
+        // Put and Patch workaround issue #59
+        (() => {
+          // REST - PUT requests (JSON)
+          this.routers.apiRestRouter.put(
+            '/*',
+            bodyParser.json({
+              limit: this.settings.jsonPayloadLimitSize
+            }),
+            (new RestPostRouter(context, this.settings)).router
+          );
+
+          // REST - PATCH requests (JSON)
+          this.routers.apiRestRouter.patch(
+            '/*',
+            bodyParser.json({
+              limit: this.settings.jsonPayloadLimitSize
+            }),
+            (new RestPostRouter(context, this.settings)).router
+          );
+        })();
+
         //  CSOM requests (XML)
         this.routers.apiCsomRouter.post(
           '/*',
@@ -173,6 +194,10 @@ export default class RestProxy {
         this.app.use('*/_api', this.routers.apiRestRouter);
         this.app.use('*/_vti_bin/client.svc/ProcessQuery', this.routers.apiCsomRouter);
         this.app.use('*/_vti_bin/*.asmx', this.routers.apiSoapRouter);
+
+        // SP2010 legacy REST API, issue #54
+        this.app.use('*/_vti_bin/ListData.svc', this.routers.genericPostRouter);
+        this.app.use('*/_vti_bin/ListData.svc', this.routers.genericGetRouter);
 
         this.app.use('/', this.routers.genericPostRouter);
         this.app.use('/', this.routers.genericGetRouter);

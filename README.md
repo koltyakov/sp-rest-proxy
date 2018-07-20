@@ -49,12 +49,6 @@ Socket proxying allows to forward API from behind NAT (experimental).
 npm install sp-rest-proxy --save-dev
 ```
 
-or
-
-```bash
-yarn add sp-rest-proxy --dev
-```
-
 2\. Create server.js with the following code:
 
 ```javascript
@@ -106,12 +100,6 @@ git clone https://github.com/koltyakov/sp-rest-proxy
 npm install
 ```
 
-or
-
-```bash
-yarn install
-```
-
 4\. Build:
 
 ```bash
@@ -145,6 +133,23 @@ npm run test
 ```
 
 ![Tests Example](./docs/img/tests-example.png)
+
+## TypeScript support
+
+In early days of `sp-rest-proxy`, the library was written in ES6 and used `module.exports` which was kept after migrating to TypeScript later on for the backward compatibility reasons.
+
+In TypeScript, it's better to import the lib from `sp-rest-proxy/dist/RestProxy` to get advantages of types:
+
+```typescript
+import RestProxy, { IProxySettings } from 'sp-rest-proxy/dist/RestProxy';
+
+const settings: IProxySettings = {
+  configPath: './config/private.json'
+};
+
+const restProxy = new RestProxy(settings);
+restProxy.serve();
+```
 
 ## Authentication settings
 

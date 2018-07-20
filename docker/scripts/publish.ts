@@ -16,7 +16,7 @@ const execPromise = (command) => {
   });
 };
 
-async function publish() {
+async function publish () {
 
   const repoName = 'koltyakov/sp-rest-proxy';
 
@@ -63,6 +63,7 @@ async function publish() {
   let images = result
     .trim()
     .split('\n')
+    // tslint:disable-next-line:no-regex-spaces
     .map(r => r.replace(/  +/g, ' ').split(' '))
     .map(r => r[2]);
 

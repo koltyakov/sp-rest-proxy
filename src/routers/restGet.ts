@@ -66,6 +66,11 @@ export class RestGetRouter {
           response.body.d.__next = this.util.buildProxyEndpointUrl(response.body.d.__next);
         }
 
+        // OData patch to PnPjs chained requests work
+        if (typeof response.body['odata.metadata'] === 'string') {
+          response.body['odata.metadata'] = this.util.buildProxyEndpointUrl(response.body['odata.metadata']);
+        }
+
         res.status(response.statusCode);
         res.json(response.body);
       })

@@ -1,7 +1,13 @@
-import RestProxy from '../../src/RestProxy';
+import * as parseArgs from 'minimist';
 
-(new RestProxy({
-  configPath: './config/private.json',
+import RestProxy, { IProxySettings } from '../../src/RestProxy';
+
+const argv = parseArgs(process.argv.slice(2));
+
+const settings: IProxySettings = {
+  configPath: argv.p || './config/private.json',
   staticRoot: './test/manual/static',
   protocol: 'http'
-})).serve();
+};
+
+new RestProxy(settings).serve();

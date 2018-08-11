@@ -24,7 +24,14 @@ export class RestGetRouter {
       console.log('\nGET: ' + endpointUrl);
     }
 
+    const isDoc = endpointUrl.split('?')[0].toLowerCase().endsWith('/$value');
     const requestHeadersPass: any = {};
+    let additionalOptions: any = {};
+    if (isDoc) {
+      additionalOptions = {
+        encoding: null
+      };
+    }
 
     const ignoreHeaders = [
       'host', 'referer', 'origin',
@@ -51,7 +58,8 @@ export class RestGetRouter {
 
     this.spr.get(endpointUrl, {
       headers: requestHeadersPass,
-      agent: this.util.isUrlHttps(endpointUrl) ? this.settings.agent : undefined
+      agent: this.util.isUrlHttps(endpointUrl) ? this.settings.agent : undefined,
+      ...additionalOptions
     })
       .then((response: any) => {
         if (this.settings.debugOutput) {
@@ -72,7 +80,11 @@ export class RestGetRouter {
         }
 
         res.status(response.statusCode);
-        res.json(response.body);
+        if (isDoc) {
+          res.send(response.body);
+        } else {
+          res.json(response.body);
+        }
       })
       .catch((err: any) => {
         res.status(err.statusCode >= 100 && err.statusCode < 600 ? err.statusCode : 500);

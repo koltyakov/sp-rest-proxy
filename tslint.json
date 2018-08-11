@@ -1,6 +1,8 @@
 {
   "extends": "tslint-config-standard",
   "rules": {
-    "semicolon": [true, "always", "ignore-interfaces"]
+    "semicolon": [true, "always", "ignore-interfaces"],
+    "space-before-function-paren": false,
+    "trailing-comma": true
   }
 }

@@ -2,8 +2,7 @@
 
 import { AuthConfig, IAuthConfigSettings } from 'node-sp-auth-config';
 import * as express from 'express';
-// tslint:disable-next-line:no-duplicate-imports
-import { Request, Response, NextFunction } from 'express';
+// import { Request, Response, NextFunction } from 'express';
 import * as bodyParser from 'body-parser';
 import * as cors from 'cors';
 import * as path from 'path';

@@ -1,18 +1,18 @@
 import * as SocketIOClient from 'socket.io-client';
 import * as httpRequest from 'request';
 
-import { getCaseInsensitiveProp } from '../utils';
+// import { getCaseInsensitiveProp } from '../utils';
 import { IGatewayClientSettings, IProxySettings } from '../interfaces';
 
 export class Client {
 
-  private settings: IGatewayClientSettings;
+  // private settings: IGatewayClientSettings;
   private proxy: IProxySettings;
   private socket: SocketIOClient.Socket;
 
   constructor (settings: IGatewayClientSettings, proxy: IProxySettings) {
     this.socket = SocketIOClient(settings.serverUrl);
-    this.settings = settings;
+    // this.settings = settings;
     this.proxy = proxy;
   }
 

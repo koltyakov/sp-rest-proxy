@@ -129,7 +129,7 @@ export class Server {
     };
     this.socket.on('RESPONSE', responseCallback);
 
-    const extractPostRequestBody = (request: express.Request, callback: Function): void => {
+    const extractPostRequestBody = (request: express.Request, callback?: (body: any) => void): void => {
       let reqBody = '';
 
       if (request.body) {
@@ -149,7 +149,7 @@ export class Server {
       }
     };
 
-    extractPostRequestBody(req, (body: any) => {
+    extractPostRequestBody(req, body => {
       let request = {
         url: req.originalUrl,
         method: 'POST',

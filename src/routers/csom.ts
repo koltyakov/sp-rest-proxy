@@ -25,7 +25,7 @@ export class CsomRouter {
       console.log('\nPOST: ' + endpointUrl);
     }
 
-    const regExpOrigin = new RegExp(req.headers.origin as any, 'g');
+    // const regExpOrigin = new RegExp(req.headers.origin as any, 'g');
     let csomPackage = '';
     req.on('data', (chunk) => {
       csomPackage += chunk;

@@ -42,7 +42,7 @@ export class SoapRouter {
             'Accept': 'application/xml, text/xml, */*; q=0.01',
             'Content-Type': 'text/xml;charset="UTF-8"',
             'X-Requested-With': 'XMLHttpRequest',
-            'Content-Length': soapBody.length
+            // 'Content-Length': soapBody.length
           };
 
           return this.spr.post(endpointUrl, {

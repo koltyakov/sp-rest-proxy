@@ -61,7 +61,7 @@ export class RestBatchRouter {
         return line;
       }).join('\n');
     }
-    req.headers['Content-Length'] = reqBodyData.byteLength;
+    // req.headers['Content-Length'] = reqBodyData.byteLength;
 
     if (!this.settings.silentMode) {
       console.log('Request body:', reqBodyData);
@@ -89,7 +89,7 @@ export class RestBatchRouter {
             } else if (prop.toLowerCase() === 'x-requestdigest') {
               // requestHeadersPass['X-RequestDigest'] = req.headers[prop]; // Temporary commented
             } else if (prop.toLowerCase() === 'content-length') {
-              requestHeadersPass['Content-Length'] = req.headers[prop];
+              // requestHeadersPass['Content-Length'] = req.headers[prop];
             } else {
               requestHeadersPass[prop] = req.headers[prop];
             }

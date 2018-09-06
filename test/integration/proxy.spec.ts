@@ -763,7 +763,7 @@ describe(`Proxy tests`, () => {
               'X-Requested-With': 'XMLHttpRequest',
               'Accept': 'application/xml, text/xml, */*; q=0.01',
               'Content-Type': 'text/xml;charset="UTF-8"',
-              'Content-Length': soapPackage.length
+              // 'Content-Length': soapPackage.length
             }
           }),
           sp.web.select('Title').get()
@@ -813,7 +813,7 @@ describe(`Proxy tests`, () => {
               'X-Requested-With': 'XMLHttpRequest',
               'Accept': '*/*',
               'Content-Type': 'text/xml',
-              'Content-Length': csomPackage.length
+              // 'Content-Length': csomPackage.length
             }
           }),
           sp.web.select('Title').get()

@@ -88,7 +88,7 @@ export class RestPostRouter {
           jsonOption.json = false;
           jsonOption.processData = false;
           if (reqBodyData) {
-            requestHeadersPass['Content-Length'] = reqBodyData.byteLength;
+            // requestHeadersPass['Content-Length'] = reqBodyData.byteLength;
           }
         }
 

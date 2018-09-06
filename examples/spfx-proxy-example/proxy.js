@@ -1,7 +1,7 @@
 const CertStore = require('@microsoft/gulp-core-build-serve/lib/CertificateStore');
 const RestProxy = require('sp-rest-proxy');
 
-const CertificateStore = CertStore.CertificateStore || CertificateStore.default;
+const CertificateStore = CertStore.CertificateStore || CertStore.default;
 
 const settings = {
   configPath: './config/private.json',

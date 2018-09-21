@@ -22,7 +22,6 @@ export class GetRouter {
 
   public router = (req: Request, res: Response, next?: NextFunction) => {
     let staticIndexUrl = '/index.html';
-
     if (req.url !== '/') {
       staticIndexUrl = req.url;
     } else {
@@ -39,26 +38,18 @@ export class GetRouter {
       res.json(response);
       return;
     }
-
     if (fs.existsSync(path.join(this.settings.staticRoot, staticIndexUrl))) {
       res.sendFile(path.join(this.settings.staticRoot, staticIndexUrl));
       return;
     }
-
     // Static resources from SharePoint
     let endpointUrl = this.util.buildEndpointUrl(req.originalUrl);
     this.spr = this.util.getCachedRequest(this.spr);
-
     if (!this.settings.silentMode) {
       console.log('\nGET: ' + endpointUrl);
     }
-
     const requestHeadersPass: any = {};
-
-    const ignoreHeaders = [
-      'host', 'referer', 'origin', 'accept-encoding', 'connection', 'if-none-match'
-    ];
-
+    const ignoreHeaders = [ 'host', 'referer', 'origin', 'accept-encoding', 'connection', 'if-none-match' ];
     Object.keys(req.headers).forEach((prop: string) => {
       if (ignoreHeaders.indexOf(prop.toLowerCase()) === -1) {
         if (prop.toLowerCase() === 'accept' && req.headers[prop] !== '*/*') {
@@ -70,52 +61,43 @@ export class GetRouter {
         }
       }
     });
-
     if (this.settings.debugOutput) {
       console.log('\nHeaders:');
       console.log(JSON.stringify(requestHeadersPass, null, 2));
     }
-
     const advanced = {
       json: false,
       processData: false,
       encoding: null
     };
-
     const ext = endpointUrl.split('?')[0].split('.').pop().toLowerCase();
     if (['js', 'css', 'aspx', 'css', 'html', 'json', 'axd'].indexOf(ext) !== -1) {
       delete advanced.encoding;
       requestHeadersPass.Accept = 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8';
     }
-
     if (endpointUrl.indexOf('/ScriptResource.axd') !== -1) {
       let axdUrlArr = endpointUrl.split('/ScriptResource.axd');
-      endpointUrl = axdUrlArr[0].split('/').splice(0, 3).join('/') +
-        '/ScriptResource.axd' + axdUrlArr[1];
-
+      endpointUrl = `${axdUrlArr[0].split('/').splice(0, 3).join('/')}/ScriptResource.axd${axdUrlArr[1]}`;
       request.get({
         uri: endpointUrl,
         agent: this.util.isUrlHttps(endpointUrl) ? this.settings.agent : undefined
       }).pipe(res);
       return;
     }
-
     this.spr.get(endpointUrl, {
       headers: requestHeadersPass,
       ...advanced as any,
       agent: this.util.isUrlHttps(endpointUrl) ? this.settings.agent : undefined
     })
-      .then((response: any) => {
-        if (!this.settings.silentMode) {
-          // console.log(response.statusCode, response.headers['content-type']);
+      .then(resp => {
+        if (this.settings.debugOutput) {
+          console.log(resp.statusCode, resp.body);
         }
-
-        res.status(response.statusCode);
-        res.contentType(response.headers['content-type'] || '');
-
-        res.send(response.body);
+        res.status(resp.statusCode);
+        res.contentType(resp.headers['content-type'] || '');
+        res.send(resp.body);
       })
-      .catch((err: any) => {
+      .catch(err => {
         res.status(err.statusCode >= 100 && err.statusCode < 600 ? err.statusCode : 500);
         if (err.response && err.response.body) {
           res.json(err.response.body);
@@ -123,6 +105,6 @@ export class GetRouter {
           res.send(err.message);
         }
       });
-
   }
+
 }

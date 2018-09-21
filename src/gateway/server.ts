@@ -7,8 +7,6 @@ import * as cors from 'cors';
 
 import { generateGuid } from '../utils';
 import { IGatewayServerSettings, IProxySettings } from '../interfaces';
-// tslint:disable-next-line:no-duplicate-imports
-import { Application } from 'express';
 
 export class Server {
 
@@ -18,9 +16,9 @@ export class Server {
   private server: http.Server;
   private io: SocketIO.Server;
   private socket: SocketIO.Socket;
-  private app: Application;
+  private app: express.Application;
 
-  constructor (settings: IGatewayServerSettings, proxy: IProxySettings, app: Application) {
+  constructor (settings: IGatewayServerSettings, proxy: IProxySettings, app: express.Application) {
     this.app = app;
     this.server = http.createServer(this.app);
     this.io = SocketIO(this.server);
@@ -28,7 +26,7 @@ export class Server {
     this.proxy = proxy;
   }
 
-  public init = () => {
+  public init = (): void => {
     this.server.listen(this.settings.port || this.proxy.port);
     this.io.on('connection', (socket) => {
 
@@ -37,7 +35,7 @@ export class Server {
       let bodyParserRaw = bodyParser.raw({
         type: '*/*',
         limit: this.proxy.rawBodyLimitSize,
-        verify: (req, res, buf, encoding) => {
+        verify: (req, _res, buf, encoding) => {
           if (buf && buf.length) {
             (req as any).rawBody = buf.toString(encoding || 'utf8');
             (req as any).buffer = buf;
@@ -69,13 +67,11 @@ export class Server {
     });
   }
 
-  private getTransmitter = (req: express.Request, res: express.Response) => {
+  private getTransmitter = (req: express.Request, res: express.Response): void => {
     const transaction = generateGuid();
-
     if (!this.proxy.silentMode) {
       console.log('\nGET: ' + req.originalUrl);
     }
-
     const responseCallback = (data) => {
       if (data.transaction === transaction) {
         let statusCode = data.response.statusCode;
@@ -86,17 +82,13 @@ export class Server {
         } catch (ex) {
           //
         }
-
         res.status(statusCode);
         res.contentType(data.response.headers['content-type']);
-
         res.send(body);
-
         this.socket.removeListener('RESPONSE', responseCallback);
       }
     };
     this.socket.on('RESPONSE', responseCallback);
-
     let request = {
       url: req.originalUrl,
       method: 'GET',
@@ -106,13 +98,11 @@ export class Server {
     this.io.emit('REQUEST', request);
   }
 
-  private postTransmitter = (req: express.Request, res: express.Response) => {
+  private postTransmitter = (req: express.Request, res: express.Response): void => {
     const transaction = generateGuid();
-
     if (!this.proxy.silentMode) {
       console.log('\nPOST: ' + req.originalUrl);
     }
-
     const responseCallback = (data) => {
       if (data.transaction === transaction) {
         let statusCode = data.response.statusCode;
@@ -128,10 +118,8 @@ export class Server {
       }
     };
     this.socket.on('RESPONSE', responseCallback);
-
     const extractPostRequestBody = (request: express.Request, callback?: (body: any) => void): void => {
       let reqBody = '';
-
       if (request.body) {
         reqBody = request.body;
         if (callback && typeof callback === 'function') {
@@ -148,7 +136,6 @@ export class Server {
         });
       }
     };
-
     extractPostRequestBody(req, body => {
       let request = {
         url: req.originalUrl,

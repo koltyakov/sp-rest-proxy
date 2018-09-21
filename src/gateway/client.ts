@@ -1,7 +1,6 @@
 import * as SocketIOClient from 'socket.io-client';
 import * as httpRequest from 'request';
 
-// import { getCaseInsensitiveProp } from '../utils';
 import { IGatewayClientSettings, IProxySettings } from '../interfaces';
 
 export class Client {

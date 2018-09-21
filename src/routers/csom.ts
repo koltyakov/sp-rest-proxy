@@ -20,27 +20,20 @@ export class CsomRouter {
   public router = (req: Request, res: Response, next?: NextFunction) => {
     const endpointUrl = this.util.buildEndpointUrl(req.originalUrl);
     this.spr = this.util.getCachedRequest(this.spr);
-
     if (!this.settings.silentMode) {
       console.log('\nPOST: ' + endpointUrl);
     }
-
     // const regExpOrigin = new RegExp(req.headers.origin as any, 'g');
     let csomPackage = '';
-    req.on('data', (chunk) => {
-      csomPackage += chunk;
-    });
+    req.on('data', chunk => csomPackage += chunk);
     req.on('end', () => {
-
       Promise.all([
         this.spr.requestDigest((endpointUrl).split('/_vti_bin')[0]),
         this.util.getAuthOptions()
       ])
-        .then((response: any) => {
-
-          const digest: string = response[0];
-          const opt: IAuthResponse = response[1];
-
+        .then(resp => {
+          const digest: string = resp[0];
+          const opt: IAuthResponse = resp[1];
           const headers = {
             ...opt.headers,
             'Accept': '*/*',
@@ -48,7 +41,6 @@ export class CsomRouter {
             'X-Requested-With': 'XMLHttpRequest',
             'X-RequestDigest': digest
           };
-
           return this.spr.post(endpointUrl, {
             headers: headers,
             body: csomPackage,
@@ -56,7 +48,7 @@ export class CsomRouter {
             agent: this.util.isUrlHttps(endpointUrl) ? this.settings.agent : undefined
           });
         })
-        .then((resp: any) => {
+        .then(resp => {
           if (this.settings.debugOutput) {
             console.log(resp.statusCode, resp.body);
           }
@@ -74,10 +66,11 @@ export class CsomRouter {
             res.json(resp.body);
           }
         })
-        .catch((err: any) => {
+        .catch(err => {
           res.status(err.statusCode);
           res.json(err);
         });
     });
   }
+
 }

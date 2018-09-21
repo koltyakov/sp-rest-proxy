@@ -19,11 +19,9 @@ export class RestGetRouter {
   public router = (req: Request, res: Response, next?: NextFunction) => {
     const endpointUrl = this.util.buildEndpointUrl(req.originalUrl);
     this.spr = this.util.getCachedRequest(this.spr);
-
     if (!this.settings.silentMode) {
       console.log('\nGET: ' + endpointUrl);
     }
-
     const isDoc = endpointUrl.split('?')[0].toLowerCase().endsWith('/$value');
     const requestHeadersPass: any = {};
     let additionalOptions: any = {};
@@ -32,13 +30,11 @@ export class RestGetRouter {
         encoding: null
       };
     }
-
     const ignoreHeaders = [
       'host', 'referer', 'origin',
       'if-none-match', 'connection', 'cache-control', 'user-agent',
       'accept-encoding', 'x-requested-with', 'accept-language'
     ];
-
     Object.keys(req.headers).forEach((prop: string) => {
       if (ignoreHeaders.indexOf(prop.toLowerCase()) === -1) {
         if (prop.toLowerCase() === 'accept' && req.headers[prop] !== '*/*') {
@@ -50,43 +46,38 @@ export class RestGetRouter {
         }
       }
     });
-
     if (this.settings.debugOutput) {
       console.log('\nHeaders:');
       console.log(JSON.stringify(req.headers, null, 2));
     }
-
     this.spr.get(endpointUrl, {
       headers: requestHeadersPass,
       agent: this.util.isUrlHttps(endpointUrl) ? this.settings.agent : undefined,
       ...additionalOptions
     })
-      .then((response: any) => {
+      .then(resp => {
         if (this.settings.debugOutput) {
-          console.log(response.statusCode, response.body);
+          console.log(resp.statusCode, resp.body);
         }
-
         // Paged collections patch
-        if (typeof response.body['odata.nextLink'] === 'string') {
-          response.body['odata.nextLink'] = this.util.buildProxyEndpointUrl(response.body['odata.nextLink']);
+        if (typeof resp.body['odata.nextLink'] === 'string') {
+          resp.body['odata.nextLink'] = this.util.buildProxyEndpointUrl(resp.body['odata.nextLink']);
         }
-        if (response.body.d && typeof response.body.d.__next === 'string') {
-          response.body.d.__next = this.util.buildProxyEndpointUrl(response.body.d.__next);
+        if (resp.body.d && typeof resp.body.d.__next === 'string') {
+          resp.body.d.__next = this.util.buildProxyEndpointUrl(resp.body.d.__next);
         }
-
         // OData patch to PnPjs chained requests work
-        if (typeof response.body['odata.metadata'] === 'string') {
-          response.body['odata.metadata'] = this.util.buildProxyEndpointUrl(response.body['odata.metadata']);
+        if (typeof resp.body['odata.metadata'] === 'string') {
+          resp.body['odata.metadata'] = this.util.buildProxyEndpointUrl(resp.body['odata.metadata']);
         }
-
-        res.status(response.statusCode);
+        res.status(resp.statusCode);
         if (isDoc) {
-          res.send(response.body);
+          res.send(resp.body);
         } else {
-          res.json(response.body);
+          res.json(resp.body);
         }
       })
-      .catch((err: any) => {
+      .catch(err => {
         res.status(err.statusCode >= 100 && err.statusCode < 600 ? err.statusCode : 500);
         if (err.response && err.response.body) {
           res.json(err.response.body);
@@ -95,4 +86,5 @@ export class RestGetRouter {
         }
       });
   }
+
 }

@@ -18,20 +18,15 @@ export class RestPostRouter {
 
   public router = (request: Request, response: Response, next?: NextFunction) => {
     const endpointUrl = this.util.buildEndpointUrl(request.originalUrl);
-
     if (!this.settings.silentMode) {
       console.log('\nPOST: ' + endpointUrl);
     }
-
     let reqBody = '';
-
     if (request.body) {
       reqBody = request.body;
       this.processPostRequest(reqBody, request, response);
     } else {
-      request.on('data', (chunk) => {
-        reqBody += chunk;
-      });
+      request.on('data', chunk => reqBody += chunk);
       request.on('end', () => {
         this.processPostRequest(reqBody, request, response);
       });
@@ -40,13 +35,10 @@ export class RestPostRouter {
 
   private processPostRequest = (reqBodyData: any, req: Request, res: Response) => {
     const endpointUrlStr = this.util.buildEndpointUrl(req.originalUrl);
-
     if (!this.settings.silentMode) {
       console.log('Request body:', reqBodyData);
     }
-
     this.spr = this.util.getCachedRequest(this.spr);
-
     this.spr.requestDigest((endpointUrlStr).split('/_api')[0])
       .then((digest: string) => {
         let requestHeadersPass: any = {};
@@ -58,7 +50,6 @@ export class RestPostRouter {
           'if-none-match', 'connection', 'cache-control', 'user-agent',
           'accept-encoding', 'x-requested-with', 'accept-language'
         ];
-
         Object.keys(req.headers).forEach((prop: string) => {
           if (ignoreHeaders.indexOf(prop.toLowerCase()) === -1) {
             if (prop.toLowerCase() === 'accept' && req.headers[prop] !== '*/*') {
@@ -71,12 +62,10 @@ export class RestPostRouter {
             }
           }
         });
-
         requestHeadersPass = {
           ...requestHeadersPass,
           'X-RequestDigest': digest
         };
-
         if (
           endpointUrlStr.toLowerCase().indexOf('/attachmentfiles/add') !== -1 ||
           endpointUrlStr.toLowerCase().indexOf('/files/add') !== -1 ||
@@ -91,17 +80,14 @@ export class RestPostRouter {
             // requestHeadersPass['Content-Length'] = reqBodyData.byteLength;
           }
         }
-
         if (this.settings.debugOutput) {
           console.log('\nHeaders:');
           console.log(JSON.stringify(requestHeadersPass, null, 2));
         }
-
         // JSOM empty object
         if (typeof reqBodyData === 'object' && Object.keys(reqBodyData).length === 0) {
           reqBodyData = '{}';
         }
-
         return this.spr.post(endpointUrlStr, {
           headers: requestHeadersPass,
           body: reqBodyData,
@@ -109,7 +95,7 @@ export class RestPostRouter {
           agent: this.util.isUrlHttps(endpointUrlStr) ? this.settings.agent : undefined
         });
       })
-      .then((resp: any) => {
+      .then(resp => {
         if (this.settings.debugOutput) {
           console.log(resp.statusCode, resp.body);
         }
@@ -120,7 +106,7 @@ export class RestPostRouter {
           res.json(resp.body);
         }
       })
-      .catch((err: any) => {
+      .catch(err => {
         res.status(err.statusCode >= 100 && err.statusCode < 600 ? err.statusCode : 500);
         if (err.response && err.response.body) {
           res.json(err.response.body);
@@ -129,4 +115,5 @@ export class RestPostRouter {
         }
       });
   }
+
 }

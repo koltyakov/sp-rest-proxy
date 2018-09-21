@@ -20,21 +20,16 @@ export class SoapRouter {
   public router = (req: Request, res: Response, next?: NextFunction) => {
     const endpointUrl = this.util.buildEndpointUrl(req.originalUrl);
     this.spr = this.util.getCachedRequest(this.spr);
-
     if (!this.settings.silentMode) {
       console.log('\nPOST: ' + endpointUrl);
     }
-
     let soapBody = '';
-    req.on('data', (chunk) => {
-      soapBody += chunk;
-    });
+    req.on('data', chunk => soapBody += chunk);
     req.on('end', () => {
       if (req.headers.origin) {
         const regExpOrigin = new RegExp(req.headers.origin as any, 'g');
         soapBody = soapBody.replace(regExpOrigin, this.ctx.siteUrl);
       }
-
       this.util.getAuthOptions()
         .then((opt: IAuthResponse) => {
           const headers = {
@@ -44,7 +39,6 @@ export class SoapRouter {
             'X-Requested-With': 'XMLHttpRequest',
             // 'Content-Length': soapBody.length
           };
-
           return this.spr.post(endpointUrl, {
             headers: headers,
             body: soapBody,
@@ -52,17 +46,18 @@ export class SoapRouter {
             agent: this.util.isUrlHttps(endpointUrl) ? this.settings.agent : undefined
           });
         })
-        .then((response: any) => {
+        .then(resp => {
           if (this.settings.debugOutput) {
-            console.log(response.statusCode, response.body);
+            console.log(resp.statusCode, resp.body);
           }
-          res.send(response.body);
+          res.send(resp.body);
           res.end();
         })
-        .catch((err: any) => {
+        .catch(err => {
           res.status(err.statusCode);
           res.json(err);
         });
     });
   }
+
 }

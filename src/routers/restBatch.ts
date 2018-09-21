@@ -18,20 +18,15 @@ export class RestBatchRouter {
 
   public router = (request: Request, response: Response, next?: NextFunction) => {
     const endpointUrl = this.util.buildEndpointUrl(request.originalUrl);
-
     if (!this.settings.silentMode) {
-      console.log('\POST (batch): ' + endpointUrl);
+      console.log('\nPOST (batch): ' + endpointUrl);
     }
-
     let reqBody = '';
-
     if (request.body) {
       reqBody = request.body;
       this.processBatchRequest(reqBody, request, response);
     } else {
-      request.on('data', (chunk) => {
-        reqBody += chunk;
-      });
+      request.on('data', chunk => reqBody += chunk);
       request.on('end', () => {
         this.processBatchRequest(reqBody, request, response);
       });
@@ -40,9 +35,7 @@ export class RestBatchRouter {
 
   private processBatchRequest = (reqBodyData: any, req: Request, res: Response) => {
     const endpointUrlStr = this.util.buildEndpointUrl(req.originalUrl);
-
     reqBodyData = (req as any).rawBody;
-
     const { processBatchMultipartBody: transform } = this.settings;
     if (transform && typeof transform === 'function') {
       reqBodyData = transform(reqBodyData);
@@ -62,23 +55,18 @@ export class RestBatchRouter {
       }).join('\n');
     }
     // req.headers['Content-Length'] = reqBodyData.byteLength;
-
     if (!this.settings.silentMode) {
       console.log('Request body:', reqBodyData);
     }
-
     this.spr = this.util.getCachedRequest(this.spr);
-
     this.spr.requestDigest((endpointUrlStr).split('/_api')[0])
       .then((digest: string) => {
         let requestHeadersPass: any = {};
-
         const ignoreHeaders = [
           'host', 'referer', 'origin',
           'if-none-match', 'connection', 'cache-control', 'user-agent',
           'accept-encoding', 'x-requested-with', 'accept-language'
         ];
-
         Object.keys(req.headers).forEach((prop: string) => {
           if (ignoreHeaders.indexOf(prop.toLowerCase()) === -1) {
             if (prop.toLowerCase() === 'accept' && req.headers[prop] !== '*/*') {
@@ -95,18 +83,14 @@ export class RestBatchRouter {
             }
           }
         });
-
         requestHeadersPass = {
           ...requestHeadersPass,
           'X-RequestDigest': requestHeadersPass['X-RequestDigest'] || digest
-          // 'Content-Length': requestHeadersPass['Content-Length'] || reqBodyData.byteLength
         };
-
         if (this.settings.debugOutput) {
           console.log('\nHeaders:');
           console.log(JSON.stringify(requestHeadersPass, null, 2));
         }
-
         return this.spr.post(endpointUrlStr, {
           headers: requestHeadersPass,
           body: reqBodyData,
@@ -114,14 +98,14 @@ export class RestBatchRouter {
           agent: this.util.isUrlHttps(endpointUrlStr) ? this.settings.agent : undefined
         });
       })
-      .then((resp: any) => {
+      .then(resp => {
         if (this.settings.debugOutput) {
           console.log(resp.statusCode, resp.body);
         }
         res.status(resp.statusCode);
         res.send(resp.body);
       })
-      .catch((err: any) => {
+      .catch(err => {
         res.status(err.statusCode >= 100 && err.statusCode < 600 ? err.statusCode : 500);
         if (err.response && err.response.body) {
           res.json(err.response.body);
@@ -130,4 +114,5 @@ export class RestBatchRouter {
         }
       });
   }
+
 }

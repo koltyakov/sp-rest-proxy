@@ -1,55 +1,47 @@
 import * as spauth from 'node-sp-auth';
 import * as spRequest from 'sp-request';
-// tslint:disable-next-line:no-duplicate-imports
-import { ISPRequest } from 'sp-request';
 import { parse as urlParse } from 'url';
 
 import { IProxyContext } from '../interfaces';
 
 export class ProxyUtils {
 
-  private spr: ISPRequest;
-  private ctx: IProxyContext;
+  private spr: spRequest.ISPRequest;
 
-  constructor (context: IProxyContext) {
-    this.ctx = context;
-  }
+  constructor(private ctx: IProxyContext) { /**/ }
 
-  public getAuthOptions = (): Promise<any> => {
+  public getAuthOptions(): Promise<spauth.IAuthResponse> {
     return spauth.getAuth(this.ctx.siteUrl, this.ctx.authOptions) as any;
   }
 
-  public getCachedRequest = (spr: ISPRequest): ISPRequest => {
+  public getCachedRequest(spr: spRequest.ISPRequest): spRequest.ISPRequest {
     this.spr = spr || spRequest.create(this.ctx.authOptions);
     return this.spr;
   }
 
-  public isOnPrem (url: string): boolean {
+  public isOnPrem(url: string): boolean {
     return url.indexOf('.sharepoint.com') === -1 && url.indexOf('.sharepoint.cn') === -1;
   }
 
-  public isUrlHttps (url: string): boolean {
+  public isUrlHttps(url: string): boolean {
     return url.split('://')[0].toLowerCase() === 'https';
   }
 
-  public isUrlAbsolute (url: string): boolean {
+  public isUrlAbsolute(url: string): boolean {
     return url.indexOf('http:') === 0 || url.indexOf('https:') === 0;
   }
 
-  public buildEndpointUrl = (reqUrl: string): string => {
+  public buildEndpointUrl(reqUrl: string): string {
     const siteUrlParsed = urlParse(this.ctx.siteUrl);
     let reqPathName = reqUrl;
-
     const baseUrlArr = siteUrlParsed.pathname.split('/');
     const reqUrlArr = reqUrl.split('?')[0].split('/');
-
     let similarity = 0;
     const len = baseUrlArr.length > reqUrlArr.length ?
       reqUrlArr.length : baseUrlArr.length;
     for (let i = 0; i < len; i += 1) {
       similarity += baseUrlArr[i] === reqUrlArr[i] ? 1 : 0;
     }
-
     if (similarity < 2) {
       reqPathName = (`${siteUrlParsed.pathname}/${reqUrl}`).replace(/\/\//g, '/');
     }
@@ -57,7 +49,7 @@ export class ProxyUtils {
     return `${siteUrlParsed.protocol}//${siteUrlParsed.host}${reqPathName}`;
   }
 
-  public buildProxyEndpointUrl = (reqUrl: string): string => {
+  public buildProxyEndpointUrl(reqUrl: string): string {
     let proxyUrl = reqUrl;
     const spHostUrl = this.ctx.siteUrl.split('/').splice(0, 3).join('/');
     if (proxyUrl.toLowerCase().indexOf(spHostUrl.toLowerCase()) === 0) {
@@ -70,9 +62,7 @@ export class ProxyUtils {
 
 export const generateGuid = (): string => {
   const s4 = () => {
-    return Math.floor((1 + Math.random()) * 0x10000)
-      .toString(16)
-      .substring(1);
+    return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
   };
   return `${s4()}${s4()}-${s4()}-${s4()}-${s4()}-${s4()}${s4()}${s4()}`;
 };
@@ -87,7 +77,7 @@ export const checkNestedProperties = (object: any, ...args: string[]): boolean =
   return true;
 };
 
-export const getCaseInsensitiveProp = (object: any, propertyName: string): any => {
+export const getCaseInsensitiveProp = (object: Object, propertyName: string): any => {
   propertyName = propertyName.toLowerCase();
   return Object.keys(object).reduce((res: any, prop: string) => {
     if (prop.toLowerCase() === propertyName) {
@@ -98,7 +88,5 @@ export const getCaseInsensitiveProp = (object: any, propertyName: string): any =
 };
 
 export const trimMultiline = (multiline: string): string => {
-  return multiline.trim().split('\n').map((line: string) => {
-    return line.trim();
-  }).join('\n');
+  return multiline.trim().split('\n').map(line => line.trim()).join('\n');
 };

@@ -1,10 +1,11 @@
+import { trimMultiline } from './';
+
 export interface IPageContextInfo extends _spPageContextInfo {}
 
 export const isLocalhost = Boolean(
   window.location.hostname === 'localhost' ||
   window.location.hostname === '[::1]' ||
-  window.location.hostname
-    .match(/^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/)
+  window.location.hostname.match(/^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/)
 );
 
 export const loadPageContext = (): Promise<IPageContextInfo> => {
@@ -13,10 +14,11 @@ export const loadPageContext = (): Promise<IPageContextInfo> => {
       return resolve(_spPageContextInfo);
     }
     if (isLocalhost) {
-      const restUrl = `${window.location.origin}/_api/web?` +
-        `$select=Title,Language,ServerRelativeUrl,CurrentUser/Id,Url&` +
-        `$expand=CurrentUser/Id`;
-
+      const restUrl = trimMultiline(`
+        ${window.location.origin}/_api/web?
+          $select=Title,Language,ServerRelativeUrl,CurrentUser/Id,Url&
+          $expand=CurrentUser/Id
+      `);
       return fetch(restUrl, {
         method: 'GET',
         headers: [['Accept', 'application/json;odata=verbose']]

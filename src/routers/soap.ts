@@ -1,8 +1,8 @@
-import { ProxyUtils } from '../utils';
-import { IProxyContext, IProxySettings } from '../interfaces';
-import { ISPRequest } from 'sp-request';
-import { IAuthResponse } from 'node-sp-auth';
 import { Request, Response, NextFunction } from 'express';
+import { ProxyUtils } from '../utils';
+
+import { ISPRequest } from 'sp-request';
+import { IProxyContext, IProxySettings } from '../interfaces';
 
 export class SoapRouter {
 
@@ -31,13 +31,12 @@ export class SoapRouter {
         soapBody = soapBody.replace(regExpOrigin, this.ctx.siteUrl);
       }
       this.util.getAuthOptions()
-        .then((opt: IAuthResponse) => {
+        .then(opt => {
           const headers = {
             ...opt.headers,
             'Accept': 'application/xml, text/xml, */*; q=0.01',
             'Content-Type': 'text/xml;charset="UTF-8"',
-            'X-Requested-With': 'XMLHttpRequest',
-            // 'Content-Length': soapBody.length
+            'X-Requested-With': 'XMLHttpRequest'
           };
           return this.spr.post(endpointUrl, {
             headers: headers,
@@ -46,11 +45,11 @@ export class SoapRouter {
             agent: this.util.isUrlHttps(endpointUrl) ? this.settings.agent : undefined
           });
         })
-        .then(resp => {
+        .then(r => {
           if (this.settings.debugOutput) {
-            console.log(resp.statusCode, resp.body);
+            console.log(r.statusCode, r.body);
           }
-          res.send(resp.body);
+          res.send(r.body);
           res.end();
         })
         .catch(err => {

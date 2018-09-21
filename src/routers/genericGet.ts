@@ -1,11 +1,11 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as request from 'request';
-
-import { ProxyUtils } from '../utils';
-import { IProxyContext, IProxySettings } from '../interfaces';
 import { Request, Response, NextFunction } from 'express';
+import { ProxyUtils } from '../utils';
+
 import { ISPRequest } from 'sp-request';
+import { IProxyContext, IProxySettings } from '../interfaces';
 
 export class GetRouter {
 
@@ -20,7 +20,7 @@ export class GetRouter {
     this.util = new ProxyUtils(this.ctx);
   }
 
-  public router = (req: Request, res: Response, next?: NextFunction) => {
+  public router = (req: Request, res: Response, _next?: NextFunction) => {
     let staticIndexUrl = '/index.html';
     if (req.url !== '/') {
       staticIndexUrl = req.url;
@@ -50,7 +50,7 @@ export class GetRouter {
     }
     const requestHeadersPass: any = {};
     const ignoreHeaders = [ 'host', 'referer', 'origin', 'accept-encoding', 'connection', 'if-none-match' ];
-    Object.keys(req.headers).forEach((prop: string) => {
+    Object.keys(req.headers).forEach(prop => {
       if (ignoreHeaders.indexOf(prop.toLowerCase()) === -1) {
         if (prop.toLowerCase() === 'accept' && req.headers[prop] !== '*/*') {
           requestHeadersPass.Accept = req.headers[prop];
@@ -89,13 +89,13 @@ export class GetRouter {
       ...advanced as any,
       agent: this.util.isUrlHttps(endpointUrl) ? this.settings.agent : undefined
     })
-      .then(resp => {
+      .then(r => {
         if (this.settings.debugOutput) {
-          console.log(resp.statusCode, resp.body);
+          console.log(r.statusCode, r.body);
         }
-        res.status(resp.statusCode);
-        res.contentType(resp.headers['content-type'] || '');
-        res.send(resp.body);
+        res.status(r.statusCode);
+        res.contentType(r.headers['content-type'] || '');
+        res.send(r.body);
       })
       .catch(err => {
         res.status(err.statusCode >= 100 && err.statusCode < 600 ? err.statusCode : 500);

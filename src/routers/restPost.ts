@@ -1,7 +1,8 @@
-import { ProxyUtils } from '../utils';
-import { IProxyContext, IProxySettings } from '../interfaces';
-import { ISPRequest } from 'sp-request';
 import { Request, Response, NextFunction } from 'express';
+import { ProxyUtils } from '../utils';
+
+import { ISPRequest } from 'sp-request';
+import { IProxyContext, IProxySettings } from '../interfaces';
 
 export class RestPostRouter {
 
@@ -40,20 +41,17 @@ export class RestPostRouter {
     }
     this.spr = this.util.getCachedRequest(this.spr);
     this.spr.requestDigest((endpointUrlStr).split('/_api')[0])
-      .then((digest: string) => {
+      .then(digest => {
         let requestHeadersPass: any = {};
-        const jsonOption: any = {
-          json: true
-        };
+        const jsonOption: any = { json: true };
         const ignoreHeaders = [
           'host', 'referer', 'origin',
           'if-none-match', 'connection', 'cache-control', 'user-agent',
           'accept-encoding', 'x-requested-with', 'accept-language'
         ];
-        Object.keys(req.headers).forEach((prop: string) => {
+        Object.keys(req.headers).forEach(prop => {
           if (ignoreHeaders.indexOf(prop.toLowerCase()) === -1) {
             if (prop.toLowerCase() === 'accept' && req.headers[prop] !== '*/*') {
-              // tslint:disable-next-line:no-string-literal
               requestHeadersPass['Accept'] = req.headers[prop];
             } else if (prop.toLowerCase() === 'content-type') {
               requestHeadersPass['Content-Type'] = req.headers[prop];
@@ -95,15 +93,15 @@ export class RestPostRouter {
           agent: this.util.isUrlHttps(endpointUrlStr) ? this.settings.agent : undefined
         });
       })
-      .then(resp => {
+      .then(r => {
         if (this.settings.debugOutput) {
-          console.log(resp.statusCode, resp.body);
+          console.log(r.statusCode, r.body);
         }
-        res.status(resp.statusCode);
-        if (typeof resp.body === 'string') {
-          res.json(JSON.parse(resp.body));
+        res.status(r.statusCode);
+        if (typeof r.body === 'string') {
+          res.json(JSON.parse(r.body));
         } else {
-          res.json(resp.body);
+          res.json(r.body);
         }
       })
       .catch(err => {

@@ -28,7 +28,7 @@ export class Server {
 
   public init = (): void => {
     this.server.listen(this.settings.port || this.proxy.port);
-    this.io.on('connection', (socket) => {
+    this.io.on('connection', socket => {
 
       this.socket = socket;
 
@@ -72,7 +72,7 @@ export class Server {
     if (!this.proxy.silentMode) {
       console.log('\nGET: ' + req.originalUrl);
     }
-    const responseCallback = (data) => {
+    const responseCallback = data => {
       if (data.transaction === transaction) {
         let statusCode = data.response.statusCode;
         let body = data.response.body;
@@ -103,7 +103,7 @@ export class Server {
     if (!this.proxy.silentMode) {
       console.log('\nPOST: ' + req.originalUrl);
     }
-    const responseCallback = (data) => {
+    const responseCallback = data => {
       if (data.transaction === transaction) {
         let statusCode = data.response.statusCode;
         let body = data.response.body;
@@ -126,9 +126,7 @@ export class Server {
           callback(reqBody);
         }
       } else {
-        request.on('data', (chunk) => {
-          reqBody += chunk;
-        });
+        request.on('data', chunk => reqBody += chunk);
         request.on('end', () => {
           if (callback && typeof callback === 'function') {
             callback(reqBody);

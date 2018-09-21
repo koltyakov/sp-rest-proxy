@@ -16,7 +16,7 @@ export class Client {
   }
 
   public init = () => {
-    this.socket.on('REQUEST', (request) => {
+    this.socket.on('REQUEST', request => {
       let endpoint = this.enpointUrl(request.url);
       console.log(`${request.method} request to ${endpoint}`);
       httpRequest(endpoint, {
@@ -25,7 +25,8 @@ export class Client {
       }, (err, response) => {
         let responsePackage = {
           transaction: request.transaction,
-          err, response
+          err,
+          response
         };
         this.socket.emit('RESPONSE', responsePackage);
       });

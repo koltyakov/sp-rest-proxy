@@ -235,7 +235,7 @@ export default class RestProxy {
         }
 
       })
-      .catch((err: any) => {
+      .catch(err => {
         console.log('Error', err);
       });
   }

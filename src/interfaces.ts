@@ -13,9 +13,7 @@ export interface IProxySettings {
   staticRoot?: string;
   rawBodyLimitSize?: string;
   jsonPayloadLimitSize?: string;
-  debugOutput?: boolean;
   metadata?: any;
-  silentMode?: boolean;
   agent?: Agent;
 
   authConfigSettings?: IAuthConfigSettings;
@@ -23,6 +21,9 @@ export interface IProxySettings {
   defaultConfigPath?: string; // Legacy
 
   processBatchMultipartBody?: (body: string) => string;
+
+  debugOutput?: boolean;
+  silentMode?: boolean;
 }
 
 export interface ISSLConf {

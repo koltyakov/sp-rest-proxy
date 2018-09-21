@@ -1,8 +1,8 @@
-import { ProxyUtils } from '../utils';
-import { IProxyContext, IProxySettings } from '../interfaces';
-import { ISPRequest } from 'sp-request';
-import { IAuthResponse } from 'node-sp-auth';
 import { Request, Response, NextFunction } from 'express';
+import { ProxyUtils } from '../utils';
+
+import { ISPRequest } from 'sp-request';
+import { IProxyContext, IProxySettings } from '../interfaces';
 
 export class CsomRouter {
 
@@ -23,7 +23,6 @@ export class CsomRouter {
     if (!this.settings.silentMode) {
       console.log('\nPOST: ' + endpointUrl);
     }
-    // const regExpOrigin = new RegExp(req.headers.origin as any, 'g');
     let csomPackage = '';
     req.on('data', chunk => csomPackage += chunk);
     req.on('end', () => {
@@ -31,9 +30,9 @@ export class CsomRouter {
         this.spr.requestDigest((endpointUrl).split('/_vti_bin')[0]),
         this.util.getAuthOptions()
       ])
-        .then(resp => {
-          const digest: string = resp[0];
-          const opt: IAuthResponse = resp[1];
+        .then(r => {
+          const digest: string = r[0];
+          const opt = r[1];
           const headers = {
             ...opt.headers,
             'Accept': '*/*',
@@ -48,22 +47,22 @@ export class CsomRouter {
             agent: this.util.isUrlHttps(endpointUrl) ? this.settings.agent : undefined
           });
         })
-        .then(resp => {
+        .then(r => {
           if (this.settings.debugOutput) {
-            console.log(resp.statusCode, resp.body);
+            console.log(r.statusCode, r.body);
           }
-          res.status(resp.statusCode);
-          if (typeof resp.body === 'string') {
+          res.status(r.statusCode);
+          if (typeof r.body === 'string') {
             try {
-              const result = JSON.parse(resp.body);
+              const result = JSON.parse(r.body);
               res.json(result);
             } catch (ex) {
-              res.status(resp.statusCode);
-              res.send(resp.body);
+              res.status(r.statusCode);
+              res.send(r.body);
               res.end();
             }
           } else {
-            res.json(resp.body);
+            res.json(r.body);
           }
         })
         .catch(err => {

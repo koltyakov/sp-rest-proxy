@@ -2,7 +2,7 @@ import { writeFileSync } from 'fs';
 import { join } from 'path';
 import { exec } from 'child_process';
 
-const execPromise = (command) => {
+const execPromise = (command: string): Promise<string> => {
   return new Promise((resolve, reject) => {
     exec(command, (err, stdout, stderr) => {
       if (err) {
@@ -67,11 +67,9 @@ async function publish () {
     .map(r => r.replace(/  +/g, ' ').split(' '))
     .map(r => r[2]);
 
-  images = images.filter((elem, pos) => {
-    return images.indexOf(elem) === pos;
-  });
+  images = images.filter((elem, pos) => images.indexOf(elem) === pos);
 
-  for (let imageId of images) {
+  for (const imageId of images) {
     await execPromise(`docker rmi ${imageId} --force`);
   }
 

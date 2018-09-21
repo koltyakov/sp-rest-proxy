@@ -1,7 +1,8 @@
-import { ProxyUtils } from '../utils';
-import { IProxyContext, IProxySettings } from '../interfaces';
-import { ISPRequest } from 'sp-request';
 import { Request, Response, NextFunction } from 'express';
+import { ProxyUtils } from '../utils';
+
+import { ISPRequest } from 'sp-request';
+import { IProxyContext, IProxySettings } from '../interfaces';
 
 export class RestBatchRouter {
 
@@ -60,14 +61,14 @@ export class RestBatchRouter {
     }
     this.spr = this.util.getCachedRequest(this.spr);
     this.spr.requestDigest((endpointUrlStr).split('/_api')[0])
-      .then((digest: string) => {
+      .then(digest => {
         let requestHeadersPass: any = {};
         const ignoreHeaders = [
           'host', 'referer', 'origin',
           'if-none-match', 'connection', 'cache-control', 'user-agent',
           'accept-encoding', 'x-requested-with', 'accept-language'
         ];
-        Object.keys(req.headers).forEach((prop: string) => {
+        Object.keys(req.headers).forEach(prop => {
           if (ignoreHeaders.indexOf(prop.toLowerCase()) === -1) {
             if (prop.toLowerCase() === 'accept' && req.headers[prop] !== '*/*') {
               // tslint:disable-next-line:no-string-literal
@@ -98,12 +99,12 @@ export class RestBatchRouter {
           agent: this.util.isUrlHttps(endpointUrlStr) ? this.settings.agent : undefined
         });
       })
-      .then(resp => {
+      .then(r => {
         if (this.settings.debugOutput) {
-          console.log(resp.statusCode, resp.body);
+          console.log(r.statusCode, r.body);
         }
-        res.status(resp.statusCode);
-        res.send(resp.body);
+        res.status(r.statusCode);
+        res.send(r.body);
       })
       .catch(err => {
         res.status(err.statusCode >= 100 && err.statusCode < 600 ? err.statusCode : 500);

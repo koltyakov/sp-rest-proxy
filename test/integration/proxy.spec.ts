@@ -4,7 +4,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import axios, { AxiosResponse } from 'axios';
 import { sp } from '@pnp/sp';
-import { Util } from '@pnp/common';
+import * as Util from '@pnp/common';
 import { parseString as xmlStringToJson } from 'xml2js';
 import { PnpNode } from 'sp-pnp-node';
 import * as request from 'request-promise';
@@ -114,8 +114,8 @@ describe(`Proxy tests`, () => {
             'Content-Type': 'application/json;odata=verbose'
           }
         })
-          .then(response => {
-            expect(response.data.d.GetContextWebInformation).to.have.property('FormDigestValue');
+          .then(r => {
+            expect(r.data.d.GetContextWebInformation).to.have.property('FormDigestValue');
             done();
           })
           .catch(done);
@@ -129,9 +129,9 @@ describe(`Proxy tests`, () => {
           axios.get(`${proxyRootUri}/_api/web?$select=Title`, testVariables.headers.verbose),
           sp.web.select('Title').get()
         ])
-          .then(response => {
-            const proxyResp: AxiosResponse = response[0];
-            const pnpResp: any = response[1];
+          .then(r => {
+            const proxyResp: AxiosResponse = r[0];
+            const pnpResp: any = r[1];
 
             expect(proxyResp.data.d.Title).to.equal(pnpResp.Title);
             done();
@@ -149,9 +149,9 @@ describe(`Proxy tests`, () => {
           axios.get(`${shorthandUri}/_api/web?$select=Title`, testVariables.headers.verbose),
           sp.web.select('Title').get()
         ])
-          .then(response => {
-            const proxyResp: AxiosResponse = response[0];
-            const pnpResp: any = response[1];
+          .then(r => {
+            const proxyResp: AxiosResponse = r[0];
+            const pnpResp: any = r[1];
             expect(proxyResp.data.d.Title).to.equal(pnpResp.Title);
             done();
           })
@@ -166,9 +166,9 @@ describe(`Proxy tests`, () => {
           axios.get(`${proxyRootUri}/_api/web/lists?$select=Title`, testVariables.headers.verbose),
           sp.web.lists.select('Title').get()
         ])
-          .then(response => {
-            const proxyResp: AxiosResponse = response[0];
-            const pnpResp: any = response[1];
+          .then(r => {
+            const proxyResp: AxiosResponse = r[0];
+            const pnpResp: any = r[1];
 
             expect(proxyResp.data.d.results.length).to.equal(pnpResp.length);
             done();
@@ -197,8 +197,8 @@ describe(`Proxy tests`, () => {
           .then(_ => {
             return sp.web.lists.getByTitle(testVariables.newListName).select('Title').get();
           })
-          .then(response => {
-            expect(response.Title).to.equal(testVariables.newListName);
+          .then(r => {
+            expect(r.Title).to.equal(testVariables.newListName);
             done();
           })
           .catch(done);
@@ -210,10 +210,10 @@ describe(`Proxy tests`, () => {
 
         const listUri = `${proxyRootUri}/_api/web/lists/getByTitle('${testVariables.newListName}')`;
         axios.get(`${listUri}?$select=ListItemEntityTypeFullName`, testVariables.headers.verbose)
-          .then((response: any) => {
+          .then(r => {
             return axios.post(
               `${listUri}/items`, {
-                __metadata: { type: response.data.d.ListItemEntityTypeFullName },
+                __metadata: { type: r.data.d.ListItemEntityTypeFullName },
                 Title: 'New item'
               }, {
                 headers: {
@@ -237,10 +237,10 @@ describe(`Proxy tests`, () => {
           axios.get(`${listUri}?$select=ListItemEntityTypeFullName`, testVariables.headers.verbose),
           axios.get(`${listUri}/items?$select=Id&$top=1`, testVariables.headers.verbose)
         ])
-          .then((response: any) => {
+          .then(r => {
             return axios.post(
-              `${listUri}/items(${response[1].data.d.results[0].Id})`, {
-                __metadata: { type: response[0].data.d.ListItemEntityTypeFullName },
+              `${listUri}/items(${r[1].data.d.results[0].Id})`, {
+                __metadata: { type: r[0].data.d.ListItemEntityTypeFullName },
                 Title: 'Updated item'
               }, {
                 headers: {
@@ -266,10 +266,10 @@ describe(`Proxy tests`, () => {
           axios.get(`${listUri}?$select=ListItemEntityTypeFullName`, testVariables.headers.verbose),
           axios.get(`${listUri}/items?$select=Id&$top=1`, testVariables.headers.verbose)
         ])
-          .then((response: any) => {
+          .then(r => {
             return axios.patch(
-              `${listUri}/items(${response[1].data.d.results[0].Id})`, {
-                __metadata: { type: response[0].data.d.ListItemEntityTypeFullName },
+              `${listUri}/items(${r[1].data.d.results[0].Id})`, {
+                __metadata: { type: r[0].data.d.ListItemEntityTypeFullName },
                 Title: 'Updated item'
               }, {
                 headers: {
@@ -306,9 +306,9 @@ describe(`Proxy tests`, () => {
 
         const listUri = `${proxyRootUri}/_api/web/lists/getByTitle('${testVariables.newListName}')`;
         axios.get(`${listUri}/items?$select=Id&$top=1`, testVariables.headers.verbose)
-          .then((response: any) => {
+          .then(r => {
             return axios.post(
-              `${listUri}/items(${response.data.d.results[0].Id})`, null, {
+              `${listUri}/items(${r.data.d.results[0].Id})`, null, {
                 headers: {
                   'X-RequestDigest': getRequestDigest(),
                   'Accept': 'application/json;odata=verbose',
@@ -330,9 +330,9 @@ describe(`Proxy tests`, () => {
           this.timeout(30 * 1000);
 
           axios.get(`${proxyRootUri}/_api/web?$select=Id`, testVariables.headers.minimalmetadata)
-            .then(response => {
-              expect(response.data).to.have.property('odata.metadata');
-              expect(response.data).to.not.have.property('__metadata');
+            .then(r => {
+              expect(r.data).to.have.property('odata.metadata');
+              expect(r.data).to.not.have.property('__metadata');
               done();
             })
             .catch(done);
@@ -343,10 +343,10 @@ describe(`Proxy tests`, () => {
           this.timeout(30 * 1000);
 
           axios.get(`${proxyRootUri}/_api/web?$select=Id`, testVariables.headers.nometadata)
-            .then(response => {
-              expect(response.data).to.have.property('Id');
-              expect(response.data).to.not.have.property('odata.metadata');
-              expect(response.data).to.not.have.property('__metadata');
+            .then(r => {
+              expect(r.data).to.have.property('Id');
+              expect(r.data).to.not.have.property('odata.metadata');
+              expect(r.data).to.not.have.property('__metadata');
               done();
             })
             .catch(done);
@@ -361,9 +361,9 @@ describe(`Proxy tests`, () => {
 
           const listUri = `${proxyRootUri}/_api/web/lists/getByTitle('${testVariables.newListName}')`;
           axios.get(`${listUri}?$select=ListItemEntityTypeFullName`, testVariables.headers.verbose)
-            .then((response: any) => {
+            .then(r => {
 
-              const listItemEntityTypeFullName: string = response.data.d.ListItemEntityTypeFullName;
+              const listItemEntityTypeFullName: string = r.data.d.ListItemEntityTypeFullName;
               const boundary = `batch_${Util.getGUID()}`;
               const changeset = `changeset_${Util.getGUID()}`;
 
@@ -373,7 +373,7 @@ describe(`Proxy tests`, () => {
                 --${boundary}
                 Content-Type: multipart/mixed; boundary="${changeset}"
 
-                ${items.map((item: string) => {
+                ${items.map(item => {
                   return trimMultiline(`
                     --${changeset}
                     Content-Type: application/http
@@ -417,9 +417,9 @@ describe(`Proxy tests`, () => {
 
           const listUri = `${proxyRootUri}/_api/web/lists/getByTitle('${testVariables.newListName}')`;
           axios.get(`${listUri}?$select=ListItemEntityTypeFullName`, testVariables.headers.verbose)
-            .then((response: any) => {
+            .then(r => {
 
-              const listItemEntityTypeFullName: string = response.data.d.ListItemEntityTypeFullName;
+              const listItemEntityTypeFullName: string = r.data.d.ListItemEntityTypeFullName;
               const boundary = `batch_${Util.getGUID()}`;
               const changeset = `changeset_${Util.getGUID()}`;
 
@@ -429,7 +429,7 @@ describe(`Proxy tests`, () => {
                 --${boundary}
                 Content-Type: multipart/mixed; boundary="${changeset}"
 
-                ${dragons.map((dragon: string) => {
+                ${dragons.map(dragon => {
                   return trimMultiline(`
                     --${changeset}
                     Content-Type: application/http
@@ -490,7 +490,7 @@ describe(`Proxy tests`, () => {
                 --${boundary}
                 Content-Type: multipart/mixed; boundary="${changeset}"
 
-                ${items.map((item: any) => {
+                ${items.map(item => {
                   const body = `{"__metadata":{"type":"${listItemEntityTypeFullName}"},"Title":"${item.Title} _updated"}`;
                   return trimMultiline(`
                     --${changeset}
@@ -554,7 +554,7 @@ describe(`Proxy tests`, () => {
                 --${boundary}
                 Content-Type: multipart/mixed; boundary="${changeset}"
 
-                ${items.map((item: any) => {
+                ${items.map(item => {
                   return trimMultiline(`
                     --${changeset}
                     Content-Type: application/http
@@ -593,10 +593,10 @@ describe(`Proxy tests`, () => {
 
         const listUri = `${proxyRootUri}/_api/web/lists/getByTitle('${testVariables.newListName}')`;
         axios.get(`${listUri}?$select=ListItemEntityTypeFullName`, testVariables.headers.verbose)
-          .then((response: any) => {
+          .then(r => {
             return axios.post(
               `${listUri}/items`, {
-                __metadata: { type: response.data.d.ListItemEntityTypeFullName },
+                __metadata: { type: r.data.d.ListItemEntityTypeFullName },
                 Title: 'Item with attachment'
               }, {
                 headers: {
@@ -607,12 +607,12 @@ describe(`Proxy tests`, () => {
               }
             );
           })
-          .then(response => {
+          .then(r => {
             const attachmentFile: string = path.join(__dirname, './attachments/image.png');
             const fileName: string = `${path.parse(attachmentFile).name}${path.parse(attachmentFile).ext}`;
             const fileBuffer: Buffer = fs.readFileSync(attachmentFile);
             return axios.post(
-              `${listUri}/items(${response.data.d.Id})/AttachmentFiles/add(FileName='${fileName}')`,
+              `${listUri}/items(${r.data.d.Id})/AttachmentFiles/add(FileName='${fileName}')`,
               fileBuffer, {
                 headers: {
                   'X-RequestDigest': getRequestDigest(),
@@ -768,14 +768,14 @@ describe(`Proxy tests`, () => {
           }),
           sp.web.select('Title').get()
         ])
-          .then(response => {
-            xmlStringToJson(response[0].data, (err: any, soapResp: any) => {
+          .then(r => {
+            xmlStringToJson(r[0].data, (err: any, soapResp: any) => {
               if (err) {
                 done(err);
               } else {
                 const webData = soapResp['soap:Envelope']['soap:Body'][0]
                   .GetWebResponse[0].GetWebResult[0].Web[0].$;
-                const pnpResp: any = response[1];
+                const pnpResp: any = r[1];
                 expect(webData.Title).to.be.equal(pnpResp.Title);
                 done();
               }
@@ -818,9 +818,9 @@ describe(`Proxy tests`, () => {
           }),
           sp.web.select('Title').get()
         ])
-          .then(response => {
-            const csomResp: any = response[0].data[4];
-            const pnpResp: any = response[1];
+          .then(r => {
+            const csomResp: any = r[0].data[4];
+            const pnpResp: any = r[1];
             expect(csomResp.Title).to.be.equal(pnpResp.Title);
             done();
           })

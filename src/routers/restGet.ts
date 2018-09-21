@@ -1,7 +1,8 @@
-import { ProxyUtils } from '../utils';
-import { IProxyContext, IProxySettings } from '../interfaces';
-import { ISPRequest } from 'sp-request';
 import { Request, Response, NextFunction } from 'express';
+import { ProxyUtils } from '../utils';
+
+import { ISPRequest } from 'sp-request';
+import { IProxyContext, IProxySettings } from '../interfaces';
 
 export class RestGetRouter {
 
@@ -35,7 +36,7 @@ export class RestGetRouter {
       'if-none-match', 'connection', 'cache-control', 'user-agent',
       'accept-encoding', 'x-requested-with', 'accept-language'
     ];
-    Object.keys(req.headers).forEach((prop: string) => {
+    Object.keys(req.headers).forEach(prop => {
       if (ignoreHeaders.indexOf(prop.toLowerCase()) === -1) {
         if (prop.toLowerCase() === 'accept' && req.headers[prop] !== '*/*') {
           requestHeadersPass.Accept = req.headers[prop];
@@ -55,26 +56,26 @@ export class RestGetRouter {
       agent: this.util.isUrlHttps(endpointUrl) ? this.settings.agent : undefined,
       ...additionalOptions
     })
-      .then(resp => {
+      .then(r => {
         if (this.settings.debugOutput) {
-          console.log(resp.statusCode, resp.body);
+          console.log(r.statusCode, r.body);
         }
         // Paged collections patch
-        if (typeof resp.body['odata.nextLink'] === 'string') {
-          resp.body['odata.nextLink'] = this.util.buildProxyEndpointUrl(resp.body['odata.nextLink']);
+        if (typeof r.body['odata.nextLink'] === 'string') {
+          r.body['odata.nextLink'] = this.util.buildProxyEndpointUrl(r.body['odata.nextLink']);
         }
-        if (resp.body.d && typeof resp.body.d.__next === 'string') {
-          resp.body.d.__next = this.util.buildProxyEndpointUrl(resp.body.d.__next);
+        if (r.body.d && typeof r.body.d.__next === 'string') {
+          r.body.d.__next = this.util.buildProxyEndpointUrl(r.body.d.__next);
         }
         // OData patch to PnPjs chained requests work
-        if (typeof resp.body['odata.metadata'] === 'string') {
-          resp.body['odata.metadata'] = this.util.buildProxyEndpointUrl(resp.body['odata.metadata']);
+        if (typeof r.body['odata.metadata'] === 'string') {
+          r.body['odata.metadata'] = this.util.buildProxyEndpointUrl(r.body['odata.metadata']);
         }
-        res.status(resp.statusCode);
+        res.status(r.statusCode);
         if (isDoc) {
-          res.send(resp.body);
+          res.send(r.body);
         } else {
-          res.json(resp.body);
+          res.json(r.body);
         }
       })
       .catch(err => {

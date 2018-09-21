@@ -11,6 +11,7 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 const settings: IProxySettings = {
   configPath: argv.p || './config/private.wcf.json',
   staticRoot: './test/manual/static',
+  debugOutput: true
   // protocol: 'https'
 };
 

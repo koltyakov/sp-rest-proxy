@@ -1,8 +1,8 @@
-import { ProxyUtils } from '../utils';
-import { IProxyContext, IProxySettings } from '../interfaces';
-import { ISPRequest } from 'sp-request';
-import { IAuthResponse } from 'node-sp-auth';
 import { Request, Response, NextFunction } from 'express';
+import { ProxyUtils } from '../utils';
+
+import { ISPRequest } from 'sp-request';
+import { IProxyContext, IProxySettings } from '../interfaces';
 
 export class PostRouter {
 
@@ -17,7 +17,7 @@ export class PostRouter {
     this.util = new ProxyUtils(this.ctx);
   }
 
-  public router = (req: Request, res: Response, next?: NextFunction) => {
+  public router = (req: Request, res: Response, _next?: NextFunction) => {
     const endpointUrl = this.util.buildEndpointUrl(req.originalUrl);
     this.spr = this.util.getCachedRequest(this.spr);
     if (!this.settings.silentMode) {
@@ -31,7 +31,7 @@ export class PostRouter {
         postBody = postBody.replace(regExpOrigin, this.ctx.siteUrl);
       }
       const requestHeadersPass = {};
-      Object.keys(req.headers).forEach((prop: string) => {
+      Object.keys(req.headers).forEach(prop => {
         if (prop.toLowerCase() === 'accept' && req.headers[prop] !== '*/*') {
           // tslint:disable-next-line:no-string-literal
           requestHeadersPass['Accept'] = req.headers[prop];
@@ -51,7 +51,7 @@ export class PostRouter {
         }
       });
       this.util.getAuthOptions()
-        .then((opt: IAuthResponse) => {
+        .then(opt => {
           const headers = {
             ...opt.headers,
             ...requestHeadersPass
@@ -67,13 +67,13 @@ export class PostRouter {
             agent: this.util.isUrlHttps(endpointUrl) ? this.settings.agent : undefined
           });
         })
-        .then(resp => {
+        .then(r => {
           if (this.settings.debugOutput) {
-            console.log(resp.statusCode, resp.body);
+            console.log(r.statusCode, r.body);
           }
-          res.status(resp.statusCode);
-          res.contentType(resp.headers['content-type'] || '');
-          res.send(resp.body);
+          res.status(r.statusCode);
+          res.contentType(r.headers['content-type'] || '');
+          res.send(r.body);
         })
         .catch(err => {
           res.status(err.statusCode >= 100 && err.statusCode < 600 ? err.statusCode : 500);

@@ -10,16 +10,16 @@ export class PostRouter extends BasicRouter {
   }
 
   public router = (req: Request, res: Response, _next?: NextFunction) => {
+    this.spr = this.getHttpClient();
     const endpointUrl = this.util.buildEndpointUrl(req.originalUrl);
-    this.spr = this.util.getCachedRequest(this.spr);
-    this.logger.info('\nPOST: ' + endpointUrl);
-
-    let postBody = '';
-    req.on('data', chunk => postBody += chunk);
+    this.logger.info('\nPOST (generic): ' + endpointUrl);
+    const agent = this.util.isUrlHttps(endpointUrl) ? this.settings.agent : undefined;
+    let body = '';
+    req.on('data', chunk => body += chunk);
     req.on('end', () => {
       if (req.headers.origin) {
         const regExpOrigin = new RegExp(req.headers.origin as any, 'g');
-        postBody = postBody.replace(regExpOrigin, this.ctx.siteUrl);
+        body = body.replace(regExpOrigin, this.ctx.siteUrl);
       }
       const requestHeadersPass = {};
       Object.keys(req.headers).forEach(prop => {
@@ -47,31 +47,14 @@ export class PostRouter extends BasicRouter {
             ...opt.headers,
             ...requestHeadersPass
           };
-          const options = {
+          const options: any = {
             json: false,
             processData: false
           };
-          return this.spr.post(endpointUrl, {
-            headers: headers,
-            body: postBody,
-            ...options as any,
-            agent: this.util.isUrlHttps(endpointUrl) ? this.settings.agent : undefined
-          });
+          return this.spr.post(endpointUrl, { headers, body, ...options, agent });
         })
-        .then(r => {
-          this.logger.verbose(r.statusCode, r.body);
-          res.status(r.statusCode);
-          res.contentType(r.headers['content-type'] || '');
-          res.send(r.body);
-        })
-        .catch(err => {
-          res.status(err.statusCode >= 100 && err.statusCode < 600 ? err.statusCode : 500);
-          if (err.response && err.response.body) {
-            res.json(err.response.body);
-          } else {
-            res.send(err.message);
-          }
-        });
+          .then(r => this.transmitResponse(res, r))
+          .catch(err => this.transmitError(res, err));
     });
   }
 

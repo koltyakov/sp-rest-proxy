@@ -1,4 +1,5 @@
 export const enum LogLevel {
+  Debug = 5,
   Verbose = 4,
   Info = 3,
   Warning = 2,
@@ -8,7 +9,14 @@ export const enum LogLevel {
 
 export class Logger {
 
-  constructor(private level: LogLevel | number = LogLevel.Info) { /**/ }
+  constructor(public level: LogLevel | number = LogLevel.Info) { /**/ }
+
+  public debug(...args: any[]) {
+    if (this.level >= LogLevel.Debug) {
+      // tslint:disable-next-line:no-console
+      console.log(...args);
+    }
+  }
 
   public verbose(...args: any[]) {
     if (this.level >= LogLevel.Verbose) {

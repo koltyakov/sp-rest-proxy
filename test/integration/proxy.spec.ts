@@ -322,7 +322,7 @@ describe(`Proxy tests`, () => {
 
       });
 
-      if (legacy) {
+      if (!legacy) {
 
         it(`should fetch minimalmetadata`, function(done: MochaDone): void {
           this.timeout(30 * 1000);

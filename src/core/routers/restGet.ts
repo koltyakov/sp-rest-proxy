@@ -10,12 +10,12 @@ export class RestGetRouter extends BasicRouter {
   }
 
   public router = (req: Request, res: Response, _next?: NextFunction) => {
+    this.spr = this.getHttpClient();
     const endpointUrl = this.util.buildEndpointUrl(req.originalUrl);
-    this.spr = this.util.getCachedRequest(this.spr);
     this.logger.info('\nGET: ' + endpointUrl);
-
+    const agent = this.util.isUrlHttps(endpointUrl) ? this.settings.agent : undefined;
     const isDoc = endpointUrl.split('?')[0].toLowerCase().endsWith('/$value');
-    const requestHeadersPass: any = {};
+    const headers: any = {};
     const additionalOptions: any = {};
     if (isDoc) {
       additionalOptions.encoding = null;
@@ -28,22 +28,17 @@ export class RestGetRouter extends BasicRouter {
     Object.keys(req.headers).forEach(prop => {
       if (ignoreHeaders.indexOf(prop.toLowerCase()) === -1) {
         if (prop.toLowerCase() === 'accept' && req.headers[prop] !== '*/*') {
-          requestHeadersPass.Accept = req.headers[prop];
+          headers.Accept = req.headers[prop];
         } else if (prop.toLowerCase() === 'content-type') {
-          requestHeadersPass['Content-Type'] = req.headers[prop];
+          headers['Content-Type'] = req.headers[prop];
         } else {
-          requestHeadersPass[prop] = req.headers[prop];
+          headers[prop] = req.headers[prop];
         }
       }
     });
-    this.logger.verbose('\nHeaders:\n', JSON.stringify(req.headers, null, 2));
-    this.spr.get(endpointUrl, {
-      headers: requestHeadersPass,
-      agent: this.util.isUrlHttps(endpointUrl) ? this.settings.agent : undefined,
-      ...additionalOptions
-    })
+    // this.logger.debug('\nHeaders:\n', JSON.stringify(req.headers, null, 2));
+    this.spr.get(endpointUrl, { headers, ...additionalOptions, agent })
       .then(r => {
-        this.logger.verbose(r.statusCode, r.body);
         // Paged collections patch
         if (typeof r.body['odata.nextLink'] === 'string') {
           r.body['odata.nextLink'] = this.util.buildProxyEndpointUrl(r.body['odata.nextLink']);
@@ -55,21 +50,10 @@ export class RestGetRouter extends BasicRouter {
         if (typeof r.body['odata.metadata'] === 'string') {
           r.body['odata.metadata'] = this.util.buildProxyEndpointUrl(r.body['odata.metadata']);
         }
-        res.status(r.statusCode);
-        if (isDoc) {
-          res.send(r.body);
-        } else {
-          res.json(r.body);
-        }
+        return r;
       })
-      .catch(err => {
-        res.status(err.statusCode >= 100 && err.statusCode < 600 ? err.statusCode : 500);
-        if (err.response && err.response.body) {
-          res.json(err.response.body);
-        } else {
-          res.send(err.message);
-        }
-      });
+      .then(r => this.transmitResponse(res, r))
+      .catch(err => this.transmitError(res, err));
   }
 
 }

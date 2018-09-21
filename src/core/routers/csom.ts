@@ -10,11 +10,12 @@ export class CsomRouter extends BasicRouter {
   }
 
   public router = (req: Request, res: Response, _next?: NextFunction) => {
+    this.spr = this.getHttpClient();
     const endpointUrl = this.util.buildEndpointUrl(req.originalUrl);
-    this.spr = this.util.getCachedRequest(this.spr);
-    this.logger.info('\nPOST: ' + endpointUrl);
-    let csomPackage = '';
-    req.on('data', chunk => csomPackage += chunk);
+    this.logger.info('\nPOST (CSOM): ' + endpointUrl);
+    const agent = this.util.isUrlHttps(endpointUrl) ? this.settings.agent : undefined;
+    let body = '';
+    req.on('data', chunk => body += chunk);
     req.on('end', () => {
       Promise.all([
         this.spr.requestDigest((endpointUrl).split('/_vti_bin')[0]),
@@ -30,33 +31,10 @@ export class CsomRouter extends BasicRouter {
             'X-Requested-With': 'XMLHttpRequest',
             'X-RequestDigest': digest
           };
-          return this.spr.post(endpointUrl, {
-            headers: headers,
-            body: csomPackage,
-            json: false,
-            agent: this.util.isUrlHttps(endpointUrl) ? this.settings.agent : undefined
-          });
+          return this.spr.post(endpointUrl, { headers, body, agent, json: false });
         })
-        .then(r => {
-          this.logger.verbose(r.statusCode, r.body);
-          res.status(r.statusCode);
-          if (typeof r.body === 'string') {
-            try {
-              const result = JSON.parse(r.body);
-              res.json(result);
-            } catch (ex) {
-              res.status(r.statusCode);
-              res.send(r.body);
-              res.end();
-            }
-          } else {
-            res.json(r.body);
-          }
-        })
-        .catch(err => {
-          res.status(err.statusCode);
-          res.json(err);
-        });
+        .then(r => this.transmitResponse(res, r))
+        .catch(err => this.transmitError(res, err));
     });
   }
 

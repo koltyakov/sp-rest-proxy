@@ -1,27 +1,18 @@
 import { Request, Response, NextFunction } from 'express';
-import { ProxyUtils } from '../utils';
 
-import { ISPRequest } from 'sp-request';
+import { BasicRouter } from '../BasicRouter';
 import { IProxyContext, IProxySettings } from '../interfaces';
 
-export class RestPostRouter {
+export class RestPostRouter extends BasicRouter {
 
-  private spr: ISPRequest;
-  private ctx: IProxyContext;
-  private settings: IProxySettings;
-  private util: ProxyUtils;
-
-  constructor (context: IProxyContext, settings: IProxySettings) {
-    this.ctx = context;
-    this.settings = settings;
-    this.util = new ProxyUtils(this.ctx);
+  constructor(context: IProxyContext, settings: IProxySettings) {
+    super(context, settings);
   }
 
   public router = (request: Request, response: Response, next?: NextFunction) => {
     const endpointUrl = this.util.buildEndpointUrl(request.originalUrl);
-    if (!this.settings.silentMode) {
-      console.log('\nPOST: ' + endpointUrl);
-    }
+    this.logger.info('\nPOST: ' + endpointUrl);
+
     let reqBody = '';
     if (request.body) {
       reqBody = request.body;
@@ -36,9 +27,7 @@ export class RestPostRouter {
 
   private processPostRequest = (reqBodyData: any, req: Request, res: Response) => {
     const endpointUrlStr = this.util.buildEndpointUrl(req.originalUrl);
-    if (!this.settings.silentMode) {
-      console.log('Request body:', reqBodyData);
-    }
+    this.logger.verbose('Request body:', reqBodyData);
     this.spr = this.util.getCachedRequest(this.spr);
     this.spr.requestDigest((endpointUrlStr).split('/_api')[0])
       .then(digest => {
@@ -78,10 +67,7 @@ export class RestPostRouter {
             // requestHeadersPass['Content-Length'] = reqBodyData.byteLength;
           }
         }
-        if (this.settings.debugOutput) {
-          console.log('\nHeaders:');
-          console.log(JSON.stringify(requestHeadersPass, null, 2));
-        }
+        this.logger.verbose('\nHeaders:\n', JSON.stringify(requestHeadersPass, null, 2));
         // JSOM empty object
         if (typeof reqBodyData === 'object' && Object.keys(reqBodyData).length === 0) {
           reqBodyData = '{}';
@@ -94,9 +80,7 @@ export class RestPostRouter {
         });
       })
       .then(r => {
-        if (this.settings.debugOutput) {
-          console.log(r.statusCode, r.body);
-        }
+        this.logger.verbose(r.statusCode, r.body);
         res.status(r.statusCode);
         if (typeof r.body === 'string') {
           res.json(JSON.parse(r.body));

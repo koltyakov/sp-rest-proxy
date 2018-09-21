@@ -1,14 +1,14 @@
-import RestProxy from './RestProxy';
-import { IProxySettings } from './interfaces';
+import RestProxy from './core/RestProxy';
+import { logger } from './utils/logger';
+import { IProxySettings } from './core/interfaces';
 
 const settings: IProxySettings = {
   configPath: './config/private.json',
-  port: 8080,
-  // protocol: 'https'
+  port: 8080
 };
 
 if (process.env.HTTP_PROXY || process.env.HTTPS_PROXY) {
-  console.log('Your Node.js environment is configured to use a network proxy.');
+  logger.error('Your Node.js environment is configured to use a network proxy.');
 }
 
 const restProxy = new RestProxy(settings);

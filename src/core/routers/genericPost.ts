@@ -1,28 +1,19 @@
 import { Request, Response, NextFunction } from 'express';
-import { ProxyUtils } from '../utils';
 
-import { ISPRequest } from 'sp-request';
+import { BasicRouter } from '../BasicRouter';
 import { IProxyContext, IProxySettings } from '../interfaces';
 
-export class PostRouter {
+export class PostRouter extends BasicRouter {
 
-  private spr: ISPRequest;
-  private ctx: IProxyContext;
-  private settings: IProxySettings;
-  private util: ProxyUtils;
-
-  constructor (context: IProxyContext, settings: IProxySettings) {
-    this.ctx = context;
-    this.settings = settings;
-    this.util = new ProxyUtils(this.ctx);
+  constructor(context: IProxyContext, settings: IProxySettings) {
+    super(context, settings);
   }
 
   public router = (req: Request, res: Response, _next?: NextFunction) => {
     const endpointUrl = this.util.buildEndpointUrl(req.originalUrl);
     this.spr = this.util.getCachedRequest(this.spr);
-    if (!this.settings.silentMode) {
-      console.log('\nPOST: ' + endpointUrl);
-    }
+    this.logger.info('\nPOST: ' + endpointUrl);
+
     let postBody = '';
     req.on('data', chunk => postBody += chunk);
     req.on('end', () => {
@@ -68,9 +59,7 @@ export class PostRouter {
           });
         })
         .then(r => {
-          if (this.settings.debugOutput) {
-            console.log(r.statusCode, r.body);
-          }
+          this.logger.verbose(r.statusCode, r.body);
           res.status(r.statusCode);
           res.contentType(r.headers['content-type'] || '');
           res.send(r.body);

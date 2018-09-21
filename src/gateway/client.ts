@@ -1,29 +1,28 @@
 import * as SocketIOClient from 'socket.io-client';
 import * as httpRequest from 'request';
 
-import { IGatewayClientSettings, IProxySettings } from '../interfaces';
+import { Logger } from '../utils/logger';
+import { IGatewayClientSettings, IProxySettings } from '../core/interfaces';
 
 export class Client {
 
-  // private settings: IGatewayClientSettings;
-  private proxy: IProxySettings;
   private socket: SocketIOClient.Socket;
+  private logger: Logger;
 
-  constructor (settings: IGatewayClientSettings, proxy: IProxySettings) {
+  constructor (private settings: IGatewayClientSettings, private proxy: IProxySettings) {
     this.socket = SocketIOClient(settings.serverUrl);
-    // this.settings = settings;
-    this.proxy = proxy;
+    this.logger = new Logger(proxy.logLevel);
   }
 
   public init = () => {
     this.socket.on('REQUEST', request => {
-      let endpoint = this.enpointUrl(request.url);
-      console.log(`${request.method} request to ${endpoint}`);
+      const endpoint = this.enpointUrl(request.url);
+      this.logger.info(`${request.method} request to ${endpoint}`);
       httpRequest(endpoint, {
         method: request.method,
         headers: request.headers
       }, (err, response) => {
-        let responsePackage = {
+        const responsePackage = {
           transaction: request.transaction,
           err,
           response
@@ -34,8 +33,8 @@ export class Client {
   }
 
   private enpointUrl = (relativeUrl: string): string => {
-    let hostname = this.proxy.hostname;
-    let port = this.proxy.port;
+    const hostname = this.proxy.hostname;
+    const port = this.proxy.port;
     return `http://${hostname}:${port}${relativeUrl}`
       .replace(':80/', '/').replace(':443/', '/');
   }

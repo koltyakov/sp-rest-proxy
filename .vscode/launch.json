@@ -11,7 +11,8 @@
       "program": "${workspaceRoot}/node_modules/ts-node/dist/bin.js",
       "args": ["${relativeFile}"],
       "cwd": "${workspaceRoot}",
-      "protocol": "inspector"
+      "protocol": "inspector",
+      "console": "integratedTerminal"
     }, {
       "name": "Current TS Tests File",
       "type": "node",
@@ -19,7 +20,8 @@
       "program": "${workspaceRoot}/node_modules/mocha/bin/_mocha",
       "args": ["-r", "ts-node/register", "${relativeFile}"],
       "cwd": "${workspaceRoot}",
-      "protocol": "inspector"
+      "protocol": "inspector",
+      "console": "integratedTerminal"
     }
   ]
 }

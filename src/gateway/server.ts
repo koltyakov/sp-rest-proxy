@@ -6,24 +6,24 @@ import * as bodyParser from 'body-parser';
 import * as cors from 'cors';
 
 import { generateGuid } from '../utils';
-import { IGatewayServerSettings, IProxySettings } from '../interfaces';
+import { IGatewayServerSettings, IProxySettings } from '../core/interfaces';
+import { Logger } from '../utils/logger';
 
 export class Server {
-
-  private settings: IGatewayServerSettings;
-  private proxy: IProxySettings;
 
   private server: http.Server;
   private io: SocketIO.Server;
   private socket: SocketIO.Socket;
-  private app: express.Application;
+  private logger: Logger;
 
-  constructor (settings: IGatewayServerSettings, proxy: IProxySettings, app: express.Application) {
-    this.app = app;
+  constructor (
+    private settings: IGatewayServerSettings,
+    private proxy: IProxySettings,
+    private app: express.Application
+  ) {
     this.server = http.createServer(this.app);
     this.io = SocketIO(this.server);
-    this.settings = settings;
-    this.proxy = proxy;
+    this.logger = new Logger(proxy.logLevel);
   }
 
   public init = (): void => {
@@ -32,7 +32,7 @@ export class Server {
 
       this.socket = socket;
 
-      let bodyParserRaw = bodyParser.raw({
+      const bodyParserRaw = bodyParser.raw({
         type: '*/*',
         limit: this.proxy.rawBodyLimitSize,
         verify: (req, _res, buf, encoding) => {
@@ -69,19 +69,12 @@ export class Server {
 
   private getTransmitter = (req: express.Request, res: express.Response): void => {
     const transaction = generateGuid();
-    if (!this.proxy.silentMode) {
-      console.log('\nGET: ' + req.originalUrl);
-    }
+    this.logger.info('\nGET: ' + req.originalUrl);
     const responseCallback = data => {
       if (data.transaction === transaction) {
-        let statusCode = data.response.statusCode;
+        const statusCode = data.response.statusCode;
         let body = data.response.body;
-
-        try {
-          body = JSON.parse(body);
-        } catch (ex) {
-          //
-        }
+        try { body = JSON.parse(body); } catch (ex) { /**/ }
         res.status(statusCode);
         res.contentType(data.response.headers['content-type']);
         res.send(body);
@@ -89,7 +82,7 @@ export class Server {
       }
     };
     this.socket.on('RESPONSE', responseCallback);
-    let request = {
+    const request = {
       url: req.originalUrl,
       method: 'GET',
       headers: req.headers,
@@ -100,18 +93,12 @@ export class Server {
 
   private postTransmitter = (req: express.Request, res: express.Response): void => {
     const transaction = generateGuid();
-    if (!this.proxy.silentMode) {
-      console.log('\nPOST: ' + req.originalUrl);
-    }
+    this.logger.info('\nPOST: ' + req.originalUrl);
     const responseCallback = data => {
       if (data.transaction === transaction) {
-        let statusCode = data.response.statusCode;
+        const statusCode = data.response.statusCode;
         let body = data.response.body;
-        try {
-          body = JSON.parse(body);
-        } catch (ex) {
-          //
-        }
+        try { body = JSON.parse(body); } catch (ex) { /**/ }
         res.status(statusCode);
         res.json(body);
         this.socket.removeListener('RESPONSE', responseCallback);
@@ -135,7 +122,7 @@ export class Server {
       }
     };
     extractPostRequestBody(req, body => {
-      let request = {
+      const request = {
         url: req.originalUrl,
         method: 'POST',
         headers: req.headers,

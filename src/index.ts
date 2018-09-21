@@ -1,2 +1,2 @@
-import RestProxy from './RestProxy';
+import RestProxy from './core/RestProxy';
 module.exports = RestProxy;

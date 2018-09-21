@@ -1,22 +1,19 @@
-import { AuthConfig as SPAuthConfigirator } from 'node-sp-auth-config';
-import * as path from 'path';
+import { resolve } from 'path';
+import { AuthConfig } from 'node-sp-auth-config';
 import * as colors from 'colors';
 
+import { logger } from '../src/utils/logger';
 import { TestsConfigs } from './configs';
 
 async function checkOrPromptForIntegrationConfigCreds (): Promise<void> {
 
-  let configs = [];
-
-  for (let testConfig of TestsConfigs) {
-    console.log(`\n=== ${colors.bold.yellow(`${testConfig.environmentName} Credentials`)} ===\n`);
-    await (new SPAuthConfigirator({
-      configPath: testConfig.configPath
-    })).getContext();
-    console.log(colors.grey(`Gotcha ${path.resolve(testConfig.configPath)}`));
+  for (const { configPath, environmentName } of TestsConfigs) {
+    logger.info(`\n=== ${colors.bold.yellow(`${environmentName} Credentials`)} ===\n`);
+    await new AuthConfig({ configPath }).getContext();
+    logger.info(colors.grey(`Gotcha ${resolve(configPath)}`));
   }
 
-  console.log('\n');
+  logger.info('\n');
 
 }
 

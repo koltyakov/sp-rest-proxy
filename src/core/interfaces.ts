@@ -3,6 +3,7 @@ import { IAuthConfigSettings } from 'node-sp-auth-config';
 import { Router } from 'express';
 import { Agent, Server as HttpsServer } from 'https';
 import { Server as HttpServer } from 'http';
+import { LogLevel } from '../utils/logger';
 
 export interface IProxySettings {
   hostname?: string;
@@ -22,8 +23,7 @@ export interface IProxySettings {
 
   processBatchMultipartBody?: (body: string) => string;
 
-  debugOutput?: boolean;
-  silentMode?: boolean;
+  logLevel?: LogLevel;
 }
 
 export interface ISSLConf {

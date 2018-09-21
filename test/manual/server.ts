@@ -1,17 +1,20 @@
 import * as parseArgs from 'minimist';
 
-import RestProxy, { IProxySettings } from '../../src/RestProxy';
+import RestProxy, { IProxySettings } from '../../src/core/RestProxy';
+import { LogLevel } from '../../src/utils/logger';
 
 const argv = parseArgs(process.argv.slice(2));
 
+// To test with Fidler uncomment following lines:
 // process.env.http_proxy = 'http://127.0.0.1:8888';
 // process.env.https_proxy = 'http://127.0.0.1:8888';
+
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 const settings: IProxySettings = {
-  configPath: argv.p || './config/private.wcf.json',
+  configPath: argv.p || './config/private.json',
   staticRoot: './test/manual/static',
-  debugOutput: true
+  logLevel: LogLevel.Verbose
   // protocol: 'https'
 };
 

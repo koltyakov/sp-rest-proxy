@@ -9,9 +9,10 @@ import { parseString as xmlStringToJson } from 'xml2js';
 import { PnpNode } from 'sp-pnp-node';
 import * as request from 'request-promise';
 
-import RestProxy, { IProxySettings, IProxyContext } from '../../src/RestProxy';
+import RestProxy, { IProxySettings, IProxyContext } from '../../src/core/RestProxy';
 import { trimMultiline } from '../../src/utils';
 import { TestsConfigs } from '../configs';
+import { LogLevel } from '../../src/utils/logger';
 
 const testVariables = {
   newListName: 'SPRP List',
@@ -39,7 +40,8 @@ const getRequestDigest = (): string => {
   return '__proxy_can_do_it_without_digest';
 };
 
-// import CertificateStore from '@microsoft/gulp-core-build-serve/lib/CertificateStore';
+// import * as CertStore from '@microsoft/gulp-core-build-serve/lib/CertificateStore';
+// const CertificateStore = CertStore.CertificateStore || CertStore.default;
 // const protocol: any = {
 //   protocol: 'https',
 //   ssl: {
@@ -50,30 +52,28 @@ const getRequestDigest = (): string => {
 
 describe(`Proxy tests`, () => {
 
-  for (const testConfig of TestsConfigs) {
+  for (const { environmentName, configPath, legacy } of TestsConfigs) {
 
-    describe(`Run tests in ${testConfig.environmentName}`, () => {
+    describe(`Run tests in ${environmentName}`, () => {
 
-      let expressServer: any;
-      let proxyContext: IProxyContext;
-      let proxySettings: IProxySettings;
+      let expressServer: any = null;
+      let proxyContext: IProxyContext = null;
+      let proxySettings: IProxySettings = null;
 
-      let proxyRootUri: string;
-      let webRelativeUrl: string;
+      let proxyRootUri: string = null;
+      let webRelativeUrl: string = null;
 
       before('Start Proxy', function(done: any): void {
         this.timeout(30 * 1000);
 
         process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
-        (new RestProxy({
-          configPath: testConfig.configPath,
+        new RestProxy({
+          configPath,
           staticRoot: './static',
-          // rawBodyLimitSize: '4MB',
-          silentMode: true,
-          protocol: 'https'
-          // ...(protocol || {})
-        })).serve((server, context, settings) => {
+          logLevel: LogLevel.Off,
+          protocol: 'http'
+        }).serve((server, context, settings) => {
           expressServer = server;
           proxyContext = context;
           proxySettings = settings;
@@ -81,12 +81,10 @@ describe(`Proxy tests`, () => {
           webRelativeUrl = `/${proxyContext.siteUrl.replace('://', '').split('/').slice(1, 100).join('/')}`;
           proxyRootUri = `${!settings.protocol ? 'http' : settings.protocol}://${settings.hostname}:${settings.port}${webRelativeUrl}`;
 
-          // Init PnP JS Core for Node.js
+          // Init PnPjs for Node.js
           sp.setup({
             sp: {
-              fetchClientFactory: () => {
-                return new PnpNode(proxyContext);
-              },
+              fetchClientFactory: () => new PnpNode(proxyContext),
               headers: {
                 Accept: 'application/json;odata=verbose'
               },
@@ -324,7 +322,7 @@ describe(`Proxy tests`, () => {
 
       });
 
-      if (!testConfig.legacy) {
+      if (legacy) {
 
         it(`should fetch minimalmetadata`, function(done: MochaDone): void {
           this.timeout(30 * 1000);

@@ -1,28 +1,18 @@
 import { Request, Response, NextFunction } from 'express';
-import { ProxyUtils } from '../utils';
 
-import { ISPRequest } from 'sp-request';
+import { BasicRouter } from '../BasicRouter';
 import { IProxyContext, IProxySettings } from '../interfaces';
 
-export class CsomRouter {
+export class CsomRouter extends BasicRouter {
 
-  private spr: ISPRequest;
-  private ctx: IProxyContext;
-  private settings: IProxySettings;
-  private util: ProxyUtils;
-
-  constructor (context: IProxyContext, settings: IProxySettings) {
-    this.ctx = context;
-    this.settings = settings;
-    this.util = new ProxyUtils(this.ctx);
+  constructor(context: IProxyContext, settings: IProxySettings) {
+    super(context, settings);
   }
 
-  public router = (req: Request, res: Response, next?: NextFunction) => {
+  public router = (req: Request, res: Response, _next?: NextFunction) => {
     const endpointUrl = this.util.buildEndpointUrl(req.originalUrl);
     this.spr = this.util.getCachedRequest(this.spr);
-    if (!this.settings.silentMode) {
-      console.log('\nPOST: ' + endpointUrl);
-    }
+    this.logger.info('\nPOST: ' + endpointUrl);
     let csomPackage = '';
     req.on('data', chunk => csomPackage += chunk);
     req.on('end', () => {
@@ -48,9 +38,7 @@ export class CsomRouter {
           });
         })
         .then(r => {
-          if (this.settings.debugOutput) {
-            console.log(r.statusCode, r.body);
-          }
+          this.logger.verbose(r.statusCode, r.body);
           res.status(r.statusCode);
           if (typeof r.body === 'string') {
             try {

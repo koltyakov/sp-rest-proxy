@@ -1,27 +1,18 @@
 import { Request, Response, NextFunction } from 'express';
-import { ProxyUtils } from '../utils';
 
-import { ISPRequest } from 'sp-request';
+import { BasicRouter } from '../BasicRouter';
 import { IProxyContext, IProxySettings } from '../interfaces';
 
-export class RestBatchRouter {
+export class RestBatchRouter extends BasicRouter {
 
-  private spr: ISPRequest;
-  private ctx: IProxyContext;
-  private settings: IProxySettings;
-  private util: ProxyUtils;
-
-  constructor (context: IProxyContext, settings: IProxySettings) {
-    this.ctx = context;
-    this.settings = settings;
-    this.util = new ProxyUtils(this.ctx);
+  constructor(context: IProxyContext, settings: IProxySettings) {
+    super(context, settings);
   }
 
-  public router = (request: Request, response: Response, next?: NextFunction) => {
+  public router = (request: Request, response: Response, _next?: NextFunction) => {
     const endpointUrl = this.util.buildEndpointUrl(request.originalUrl);
-    if (!this.settings.silentMode) {
-      console.log('\nPOST (batch): ' + endpointUrl);
-    }
+    this.logger.info('\nPOST (batch): ' + endpointUrl);
+
     let reqBody = '';
     if (request.body) {
       reqBody = request.body;
@@ -34,7 +25,7 @@ export class RestBatchRouter {
     }
   }
 
-  private processBatchRequest = (reqBodyData: any, req: Request, res: Response) => {
+  private processBatchRequest(reqBodyData: any, req: Request, res: Response) {
     const endpointUrlStr = this.util.buildEndpointUrl(req.originalUrl);
     reqBodyData = (req as any).rawBody;
     const { processBatchMultipartBody: transform } = this.settings;
@@ -56,9 +47,7 @@ export class RestBatchRouter {
       }).join('\n');
     }
     // req.headers['Content-Length'] = reqBodyData.byteLength;
-    if (!this.settings.silentMode) {
-      console.log('Request body:', reqBodyData);
-    }
+    this.logger.info('Request body:', reqBodyData);
     this.spr = this.util.getCachedRequest(this.spr);
     this.spr.requestDigest((endpointUrlStr).split('/_api')[0])
       .then(digest => {
@@ -88,10 +77,7 @@ export class RestBatchRouter {
           ...requestHeadersPass,
           'X-RequestDigest': requestHeadersPass['X-RequestDigest'] || digest
         };
-        if (this.settings.debugOutput) {
-          console.log('\nHeaders:');
-          console.log(JSON.stringify(requestHeadersPass, null, 2));
-        }
+        this.logger.verbose('\nHeaders:\n', JSON.stringify(requestHeadersPass, null, 2));
         return this.spr.post(endpointUrlStr, {
           headers: requestHeadersPass,
           body: reqBodyData,
@@ -100,9 +86,7 @@ export class RestBatchRouter {
         });
       })
       .then(r => {
-        if (this.settings.debugOutput) {
-          console.log(r.statusCode, r.body);
-        }
+        this.logger.verbose(r.statusCode, r.body);
         res.status(r.statusCode);
         res.send(r.body);
       })

@@ -1,35 +1,24 @@
 import { Request, Response, NextFunction } from 'express';
-import { ProxyUtils } from '../utils';
 
-import { ISPRequest } from 'sp-request';
+import { BasicRouter } from '../BasicRouter';
 import { IProxyContext, IProxySettings } from '../interfaces';
 
-export class RestGetRouter {
+export class RestGetRouter extends BasicRouter {
 
-  private spr: ISPRequest;
-  private ctx: IProxyContext;
-  private settings: IProxySettings;
-  private util: ProxyUtils;
-
-  constructor (context: IProxyContext, settings: IProxySettings) {
-    this.ctx = context;
-    this.settings = settings;
-    this.util = new ProxyUtils(this.ctx);
+  constructor(context: IProxyContext, settings: IProxySettings) {
+    super(context, settings);
   }
 
-  public router = (req: Request, res: Response, next?: NextFunction) => {
+  public router = (req: Request, res: Response, _next?: NextFunction) => {
     const endpointUrl = this.util.buildEndpointUrl(req.originalUrl);
     this.spr = this.util.getCachedRequest(this.spr);
-    if (!this.settings.silentMode) {
-      console.log('\nGET: ' + endpointUrl);
-    }
+    this.logger.info('\nGET: ' + endpointUrl);
+
     const isDoc = endpointUrl.split('?')[0].toLowerCase().endsWith('/$value');
     const requestHeadersPass: any = {};
-    let additionalOptions: any = {};
+    const additionalOptions: any = {};
     if (isDoc) {
-      additionalOptions = {
-        encoding: null
-      };
+      additionalOptions.encoding = null;
     }
     const ignoreHeaders = [
       'host', 'referer', 'origin',
@@ -47,19 +36,14 @@ export class RestGetRouter {
         }
       }
     });
-    if (this.settings.debugOutput) {
-      console.log('\nHeaders:');
-      console.log(JSON.stringify(req.headers, null, 2));
-    }
+    this.logger.verbose('\nHeaders:\n', JSON.stringify(req.headers, null, 2));
     this.spr.get(endpointUrl, {
       headers: requestHeadersPass,
       agent: this.util.isUrlHttps(endpointUrl) ? this.settings.agent : undefined,
       ...additionalOptions
     })
       .then(r => {
-        if (this.settings.debugOutput) {
-          console.log(r.statusCode, r.body);
-        }
+        this.logger.verbose(r.statusCode, r.body);
         // Paged collections patch
         if (typeof r.body['odata.nextLink'] === 'string') {
           r.body['odata.nextLink'] = this.util.buildProxyEndpointUrl(r.body['odata.nextLink']);

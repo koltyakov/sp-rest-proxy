@@ -2,6 +2,9 @@ import { writeFileSync } from 'fs';
 import { join } from 'path';
 import { exec } from 'child_process';
 
+// tslint:disable-next-line:no-console
+const log = console.log;
+
 const execPromise = (command: string): Promise<string> => {
   return new Promise((resolve, reject) => {
     exec(command, (err, stdout, stderr) => {
@@ -25,38 +28,38 @@ async function publish () {
   let result;
 
   let updatePackage = false;
-  let dockerPackageJson = require(join(__dirname, '..', 'package.json'));
+  const dockerPackageJson = require(join(__dirname, '..', 'package.json'));
   if (dockerPackageJson.version !== version) {
     dockerPackageJson.version = version;
-    console.log(`Package version is updated to ${version}`);
+    log(`Package version is updated to ${version}`);
     updatePackage = true;
   }
   if (dockerPackageJson.dependencies['sp-rest-proxy'] !== `^${version}`) {
     dockerPackageJson.dependencies['sp-rest-proxy'] = `^${version}`;
-    console.log(`sp-rest-proxy dependency is updated to ^${version}`);
+    log(`sp-rest-proxy dependency is updated to ^${version}`);
     updatePackage = true;
   }
   if (updatePackage) {
     writeFileSync(join(__dirname, '..', 'package.json'), JSON.stringify(dockerPackageJson, null, 2));
   }
 
-  console.log(`=== Building image for version ${version} ===`);
+  log(`=== Building image for version ${version} ===`);
 
   result = await execPromise(`cd docker && docker build -t ${repoName}:${version} .`);
-  console.log(result);
+  log(result);
 
   result = await execPromise(`cd docker && docker build -t ${repoName}:latest .`);
-  console.log(result);
+  log(result);
 
-  console.log(`=== Pushing images to docker hub ===`);
+  log(`=== Pushing images to docker hub ===`);
 
   result = await execPromise(`docker push ${repoName}:${version}`);
-  console.log(result);
+  log(result);
 
   result = await execPromise(`docker push ${repoName}:latest`);
-  console.log(result);
+  log(result);
 
-  console.log(`=== Deleting local images ===`);
+  log(`=== Deleting local images ===`);
 
   result = await execPromise(`docker images | grep ${repoName}`);
 
@@ -73,15 +76,15 @@ async function publish () {
     await execPromise(`docker rmi ${imageId} --force`);
   }
 
-  console.log(images);
+  log(images);
 
 }
 
 publish()
   .then(_ => {
-    console.log('=== Done ===');
+    log('=== Done ===');
   })
   .catch(err => {
-    console.log('=== Failed ===');
-    console.log(err);
+    log('=== Failed ===');
+    log(err);
   });

@@ -5,6 +5,7 @@
     "space-before-function-paren": false,
     "trailing-comma": true,
     "no-unused-variable": null,
-    "strict-type-predicates": null
+    "strict-type-predicates": null,
+    "no-console": true
   }
 }

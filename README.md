@@ -17,8 +17,7 @@ Original concept of the proxy was created to show how it could be easy to implem
 ## Supported SharePoint versions
 
 - SharePoint Online
-- SharePoint 2013
-- SharePoint 2016
+- SharePoint On-Prem (2019/2016/2013/2010)
 
 ## Development paradigms
 

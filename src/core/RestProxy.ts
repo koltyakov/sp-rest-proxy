@@ -43,7 +43,7 @@ export default class RestProxy {
       protocol: typeof settings.protocol !== 'undefined' ? settings.protocol : 'http',
       hostname: settings.hostname || process.env.HOSTNAME || 'localhost',
       port: settings.port || process.env.PORT || 8080,
-      staticRoot: path.resolve(settings.staticRoot || path.join(__dirname, '../static')),
+      staticRoot: path.resolve(settings.staticRoot || path.join(__dirname, '/../../static')),
       rawBodyLimitSize: settings.rawBodyLimitSize || '10MB',
       jsonPayloadLimitSize: settings.jsonPayloadLimitSize || '2MB',
       metadata: require(path.join(__dirname, '/../../package.json')),

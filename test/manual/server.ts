@@ -15,7 +15,9 @@ const settings: IProxySettings = {
   configPath: argv.p || './config/private.json',
   staticRoot: './test/manual/static',
   logLevel: LogLevel.Verbose
-  // protocol: 'https'
+  // protocol: 'https',
+  // hostname: '10.42.7.50',
+  // port: 3777
 };
 
 new RestProxy(settings).serve();

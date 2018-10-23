@@ -8,3 +8,5 @@ export {
   IGatewayClientSettings,
   IGatewayServerSettings
 } from './core/interfaces';
+
+export { LogLevel } from './utils/logger';

@@ -1,6 +1,6 @@
 {
   "name": "sp-rest-proxy-docker",
-  "version": "2.7.5",
+  "version": "2.7.6",
   "description": "sp-rest-proxy for docker",
   "main": "./server.js",
   "scripts": {
@@ -16,6 +16,6 @@
   "author": "Andrew Koltyakov (andrew.koltyakov@gmail.com)",
   "license": "MIT",
   "dependencies": {
-    "sp-rest-proxy": "^2.7.5"
+    "sp-rest-proxy": "^2.7.6"
   }
 }

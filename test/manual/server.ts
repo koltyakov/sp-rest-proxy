@@ -14,7 +14,7 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 const settings: IProxySettings = {
   configPath: argv.p || './config/private.json',
   staticRoot: './test/manual/static',
-  logLevel: LogLevel.Verbose
+  logLevel: LogLevel.Info
   // protocol: 'https',
   // hostname: '10.42.7.50',
   // port: 3777

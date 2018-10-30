@@ -25,6 +25,7 @@ export class SoapRouter extends BasicRouter {
         .then(opt => {
           const headers = {
             ...opt.headers,
+            'SOAPAction': req.headers.soapaction,
             'Accept': 'application/xml, text/xml, */*; q=0.01',
             'Content-Type': 'text/xml;charset="UTF-8"',
             'X-Requested-With': 'XMLHttpRequest'

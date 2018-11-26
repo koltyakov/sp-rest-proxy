@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 
-import { ProxyUtils } from '../utils';
+import { ProxyUtils } from '../utils/proxy';
 import { Logger } from '../utils/logger';
 
 import { ISPRequest } from 'sp-request';
@@ -35,7 +35,11 @@ export class BasicRouter {
   public transmitError(res: Response, err: any): void {
     const { statusCode, message, error } = err;
     this.logger.verbose('Error', { statusCode, message, error });
-    const response: IncomingMessage = err.response;
+    const response: IncomingMessage = err.response || {
+      statusCode: statusCode || 400,
+      headers: {},
+      body: message || 'Unknown error'
+    };
     res.status(response.statusCode);
     res.contentType(response.headers['content-type'] || '');
     res.send(response.body);

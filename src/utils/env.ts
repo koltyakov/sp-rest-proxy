@@ -1,4 +1,4 @@
-import { trimMultiline } from './';
+import { trimMultiline } from './misc';
 
 export interface IPageContextInfo extends _spPageContextInfo {}
 

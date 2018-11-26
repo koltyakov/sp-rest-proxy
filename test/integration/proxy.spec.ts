@@ -10,7 +10,7 @@ import { PnpNode } from 'sp-pnp-node';
 import * as request from 'request-promise';
 
 import RestProxy, { IProxySettings, IProxyContext } from '../../src/core/RestProxy';
-import { trimMultiline } from '../../src/utils';
+import { trimMultiline } from '../../src/utils/misc';
 import { TestsConfigs } from '../configs';
 import { LogLevel } from '../../src/utils/logger';
 

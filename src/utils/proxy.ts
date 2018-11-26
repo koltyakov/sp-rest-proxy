@@ -58,34 +58,3 @@ export class ProxyUtils {
   }
 
 }
-
-export const generateGuid = (): string => {
-  const s4 = () => {
-    return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
-  };
-  return `${s4()}${s4()}-${s4()}-${s4()}-${s4()}-${s4()}${s4()}${s4()}`;
-};
-
-export const checkNestedProperties = (object: any, ...args: string[]): boolean => {
-  args.forEach(arg => {
-    if (!object || !object.hasOwnProperty(arg)) {
-      return false;
-    }
-    object = object[arg];
-  });
-  return true;
-};
-
-export const getCaseInsensitiveProp = (object: Object, propertyName: string): any => {
-  propertyName = propertyName.toLowerCase();
-  return Object.keys(object).reduce((res: any, prop: string) => {
-    if (prop.toLowerCase() === propertyName) {
-      res = object[prop];
-    }
-    return res;
-  }, undefined);
-};
-
-export const trimMultiline = (multiline: string): string => {
-  return multiline.trim().split('\n').map(line => line.trim()).join('\n');
-};

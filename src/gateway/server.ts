@@ -5,7 +5,7 @@ import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as cors from 'cors';
 
-import { generateGuid } from '../utils';
+import { generateGuid } from '../utils/misc';
 import { IGatewayServerSettings, IProxySettings } from '../core/interfaces';
 import { Logger } from '../utils/logger';
 

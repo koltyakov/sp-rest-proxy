@@ -71,6 +71,10 @@ export class RestPostRouter extends BasicRouter {
         // JSOM empty object
         if (typeof body === 'object' && Object.keys(body).length === 0) {
           body = '{}';
+          // When content-length is set to 0 in this case - since body has been
+          // forcably set to "{}" - the content length becomes invalid. The following
+          // line removes the content-length header to avoid errors downstream.
+          delete headers['content-length'];
         }
         return this.spr.post(endpointUrl, { headers, body, ...jsonOption, agent });
       })

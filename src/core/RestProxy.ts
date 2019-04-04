@@ -34,8 +34,9 @@ export default class RestProxy {
   private settings: IProxySettings;
   private routers: IRouters;
   private logger: Logger;
+  private isExtApp: boolean = false;
 
-  constructor(settings: IProxySettings = {}) {
+  constructor(settings: IProxySettings = {}, app?: express.Application) {
     const authConfigSettings: IAuthConfigSettings = settings.authConfigSettings || {};
 
     this.settings = {
@@ -63,7 +64,12 @@ export default class RestProxy {
 
     this.logger = new Logger(this.settings.logLevel);
 
-    this.app = express();
+    if (typeof app !== 'undefined') {
+      this.app = app;
+      this.isExtApp = true;
+    } else {
+      this.app = express();
+    }
 
     this.routers = {
       apiRestRouter: express.Router(),
@@ -79,164 +85,6 @@ export default class RestProxy {
     this.serve(callback);
   }
 
-  public serve(callback?: IProxyCallback): void {
-    (new AuthConfig(this.settings.authConfigSettings))
-      .getContext()
-      .then(context => {
-        return {
-          ...context,
-          proxyHostUrl: `${this.settings.protocol}://${this.settings.hostname}:${this.settings.port}`
-        } as IProxyContext;
-      })
-      .then(context => {
-
-        const bodyParserRaw = bodyParser.raw({
-          type: _req => true, // '*/*', // To catch request without Content-Type header
-          limit: this.settings.rawBodyLimitSize,
-          verify: (req, _res, buf, encoding) => {
-            if (buf && buf.length) {
-              (req as any).rawBody = buf.toString(encoding || 'utf8');
-              (req as any).buffer = buf;
-            }
-          }
-        });
-
-        const bodyParserUrlencoded = bodyParser.urlencoded({ extended: true });
-
-        // REST - Files and attachments
-        this.routers.apiRestRouter.post(
-          `/*(${[
-            '/attachmentfiles/add',
-            '/files/add',
-            '/startUpload',
-            '/continueUpload',
-            '/finishUpload'
-          ].join('|')})*`,
-          bodyParserRaw,
-          new RestPostRouter(context, this.settings).router
-        );
-
-        // REST - Batch requests
-        this.routers.apiRestRouter.post(
-          '/[$]batch',
-          bodyParserRaw,
-          new RestBatchRouter(context, this.settings).router
-        );
-
-        // REST - GET requests (JSON)
-        this.routers.apiRestRouter.get(
-          '/*',
-          new RestGetRouter(context, this.settings).router
-        );
-
-        // REST - POST requests (JSON)
-        this.routers.apiRestRouter.post(
-          '/*',
-          bodyParser.json({
-            limit: this.settings.jsonPayloadLimitSize
-          }),
-          new RestPostRouter(context, this.settings).router
-        );
-
-        // Put and Patch workaround issue #59
-        (() => {
-          // REST - PUT requests (JSON)
-          this.routers.apiRestRouter.put(
-            '/*',
-            bodyParser.json({
-              limit: this.settings.jsonPayloadLimitSize
-            }),
-            new RestPostRouter(context, this.settings).router
-          );
-
-          // REST - PATCH requests (JSON)
-          this.routers.apiRestRouter.patch(
-            '/*',
-            bodyParser.json({
-              limit: this.settings.jsonPayloadLimitSize
-            }),
-            new RestPostRouter(context, this.settings).router
-          );
-        })();
-
-        //  CSOM requests (XML)
-        this.routers.apiCsomRouter.post(
-          '/*',
-          bodyParserUrlencoded,
-          new CsomRouter(context, this.settings).router
-        );
-
-        //  SOAP requests (XML)
-        this.routers.apiSoapRouter.post(
-          '/*',
-          bodyParserUrlencoded,
-          new SoapRouter(context, this.settings).router
-        );
-
-        // Generic GET and static local content
-        this.routers.genericGetRouter.get(
-          '/*',
-          new GetRouter(context, this.settings).router
-        );
-
-        // Generic POST
-        this.routers.genericPostRouter.post(
-          '/*',
-          bodyParserUrlencoded,
-          new PostRouter(context, this.settings).router
-        );
-
-        // this.app.use(bodyParser.urlencoded({ extended: true }));
-
-        this.app.use(cors());
-        this.app.use('*/_api', this.routers.apiRestRouter);
-        this.app.use('*/_vti_bin/client.svc/ProcessQuery', this.routers.apiCsomRouter);
-        this.app.use('*/_vti_bin/*.asmx', this.routers.apiSoapRouter);
-
-        // SP2010 legacy REST API, issue #54
-        this.app.use('*/_vti_bin/ListData.svc', this.routers.genericPostRouter);
-        this.app.use('*/_vti_bin/ListData.svc', this.routers.genericGetRouter);
-
-        this.app.use('/', this.routers.genericPostRouter);
-        this.app.use('/', this.routers.genericGetRouter);
-
-        const upCallback = (server: https.Server | http.Server, context: IProxyContext, settings: IProxySettings, callback?: IProxyCallback) => {
-          this.logger.info(`SharePoint REST Proxy has been started on ${context.proxyHostUrl}`);
-          // After proxy is started callback
-          if (callback && typeof callback === 'function') {
-            callback(server, context, settings);
-          }
-        };
-
-        let server: http.Server | https.Server = null;
-        if (this.settings.protocol === 'https') {
-          if (typeof this.settings.ssl === 'undefined') {
-            // console.log('Error: No SSL settings provided!');
-            // return;
-            this.settings.ssl = {
-              cert: path.join(__dirname, './../ssl/cert.crt'),
-              key: path.join(__dirname, './../ssl/key.pem')
-            };
-          }
-          const options: https.ServerOptions = {
-            cert: fs.existsSync(this.settings.ssl.cert) ? fs.readFileSync(this.settings.ssl.cert) : this.settings.ssl.cert,
-            key: fs.existsSync(this.settings.ssl.key) ? fs.readFileSync(this.settings.ssl.key) : this.settings.ssl.key
-          };
-          server = https.createServer(options, this.app);
-        } else {
-          server = require('http').Server(this.app);
-        }
-
-        if (server) {
-          server.listen(this.settings.port, this.settings.hostname, () => {
-            upCallback(server, context, this.settings, callback);
-          });
-        }
-
-      })
-      .catch(err => this.logger.error('Error', err));
-  }
-
   // Serve socket gateway server
   public serveGateway = (settings: IGatewayServerSettings): void => {
     new GatewayServer(settings, this.settings, this.app).init();
@@ -246,6 +94,167 @@ export default class RestProxy {
   public serveClient = (settings: IGatewayClientSettings): void => {
     new GatewayClient(settings, this.settings).init();
     this.serve();
+  }
+
+  // Keep public for backward compatibility
+  public serve(callback?: IProxyCallback): void {
+    (async () => {
+
+      const ctx = await new AuthConfig(this.settings.authConfigSettings).getContext();
+
+      const context = {
+        ...ctx,
+        proxyHostUrl: `${this.settings.protocol}://${this.settings.hostname}:${this.settings.port}`
+      } as IProxyContext;
+
+      const bodyParserRaw = bodyParser.raw({
+        type: _req => true, // '*/*', // To catch request without Content-Type header
+        limit: this.settings.rawBodyLimitSize,
+        verify: (req, _res, buf, encoding) => {
+          if (buf && buf.length) {
+            (req as any).rawBody = buf.toString(encoding || 'utf8');
+            (req as any).buffer = buf;
+          }
+        }
+      });
+
+      const bodyParserUrlencoded = bodyParser.urlencoded({ extended: true });
+
+      // REST - Files and attachments
+      this.routers.apiRestRouter.post(
+        `/*(${[
+          '/attachmentfiles/add',
+          '/files/add',
+          '/startUpload',
+          '/continueUpload',
+          '/finishUpload',
+          '/_layouts/15/Upload'
+        ].join('|')})*`,
+        bodyParserRaw,
+        new RestPostRouter(context, this.settings).router
+      );
+
+      // REST - Batch requests
+      this.routers.apiRestRouter.post(
+        '/[$]batch',
+        bodyParserRaw,
+        new RestBatchRouter(context, this.settings).router
+      );
+
+      // REST - GET requests (JSON)
+      this.routers.apiRestRouter.get(
+        '/*',
+        new RestGetRouter(context, this.settings).router
+      );
+
+      // REST - POST requests (JSON)
+      this.routers.apiRestRouter.post(
+        '/*',
+        bodyParser.json({
+          limit: this.settings.jsonPayloadLimitSize
+        }),
+        new RestPostRouter(context, this.settings).router
+      );
+
+      // Put and Patch workaround issue #59
+      (() => {
+        // REST - PUT requests (JSON)
+        this.routers.apiRestRouter.put(
+          '/*',
+          bodyParser.json({
+            limit: this.settings.jsonPayloadLimitSize
+          }),
+          new RestPostRouter(context, this.settings).router
+        );
+
+        // REST - PATCH requests (JSON)
+        this.routers.apiRestRouter.patch(
+          '/*',
+          bodyParser.json({
+            limit: this.settings.jsonPayloadLimitSize
+          }),
+          new RestPostRouter(context, this.settings).router
+        );
+      })();
+
+      //  CSOM requests (XML)
+      this.routers.apiCsomRouter.post(
+        '/*',
+        bodyParserUrlencoded,
+        new CsomRouter(context, this.settings).router
+      );
+
+      //  SOAP requests (XML)
+      this.routers.apiSoapRouter.post(
+        '/*',
+        bodyParserUrlencoded,
+        new SoapRouter(context, this.settings).router
+      );
+
+      // Generic GET and static local content
+      this.routers.genericGetRouter.get(
+        '/*',
+        new GetRouter(context, this.settings).router
+      );
+
+      // Generic POST
+      this.routers.genericPostRouter.post(
+        '/*',
+        bodyParserUrlencoded,
+        new PostRouter(context, this.settings).router
+      );
+
+      // this.app.use(bodyParser.urlencoded({ extended: true }));
+
+      this.app.use(cors());
+      this.app.use('*/_api', this.routers.apiRestRouter);
+      this.app.use('*/_vti_bin/client.svc/ProcessQuery', this.routers.apiCsomRouter);
+      this.app.use('*/_vti_bin/*.asmx', this.routers.apiSoapRouter);
+
+      // SP2010 legacy REST API, issue #54
+      this.app.use('*/_vti_bin/ListData.svc', this.routers.genericPostRouter);
+      this.app.use('*/_vti_bin/ListData.svc', this.routers.genericGetRouter);
+
+      this.app.use('/', this.routers.genericPostRouter);
+      this.app.use('/', this.routers.genericGetRouter);
+
+      // Deligate serving to external app
+      if (this.isExtApp) { return; }
+
+      const upCallback = (server: https.Server | http.Server, context: IProxyContext, settings: IProxySettings, callback?: IProxyCallback) => {
+        this.logger.info(`SharePoint REST Proxy has been started on ${context.proxyHostUrl}`);
+        // After proxy is started callback
+        if (callback && typeof callback === 'function') {
+          callback(server, context, settings);
+        }
+      };
+
+      let server: http.Server | https.Server = null;
+      if (this.settings.protocol === 'https') {
+        if (typeof this.settings.ssl === 'undefined') {
+          // console.log('Error: No SSL settings provided!');
+          // return;
+          this.settings.ssl = {
+            cert: path.join(__dirname, './../ssl/cert.crt'),
+            key: path.join(__dirname, './../ssl/key.pem')
+          };
+        }
+        const options: https.ServerOptions = {
+          cert: fs.existsSync(this.settings.ssl.cert) ? fs.readFileSync(this.settings.ssl.cert) : this.settings.ssl.cert,
+          key: fs.existsSync(this.settings.ssl.key) ? fs.readFileSync(this.settings.ssl.key) : this.settings.ssl.key
+        };
+        server = https.createServer(options, this.app);
+      } else {
+        server = require('http').Server(this.app);
+      }
+
+      if (server) {
+        server.listen(this.settings.port, this.settings.hostname, () => {
+          upCallback(server, context, this.settings, callback);
+        });
+      }
+
+    })().catch(err => this.logger.error('Error', err));
   }
 
 }

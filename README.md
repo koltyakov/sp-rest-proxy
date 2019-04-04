@@ -37,6 +37,7 @@ Original concept of the proxy was created to show how it could be easy to implem
 - API Proxy server
 - Socket gateway server
 - Socket gateway client
+- Custom Express apps embed mode
 
 Socket proxying allows to forward API from behind NAT (experimental).
 
@@ -132,6 +133,32 @@ npm run test
 ```
 
 ![Tests Example](./docs/img/tests-example.png)
+
+## Webpack Dev Server
+
+```javascript
+/* webpack.config.js */
+const RestProxy = require('sp-rest-proxy');
+
+const port = process.env.WEBPACK_DEV_SERVER_PORT || 9090;
+
+module.exports = {
+  // Common Webpack settings
+  // ...
+  devServer: {
+    watchContentBase: true,
+    writeToDisk: true,
+    port,
+    before: app => {
+      // Register SP API Proxy
+      new RestProxy({ port }, app).serveProxy();
+
+      // Other routes
+      // ...
+    }
+  }
+};
+```
 
 ## TypeScript support
 

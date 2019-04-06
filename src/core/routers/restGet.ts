@@ -22,7 +22,7 @@ export class RestGetRouter extends BasicRouter {
     }
     const ignoreHeaders = [
       'host', 'referer', 'origin',
-      'if-none-match', 'connection', 'cache-control', 'user-agent',
+      'connection', 'cache-control', 'user-agent',
       'accept-encoding', 'x-requested-with', 'accept-language'
     ];
     Object.keys(req.headers).forEach(prop => {

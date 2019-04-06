@@ -34,8 +34,8 @@ export class RestPostRouter extends BasicRouter {
         let headers: any = {};
         const jsonOption: any = { json: true };
         const ignoreHeaders = [
-          'host', 'referer', 'origin',
-          'if-none-match', 'connection', 'cache-control', 'user-agent',
+          'host', 'referer', 'origin', 'x-requestdigest',
+          'connection', 'cache-control', 'user-agent',
           'accept-encoding', 'x-requested-with', 'accept-language'
         ];
         Object.keys(req.headers).forEach(prop => {
@@ -44,6 +44,8 @@ export class RestPostRouter extends BasicRouter {
               headers['Accept'] = req.headers[prop];
             } else if (prop.toLowerCase() === 'content-type') {
               headers['Content-Type'] = req.headers[prop];
+            } else if (prop.toLowerCase() === 'x-requestdigest') {
+              headers['X-RequestDigest'] = req.headers[prop];
             } else {
               headers[prop] = req.headers[prop];
             }
@@ -63,18 +65,24 @@ export class RestPostRouter extends BasicRouter {
           body = (req as any).buffer;
           jsonOption.json = false;
           jsonOption.processData = false;
-          if (body) {
-            // requestHeadersPass['Content-Length'] = reqBodyData.byteLength;
-          }
+          // if (body) {
+          //   headers['Content-Length'] = body.byteLength;
+          // }
         }
-        // this.logger.debug('\nHeaders:\n', JSON.stringify(requestHeadersPass, null, 2));
-        // JSOM empty object
+        // this.logger.debug('\nHeaders:\n', JSON.stringify(headers, null, 2));
         if (typeof body === 'object' && Object.keys(body).length === 0) {
-          body = '{}';
-          // When content-length is set to 0 in this case - since body has been
-          // forcably set to "{}" - the content length becomes invalid. The following
-          // line removes the content-length header to avoid errors downstream.
-          delete headers['content-length'];
+          // JSOM empty object
+          if (endpointUrl.toLowerCase().indexOf('/_vti_bin/client.svc') !== -1) {
+            body = '{}';
+            // When content-length is set to 0 in this case - since body has been
+            // forcably set to "{}" - the content length becomes invalid. The following
+            // line removes the content-length header to avoid errors downstream.
+          }
+          Object.keys(headers).forEach(prop => {
+            if (prop.toLowerCase() === 'content-length') {
+              delete headers[prop];
+            }
+          });
         }
         return this.spr.post(endpointUrl, { headers, body, ...jsonOption, agent });
       })

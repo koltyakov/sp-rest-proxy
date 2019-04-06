@@ -82,9 +82,10 @@ describe(`Proxy tests`, () => {
           proxyRootUri = `${!settings.protocol ? 'http' : settings.protocol}://${settings.hostname}:${settings.port}${webRelativeUrl}`;
 
           // Init PnPjs for Node.js
+          const fetchClientFactory = new PnpNode(proxyContext);
           sp.setup({
             sp: {
-              fetchClientFactory: () => new PnpNode(proxyContext),
+              fetchClientFactory: () => fetchClientFactory,
               headers: {
                 Accept: 'application/json;odata=verbose'
               },
@@ -537,7 +538,7 @@ describe(`Proxy tests`, () => {
           ])
             .then((response: any): any => {
 
-              const listItemEntityTypeFullName: string = response[1].data.d.ListItemEntityTypeFullName;
+              // const listItemEntityTypeFullName: string = response[1].data.d.ListItemEntityTypeFullName;
               const boundary = `batch_${Util.getGUID()}`;
               const changeset = `changeset_${Util.getGUID()}`;
               const items = response[0].data.d.results;
@@ -718,6 +719,51 @@ describe(`Proxy tests`, () => {
             expect(data.byteLength).eq(fileBuffer.byteLength);
             done();
           })
+          .catch(done);
+
+      });
+
+      it('should add a folder', function(done: MochaDone): void {
+        this.timeout(30 * 1000);
+
+        const docLibFolder: string = `${webRelativeUrl}/${testVariables.newDocLibName}`;
+        const folderName = `New Folder (proxy)`;
+
+        const methodUri = `${proxyRootUri}/_api/web/` +
+          `getFolderByServerRelativeUrl('${docLibFolder}')` +
+          `/folders/add('${folderName}')`;
+
+        axios.post(methodUri, null,
+          {
+            headers: {
+              'X-RequestDigest': getRequestDigest(),
+              'Accept': 'application/json;odata=verbose',
+              'Content-Type': 'application/json;odata=verbose;charset=utf-8'
+            }
+          }
+        )
+          .then(_ => done())
+          .catch(done);
+
+      });
+
+      it('should delete a folder', function(done: MochaDone): void {
+        this.timeout(30 * 1000);
+
+        const folderUrl: string = `${webRelativeUrl}/${testVariables.newDocLibName}/New Folder (proxy)`;
+
+        const methodUri = `${proxyRootUri}/_api/web/getFolderByServerRelativeUrl('${folderUrl}')`;
+
+        axios.post(methodUri, {}, {
+          headers: {
+            'X-RequestDigest': getRequestDigest(),
+            'Accept': 'application/json;odata=verbose',
+            'Content-Type': 'application/json;odata=verbose',
+            'If-Match': '*',
+            'X-HTTP-Method': 'DELETE'
+          }
+        })
+          .then(_ => done())
           .catch(done);
 
       });

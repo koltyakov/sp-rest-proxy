@@ -35,8 +35,8 @@ export class ProxyUtils {
   public buildEndpointUrl(req: Request | string): string {
     const reqUrl = typeof req === 'string' ? req : req.originalUrl;
     let strictRelativeUrls = this.settings.strictRelativeUrls;
-    if (typeof req === 'object' && req.headers && typeof req.headers['X-ProxyStrict'] !== 'undefined') {
-      strictRelativeUrls = Boolean(req.headers['X-ProxyStrict']);
+    if (typeof req === 'object' && req.header('X-ProxyStrict')) {
+      strictRelativeUrls = req.header('X-ProxyStrict').toLowerCase() === 'true' ? true : false;
     }
     const siteUrlParsed = urlParse(this.ctx.siteUrl);
     const baseUrlArr = siteUrlParsed.pathname.split('/');

@@ -31,20 +31,22 @@ export class ProxyUtils {
     return url.indexOf('http:') === 0 || url.indexOf('https:') === 0;
   }
 
-  public buildEndpointUrl(reqUrl: string): string {
+  public buildEndpointUrl(reqUrl: string, strictRelativeUrls = false): string {
     const siteUrlParsed = urlParse(this.ctx.siteUrl);
     const baseUrlArr = siteUrlParsed.pathname.split('/');
     const reqUrlArr = reqUrl.split('?')[0].split('/');
     const len = baseUrlArr.length > reqUrlArr.length ? reqUrlArr.length : baseUrlArr.length;
     let similarity = 0;
     let reqPathName = reqUrl;
-    for (let i = 0; i < len; i += 1) {
-      similarity += baseUrlArr[i] === reqUrlArr[i] ? 1 : 0;
+    if (!strictRelativeUrls) {
+      for (let i = 0; i < len; i += 1) {
+        similarity += baseUrlArr[i] === reqUrlArr[i] ? 1 : 0;
+      }
+      if (similarity < 2) {
+        reqPathName = (`${siteUrlParsed.pathname}/${reqUrl}`).replace(/\/\//g, '/');
+      }
+      reqPathName = reqPathName.replace(/\/\//g, '/');
     }
-    if (similarity < 2) {
-      reqPathName = (`${siteUrlParsed.pathname}/${reqUrl}`).replace(/\/\//g, '/');
-    }
-    reqPathName = reqPathName.replace(/\/\//g, '/');
     return `${siteUrlParsed.protocol}//${siteUrlParsed.host}${reqPathName}`;
   }
 

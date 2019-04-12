@@ -16,6 +16,7 @@ export interface IProxySettings {
   jsonPayloadLimitSize?: string;
   metadata?: any;
   agent?: Agent;
+  strictRelativeUrls?: boolean;
 
   authConfigSettings?: IAuthConfigSettings;
   configPath?: string; // Legacy

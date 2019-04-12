@@ -11,7 +11,7 @@ export class SoapRouter extends BasicRouter {
 
   public router = (req: Request, res: Response, _next?: NextFunction) => {
     this.spr = this.getHttpClient();
-    const endpointUrl = this.util.buildEndpointUrl(req.originalUrl);
+    const endpointUrl = this.util.buildEndpointUrl(req.originalUrl, this.settings.strictRelativeUrls);
     this.logger.info('\nPOST (SOAP): ' + endpointUrl);
     const agent = this.util.isUrlHttps(endpointUrl) ? this.settings.agent : undefined;
     let body = '';

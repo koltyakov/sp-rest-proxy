@@ -20,7 +20,7 @@ export class GetRouter extends BasicRouter {
     }
 
     this.spr = this.getHttpClient();
-    let endpointUrl = this.util.buildEndpointUrl(req.originalUrl);
+    let endpointUrl = this.util.buildEndpointUrl(req.originalUrl, this.settings.strictRelativeUrls);
     this.logger.info('\nGET (generic): ' + endpointUrl);
     const agent = this.util.isUrlHttps(endpointUrl) ? this.settings.agent : undefined;
     const headers: any = {};

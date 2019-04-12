@@ -10,7 +10,7 @@ export class RestBatchRouter extends BasicRouter {
   }
 
   public router = (request: Request, response: Response, _next?: NextFunction) => {
-    const endpointUrl = this.util.buildEndpointUrl(request.originalUrl);
+    const endpointUrl = this.util.buildEndpointUrl(request.originalUrl, this.settings.strictRelativeUrls);
     this.logger.info('\nPOST (batch): ' + endpointUrl);
     let reqBody = '';
     if (request.body) {
@@ -23,7 +23,7 @@ export class RestBatchRouter extends BasicRouter {
   }
 
   private processBatchRequest(body: any, req: Request, res: Response) {
-    const endpointUrl = this.util.buildEndpointUrl(req.originalUrl);
+    const endpointUrl = this.util.buildEndpointUrl(req.originalUrl, this.settings.strictRelativeUrls);
     body = (req as any).rawBody;
     const { processBatchMultipartBody: transform } = this.settings;
     if (transform && typeof transform === 'function') {

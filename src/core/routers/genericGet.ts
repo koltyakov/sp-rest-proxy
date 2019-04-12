@@ -13,14 +13,12 @@ export class GetRouter extends BasicRouter {
   }
 
   public router = (req: Request, res: Response, _next?: NextFunction) => {
-
     // Route local proxy resources (web app)
     if (this.serveLocalResources(req, res)) {
       return;
     }
-
     this.spr = this.getHttpClient();
-    let endpointUrl = this.util.buildEndpointUrl(req.originalUrl, this.settings.strictRelativeUrls);
+    let endpointUrl = this.util.buildEndpointUrl(req);
     this.logger.info('\nGET (generic): ' + endpointUrl);
     const agent = this.util.isUrlHttps(endpointUrl) ? this.settings.agent : undefined;
     const headers: any = {};

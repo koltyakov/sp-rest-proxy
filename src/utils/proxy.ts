@@ -1,14 +1,15 @@
 import * as spauth from 'node-sp-auth';
 import * as spRequest from 'sp-request';
+import { Request } from 'express';
 import { parse as urlParse } from 'url';
 
-import { IProxyContext } from '../core/interfaces';
+import { IProxyContext, IProxySettings } from '../core/interfaces';
 
 export class ProxyUtils {
 
   private spr: spRequest.ISPRequest;
 
-  constructor(private ctx: IProxyContext) { /**/ }
+  constructor(private ctx: IProxyContext, private settings: IProxySettings) { /**/ }
 
   public getAuthOptions(): Promise<spauth.IAuthResponse> {
     return spauth.getAuth(this.ctx.siteUrl, this.ctx.authOptions) as any;
@@ -31,7 +32,12 @@ export class ProxyUtils {
     return url.indexOf('http:') === 0 || url.indexOf('https:') === 0;
   }
 
-  public buildEndpointUrl(reqUrl: string, strictRelativeUrls = false): string {
+  public buildEndpointUrl(req: Request | string): string {
+    const reqUrl = typeof req === 'string' ? req : req.originalUrl;
+    let strictRelativeUrls = this.settings.strictRelativeUrls;
+    if (typeof req === 'object' && req.headers && typeof req.headers['X-ProxyStrict'] !== 'undefined') {
+      strictRelativeUrls = Boolean(req.headers['X-ProxyStrict']);
+    }
     const siteUrlParsed = urlParse(this.ctx.siteUrl);
     const baseUrlArr = siteUrlParsed.pathname.split('/');
     const reqUrlArr = reqUrl.split('?')[0].split('/');

@@ -21,7 +21,10 @@ export const loadPageContext = (): Promise<IPageContextInfo> => {
       `);
       return fetch(restUrl, {
         method: 'GET',
-        headers: [['Accept', 'application/json;odata=verbose']]
+        headers: [
+          ['Accept', 'application/json;odata=verbose'],
+          ['X-ProxyStrict', 'false']
+        ]
       })
         .then(res => res.json())
         .then(({ d: webInfo }) => {

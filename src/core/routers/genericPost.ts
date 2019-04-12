@@ -11,7 +11,7 @@ export class PostRouter extends BasicRouter {
 
   public router = (req: Request, res: Response, _next?: NextFunction) => {
     this.spr = this.getHttpClient();
-    const endpointUrl = this.util.buildEndpointUrl(req.originalUrl, this.settings.strictRelativeUrls);
+    const endpointUrl = this.util.buildEndpointUrl(req);
     this.logger.info('\nPOST (generic): ' + endpointUrl);
     const agent = this.util.isUrlHttps(endpointUrl) ? this.settings.agent : undefined;
     let body = '';

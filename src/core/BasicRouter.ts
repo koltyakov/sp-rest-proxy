@@ -14,7 +14,7 @@ export class BasicRouter {
   public logger: Logger;
 
   constructor(public ctx: IProxyContext, public settings: IProxySettings) {
-    this.util = new ProxyUtils(this.ctx);
+    this.util = new ProxyUtils(ctx, settings);
     this.logger = new Logger(settings.logLevel);
   }
 

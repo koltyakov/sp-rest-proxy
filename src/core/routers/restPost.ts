@@ -10,7 +10,7 @@ export class RestPostRouter extends BasicRouter {
   }
 
   public router = (request: Request, response: Response, _next?: NextFunction) => {
-    const endpointUrl = this.util.buildEndpointUrl(request.originalUrl, this.settings.strictRelativeUrls);
+    const endpointUrl = this.util.buildEndpointUrl(request);
     this.logger.info('\nPOST: ' + endpointUrl);
     let reqBody = '';
     if (request.body) {
@@ -26,7 +26,7 @@ export class RestPostRouter extends BasicRouter {
 
   private processPostRequest = (body: any, req: Request, res: Response) => {
     this.spr = this.getHttpClient();
-    const endpointUrl = this.util.buildEndpointUrl(req.originalUrl, this.settings.strictRelativeUrls);
+    const endpointUrl = this.util.buildEndpointUrl(req);
     this.logger.verbose('Request body:', body);
     const agent = this.util.isUrlHttps(endpointUrl) ? this.settings.agent : undefined;
     this.spr.requestDigest((endpointUrl).split('/_api')[0])

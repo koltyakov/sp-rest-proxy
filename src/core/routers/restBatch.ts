@@ -29,7 +29,7 @@ export class RestBatchRouter extends BasicRouter {
     if (transform && typeof transform === 'function') {
       body = transform(body);
     } else {
-      const regExp = new RegExp('^(POST|GET) https?://localhost(:[0-9]+)?/', 'i');
+      const regExp = new RegExp('^(POST|GET|MERGE|DELETE) https?://localhost(:[0-9]+)?/', 'i');
       const origin = this.ctx.siteUrl.split('/').splice(0, 3).join('/');
       body = body.split('\n').map(line => {
         if (regExp.test(line)) {
@@ -37,7 +37,7 @@ export class RestBatchRouter extends BasicRouter {
           const method = parts.shift();
           const version = parts.pop();
           let endpoint = parts.join(' ');
-          endpoint = `${origin}/${endpoint.split('/').splice(3, 100).join('/')}`;
+          endpoint = `${origin}/${endpoint.split('/').splice(3).join('/')}`;
           line = `${method} ${endpoint} ${version}`;
         }
         return line;

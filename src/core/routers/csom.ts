@@ -21,9 +21,7 @@ export class CsomRouter extends BasicRouter {
         this.spr.requestDigest((endpointUrl).split('/_vti_bin')[0]),
         this.util.getAuthOptions()
       ])
-        .then(r => {
-          const digest: string = r[0];
-          const opt = r[1];
+        .then(([ digest, opt ]) => {
           const headers = {
             ...opt.headers,
             'Accept': '*/*',

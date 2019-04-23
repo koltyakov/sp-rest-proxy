@@ -16,7 +16,7 @@ export class PostRouter extends BasicRouter {
     const agent = this.util.isUrlHttps(endpointUrl) ? this.settings.agent : undefined;
     let body = '';
     req.on('data', chunk => body += chunk);
-    req.on('end', () => {
+    req.on('end', async () => {
       if (req.headers.origin) {
         const regExpOrigin = new RegExp(req.headers.origin as any, 'g');
         body = body.replace(regExpOrigin, this.ctx.siteUrl);
@@ -40,7 +40,21 @@ export class PostRouter extends BasicRouter {
         if (prop.toLowerCase() === 'x-http-method') {
           requestHeadersPass['X-HTTP-Method'] = req.headers[prop];
         }
+        if (prop.toLowerCase() === 'x-requestdigest') {
+          requestHeadersPass['X-RequestDigest'] = req.headers[prop];
+        }
       });
+
+      // Automatically add X-RequestDigest for /_vti_bin requests
+      if (!requestHeadersPass['X-RequestDigest'] && endpointUrl.indexOf('/_vti_bin') !== -1) {
+        try {
+          const digest = await Promise.resolve(this.spr.requestDigest(endpointUrl.split('/_vti_bin')[0]));
+          requestHeadersPass['X-RequestDigest'] = digest;
+        } catch (ex) {
+          return this.transmitError(res, ex);
+        }
+      }
+
       this.util.getAuthOptions()
         .then(opt => {
           const headers = {
@@ -53,8 +67,8 @@ export class PostRouter extends BasicRouter {
           };
           return this.spr.post(endpointUrl, { headers, body, ...options, agent });
         })
-          .then(r => this.transmitResponse(res, r))
-          .catch(err => this.transmitError(res, err));
+        .then(r => this.transmitResponse(res, r))
+        .catch(err => this.transmitError(res, err));
     });
   }
 

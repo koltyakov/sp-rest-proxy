@@ -47,7 +47,7 @@ export class RestBatchRouter extends BasicRouter {
     this.logger.verbose('Request body:', body);
     this.spr = this.getHttpClient();
     const agent = this.util.isUrlHttps(endpointUrl) ? this.settings.agent : undefined;
-    this.spr.requestDigest((endpointUrl).split('/_api')[0])
+    this.spr.requestDigest(endpointUrl.split('/_api')[0])
       .then(digest => {
         let headers: any = {};
         const ignoreHeaders = [
@@ -58,12 +58,11 @@ export class RestBatchRouter extends BasicRouter {
         Object.keys(req.headers).forEach(prop => {
           if (ignoreHeaders.indexOf(prop.toLowerCase()) === -1) {
             if (prop.toLowerCase() === 'accept' && req.headers[prop] !== '*/*') {
-              // tslint:disable-next-line:no-string-literal
               headers['Accept'] = req.headers[prop];
             } else if (prop.toLowerCase() === 'content-type') {
               headers['Content-Type'] = req.headers[prop];
             } else if (prop.toLowerCase() === 'x-requestdigest') {
-              // requestHeadersPass['X-RequestDigest'] = req.headers[prop]; // Temporary commented
+              // headers['X-RequestDigest'] = req.headers[prop]; // temporary commented
             } else if (prop.toLowerCase() === 'content-length') {
               // requestHeadersPass['Content-Length'] = req.headers[prop];
             } else {
@@ -78,8 +77,8 @@ export class RestBatchRouter extends BasicRouter {
         // this.logger.debug('\nHeaders:\n', JSON.stringify(requestHeadersPass, null, 2));
         return this.spr.post(endpointUrl, { headers, body, agent, json: false });
       })
-        .then(r => this.transmitResponse(res, r))
-        .catch(err => this.transmitError(res, err));
+      .then(r => this.transmitResponse(res, r))
+      .catch(err => this.transmitError(res, err));
   }
 
 }

@@ -18,9 +18,7 @@ export class RestPostRouter extends BasicRouter {
       this.processPostRequest(reqBody, request, response);
     } else {
       request.on('data', chunk => reqBody += chunk);
-      request.on('end', () => {
-        this.processPostRequest(reqBody, request, response);
-      });
+      request.on('end', () => this.processPostRequest(reqBody, request, response));
     }
   }
 
@@ -29,7 +27,7 @@ export class RestPostRouter extends BasicRouter {
     const endpointUrl = this.util.buildEndpointUrl(req);
     this.logger.verbose('Request body:', body);
     const agent = this.util.isUrlHttps(endpointUrl) ? this.settings.agent : undefined;
-    this.spr.requestDigest((endpointUrl).split('/_api')[0])
+    this.spr.requestDigest(endpointUrl.split('/_api')[0])
       .then(digest => {
         let headers: any = {};
         const jsonOption: any = { json: true };
@@ -53,7 +51,7 @@ export class RestPostRouter extends BasicRouter {
         });
         headers = {
           ...headers,
-          'X-RequestDigest': digest
+          'X-RequestDigest': headers['X-RequestDigest'] || digest
         };
         if (
           endpointUrl.toLowerCase().indexOf('/attachmentfiles/add') !== -1 ||

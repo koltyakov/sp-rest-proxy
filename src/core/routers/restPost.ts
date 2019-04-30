@@ -70,7 +70,10 @@ export class RestPostRouter extends BasicRouter {
         // this.logger.debug('\nHeaders:\n', JSON.stringify(headers, null, 2));
         if (typeof body === 'object' && Object.keys(body).length === 0) {
           // JSOM empty object
-          if (endpointUrl.toLowerCase().indexOf('/_vti_bin/client.svc') !== -1) {
+          if (
+            endpointUrl.toLowerCase().indexOf('/_vti_bin/client.svc') !== -1 ||
+            endpointUrl.toLowerCase().indexOf('/_api/contextinfo') !== -1
+          ) {
             body = '{}';
             // When content-length is set to 0 in this case - since body has been
             // forcably set to "{}" - the content length becomes invalid. The following

@@ -6,7 +6,7 @@ if (ci) { process.env.SPAUTH_ENV = 'production'; }
 export const TestsConfigs: ITestSetup[] = ((headless: boolean) => {
   if (headless) {
     const ciTestConf: ICiTestSetup[] = [{
-      environmentName: 'SharePoint Online Test Tenant',
+      environmentName: 'SharePoint Online',
       legacy: false,
       siteUrl: process.env.SPAUTH_SITEURL,
       authOptions: {
@@ -35,3 +35,5 @@ export const TestsConfigs: ITestSetup[] = ((headless: boolean) => {
   ];
   return privateConf;
 })(ci);
+
+export { ITestSetup, ICiTestSetup, IPrivateTestSetup } from './interfaces';

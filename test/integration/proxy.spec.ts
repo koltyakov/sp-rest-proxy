@@ -11,10 +11,8 @@ import * as request from 'request-promise';
 
 import RestProxy, { IProxySettings, IProxyContext } from '../../src/core/RestProxy';
 import { trimMultiline } from '../../src/utils/misc';
-import { TestsConfigs } from '../configs';
+import { TestsConfigs, ICiTestSetup, IPrivateTestSetup } from '../configs';
 import { LogLevel } from '../../src/utils/logger';
-
-import { ICiTestSetup, IPrivateTestSetup } from '../interfaces';
 
 const testVariables = {
   newListName: 'SPRP List',

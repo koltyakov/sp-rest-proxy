@@ -4,6 +4,7 @@
 
 [![npm version](https://badge.fury.io/js/sp-rest-proxy.svg)](https://badge.fury.io/js/sp-rest-proxy)
 [![Downloads](https://img.shields.io/npm/dm/sp-rest-proxy.svg)](https://www.npmjs.com/package/sp-rest-proxy)
+[![Build Status](https://koltyakov.visualstudio.com/SPNode/_apis/build/status/sp-rest-proxy?branchName=master)](https://koltyakov.visualstudio.com/SPNode/_build/latest?definitionId=7&branchName=master)
 [![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/sharepoint-node/Lobby)
 
 > Allows performing API calls to local Express application with forwarding the queries to a remote SharePoint instance.

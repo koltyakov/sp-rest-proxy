@@ -12,7 +12,7 @@
     "clean": "rimraf ./dist",
     "test": "ts-node ./test/init && mocha --opts test/mocha.opts || ECHO.",
     "test:manual": "ts-node ./test/manual/server",
-    "test:ci": "ts-node ./test/init && mocha --opts test/mocha.opts --ci || ECHO.",
+    "test:ci": "mocha --opts test/mocha.opts --ci || ECHO.",
     "docker": "ts-node ./docker/scripts/publish"
   },
   "keywords": [

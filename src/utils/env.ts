@@ -47,6 +47,7 @@ export const loadPageContext = (): Promise<IPageContextInfo> => {
             webTitle: webInfo.Title,
             webAbsoluteUrl: window.location.origin + webInfo.ServerRelativeUrl,
             webServerRelativeUrl: webInfo.ServerRelativeUrl,
+            // Locale
             currentLanguage: webInfo.Language,
             // Site info
             siteAbsoluteUrl: window.location.origin + siteInfo.ServerRelativeUrl,

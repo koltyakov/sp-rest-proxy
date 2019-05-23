@@ -6,10 +6,13 @@
   "typings": "./dist/index/RestProxy",
   "scripts": {
     "serve": "ts-node ./src/server",
-    "build": "npm run tslint && rimraf ./dist && tsc -p .",
+    "build": "npm run tslint && npm run clean && npm run tsc",
     "tslint": "tslint -p .",
+    "tsc": "tsc -p .",
+    "clean": "rimraf ./dist",
     "test": "ts-node ./test/init && mocha --opts test/mocha.opts || ECHO.",
     "test:manual": "ts-node ./test/manual/server",
+    "test:ci": "ts-node ./test/init && mocha --opts test/mocha.opts --ci || ECHO.",
     "docker": "ts-node ./docker/scripts/publish"
   },
   "keywords": [

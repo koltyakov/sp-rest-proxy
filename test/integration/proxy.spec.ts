@@ -1,4 +1,4 @@
-import * as mocha from 'mocha';
+import * as Mocha from 'mocha';
 import { expect } from 'chai';
 import * as path from 'path';
 import * as fs from 'fs';
@@ -13,6 +13,8 @@ import RestProxy, { IProxySettings, IProxyContext } from '../../src/core/RestPro
 import { trimMultiline } from '../../src/utils/misc';
 import { TestsConfigs } from '../configs';
 import { LogLevel } from '../../src/utils/logger';
+
+import { ICiTestSetup, IPrivateTestSetup } from '../interfaces';
 
 const testVariables = {
   newListName: 'SPRP List',
@@ -52,9 +54,9 @@ const getRequestDigest = (): string => {
 
 describe(`Proxy tests`, () => {
 
-  for (const { environmentName, configPath, legacy } of TestsConfigs) {
+  for (const config of TestsConfigs) {
 
-    describe(`Run tests in ${environmentName}`, () => {
+    describe(`Run tests in ${config.environmentName}`, () => {
 
       let expressServer: any = null;
       let proxyContext: IProxyContext = null;
@@ -68,12 +70,31 @@ describe(`Proxy tests`, () => {
 
         process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
-        new RestProxy({
-          configPath,
+        // Local test mode
+        if (typeof (config as IPrivateTestSetup).configPath !== 'undefined') {
+          proxySettings = {
+            configPath: (config as IPrivateTestSetup).configPath
+          };
+        } else { // Headless/CI mode
+          proxySettings = {
+            authConfigSettings: {
+              headlessMode: true,
+              authOptions: {
+                siteUrl: (config as ICiTestSetup).siteUrl,
+                ...(config as ICiTestSetup).authOptions
+              } as any,
+            }
+          };
+        }
+
+        const proxy: RestProxy = new RestProxy({
+          ...proxySettings,
           staticRoot: './static',
           logLevel: LogLevel.Off,
           protocol: 'http'
-        }).serve((server, context, settings) => {
+        });
+
+        proxy.serve((server, context, settings) => {
           expressServer = server;
           proxyContext = context;
           proxySettings = settings;
@@ -104,7 +125,7 @@ describe(`Proxy tests`, () => {
         done();
       });
 
-      it(`should get contextinfo`, function(done: MochaDone): void {
+      it(`should get contextinfo`, function(done: Mocha.Done): void {
         this.timeout(60 * 1000);
 
         axios.post(`${proxyRootUri}/_api/contextinfo`, {}, {
@@ -121,7 +142,7 @@ describe(`Proxy tests`, () => {
 
       });
 
-      it(`should get web's title`, function(done: MochaDone): void {
+      it(`should get web's title`, function(done: Mocha.Done): void {
         this.timeout(30 * 1000);
 
         Promise.all([
@@ -139,7 +160,7 @@ describe(`Proxy tests`, () => {
 
       });
 
-      it(`should work with shorthand URIs`, function(done: MochaDone): void {
+      it(`should work with shorthand URIs`, function(done: Mocha.Done): void {
         this.timeout(30 * 1000);
 
         const shorthandUri: string = `${!proxySettings.protocol ? 'http' : proxySettings.protocol}://${proxySettings.hostname}:${proxySettings.port}`;
@@ -158,7 +179,7 @@ describe(`Proxy tests`, () => {
 
       });
 
-      it(`should get lists on the web`, function(done: MochaDone): void {
+      it(`should get lists on the web`, function(done: Mocha.Done): void {
         this.timeout(30 * 1000);
 
         Promise.all([
@@ -176,7 +197,7 @@ describe(`Proxy tests`, () => {
 
       });
 
-      it('should create a new list', function(done: MochaDone): void {
+      it('should create a new list', function(done: Mocha.Done): void {
         this.timeout(30 * 1000);
 
         axios.post(`${proxyRootUri}/_api/web/lists`, {
@@ -204,7 +225,7 @@ describe(`Proxy tests`, () => {
 
       });
 
-      it('should create a list item', function(done: MochaDone): void {
+      it('should create a list item', function(done: Mocha.Done): void {
         this.timeout(30 * 1000);
 
         const listUri = `${proxyRootUri}/_api/web/lists/getByTitle('${testVariables.newListName}')`;
@@ -228,7 +249,7 @@ describe(`Proxy tests`, () => {
 
       });
 
-      it('should update a list item', function(done: MochaDone): void {
+      it('should update a list item', function(done: Mocha.Done): void {
         this.timeout(30 * 1000);
 
         const listUri = `${proxyRootUri}/_api/web/lists/getByTitle('${testVariables.newListName}')`;
@@ -257,7 +278,7 @@ describe(`Proxy tests`, () => {
 
       });
 
-      it('should update a list item using PATCH', function(done: MochaDone): void {
+      it('should update a list item using PATCH', function(done: Mocha.Done): void {
         this.timeout(30 * 1000);
 
         const listUri = `${proxyRootUri}/_api/web/lists/getByTitle('${testVariables.newListName}')`;
@@ -286,7 +307,7 @@ describe(`Proxy tests`, () => {
 
       });
 
-      it('should get list items using legacy REST', function(done: MochaDone): void {
+      it('should get list items using legacy REST', function(done: Mocha.Done): void {
         this.timeout(30 * 1000);
 
         axios.get(`${proxyRootUri}/_vti_bin/ListData.svc/${testVariables.newListName.replace(/ /g, '')}`, {
@@ -300,7 +321,7 @@ describe(`Proxy tests`, () => {
 
       });
 
-      it('should delete a list item', function(done: MochaDone): void {
+      it('should delete a list item', function(done: Mocha.Done): void {
         this.timeout(30 * 1000);
 
         const listUri = `${proxyRootUri}/_api/web/lists/getByTitle('${testVariables.newListName}')`;
@@ -323,9 +344,9 @@ describe(`Proxy tests`, () => {
 
       });
 
-      if (!legacy) {
+      if (!config.legacy) {
 
-        it(`should fetch minimalmetadata`, function(done: MochaDone): void {
+        it(`should fetch minimalmetadata`, function(done: Mocha.Done): void {
           this.timeout(30 * 1000);
 
           axios.get(`${proxyRootUri}/_api/web?$select=Id`, testVariables.headers.minimalmetadata)
@@ -338,7 +359,7 @@ describe(`Proxy tests`, () => {
 
         });
 
-        it(`should fetch nometadata`, function(done: MochaDone): void {
+        it(`should fetch nometadata`, function(done: Mocha.Done): void {
           this.timeout(30 * 1000);
 
           axios.get(`${proxyRootUri}/_api/web?$select=Id`, testVariables.headers.nometadata)
@@ -353,7 +374,7 @@ describe(`Proxy tests`, () => {
         });
 
         // Add test to check if items were physically created
-        it('should create list items in a batch (local endpoints)', function(done: MochaDone): void {
+        it('should create list items in a batch (local endpoints)', function(done: Mocha.Done): void {
           this.timeout(30 * 1000);
 
           const items = ['Batman', 'Iron man'];
@@ -408,7 +429,7 @@ describe(`Proxy tests`, () => {
         });
 
         // Add test to check if items were physically created
-        it('should create list items in a batch', function(done: MochaDone): void {
+        it('should create list items in a batch', function(done: Mocha.Done): void {
           this.timeout(30 * 1000);
 
           const dragons = ['Jineoss', 'Zyna', 'Bothir', 'Jummerth', 'Irgonth', 'Kilbiag',
@@ -464,7 +485,7 @@ describe(`Proxy tests`, () => {
         });
 
         // Add test to check if items were physically updated
-        it('should update list items in a batch', function(done: MochaDone): void {
+        it('should update list items in a batch', function(done: Mocha.Done): void {
           this.timeout(30 * 1000);
 
           const listUri = `${proxyRootUri}/_api/web/lists/getByTitle('${testVariables.newListName}')`;
@@ -528,7 +549,7 @@ describe(`Proxy tests`, () => {
         });
 
         // Add test to check if items were physically deleted
-        it('should delete list items in a batch', function(done: MochaDone): void {
+        it('should delete list items in a batch', function(done: Mocha.Done): void {
           this.timeout(30 * 1000);
 
           const listUri = `${proxyRootUri}/_api/web/lists/getByTitle('${testVariables.newListName}')`;
@@ -587,7 +608,7 @@ describe(`Proxy tests`, () => {
 
       }
 
-      it(`should add item's attachment`, function(done: MochaDone): void {
+      it(`should add item's attachment`, function(done: Mocha.Done): void {
         this.timeout(30 * 1000);
 
         const listUri = `${proxyRootUri}/_api/web/lists/getByTitle('${testVariables.newListName}')`;
@@ -628,7 +649,7 @@ describe(`Proxy tests`, () => {
 
       // TODO: Download attachment and compare with local one
 
-      it('should delete a list', function(done: MochaDone): void {
+      it('should delete a list', function(done: Mocha.Done): void {
         this.timeout(30 * 1000);
 
         axios.post(`${proxyRootUri}/_api/web/lists/getByTitle('${testVariables.newListName}')`, null, {
@@ -645,7 +666,7 @@ describe(`Proxy tests`, () => {
 
       });
 
-      it('should create a document library', function(done: MochaDone): void {
+      it('should create a document library', function(done: Mocha.Done): void {
         this.timeout(30 * 1000);
 
         axios.post(`${proxyRootUri}/_api/web/lists`, {
@@ -667,7 +688,7 @@ describe(`Proxy tests`, () => {
 
       });
 
-      it('should add a document', function(done: MochaDone): void {
+      it('should add a document', function(done: Mocha.Done): void {
         this.timeout(30 * 1000);
 
         const attachmentFile: string = path.join(__dirname, './attachments/image.png');
@@ -694,7 +715,7 @@ describe(`Proxy tests`, () => {
 
       });
 
-      it('should download a binary document', function(done: MochaDone): void {
+      it('should download a binary document', function(done: Mocha.Done): void {
         this.timeout(30 * 1000);
 
         const attachmentFile: string = path.join(__dirname, './attachments/image.png');
@@ -723,7 +744,7 @@ describe(`Proxy tests`, () => {
 
       });
 
-      it('should add a folder', function(done: MochaDone): void {
+      it('should add a folder', function(done: Mocha.Done): void {
         this.timeout(30 * 1000);
 
         const docLibFolder: string = `${webRelativeUrl}/${testVariables.newDocLibName}`;
@@ -747,7 +768,7 @@ describe(`Proxy tests`, () => {
 
       });
 
-      it('should delete a folder', function(done: MochaDone): void {
+      it('should delete a folder', function(done: Mocha.Done): void {
         this.timeout(30 * 1000);
 
         const folderUrl: string = `${webRelativeUrl}/${testVariables.newDocLibName}/New Folder (proxy)`;
@@ -768,7 +789,7 @@ describe(`Proxy tests`, () => {
 
       });
 
-      it('should delete a document library', function(done: MochaDone): void {
+      it('should delete a document library', function(done: Mocha.Done): void {
         this.timeout(30 * 1000);
 
         axios.post(`${proxyRootUri}/_api/web/lists/getByTitle('${testVariables.newDocLibName}')`, null, {
@@ -785,7 +806,7 @@ describe(`Proxy tests`, () => {
 
       });
 
-      it(`should get web's title with SOAP`, function(done: MochaDone): void {
+      it(`should get web's title with SOAP`, function(done: Mocha.Done): void {
         this.timeout(30 * 1000);
 
         const soapPackage = trimMultiline(`
@@ -829,7 +850,7 @@ describe(`Proxy tests`, () => {
 
       });
 
-      it(`should get web's title with CSOM`, function(done: MochaDone): void {
+      it(`should get web's title with CSOM`, function(done: Mocha.Done): void {
         this.timeout(30 * 1000);
 
         const csomPackage = trimMultiline(`

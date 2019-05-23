@@ -18,9 +18,7 @@ export class RestPostRouter extends BasicRouter {
       this.processPostRequest(reqBody, request, response);
     } else {
       request.on('data', chunk => reqBody += chunk);
-      request.on('end', () => {
-        this.processPostRequest(reqBody, request, response);
-      });
+      request.on('end', () => this.processPostRequest(reqBody, request, response));
     }
   }
 
@@ -29,7 +27,7 @@ export class RestPostRouter extends BasicRouter {
     const endpointUrl = this.util.buildEndpointUrl(req);
     this.logger.verbose('Request body:', body);
     const agent = this.util.isUrlHttps(endpointUrl) ? this.settings.agent : undefined;
-    this.spr.requestDigest((endpointUrl).split('/_api')[0])
+    this.spr.requestDigest(endpointUrl.split('/_api')[0])
       .then(digest => {
         let headers: any = {};
         const jsonOption: any = { json: true };
@@ -53,7 +51,7 @@ export class RestPostRouter extends BasicRouter {
         });
         headers = {
           ...headers,
-          'X-RequestDigest': digest
+          'X-RequestDigest': headers['X-RequestDigest'] || digest
         };
         if (
           endpointUrl.toLowerCase().indexOf('/attachmentfiles/add') !== -1 ||
@@ -72,7 +70,10 @@ export class RestPostRouter extends BasicRouter {
         // this.logger.debug('\nHeaders:\n', JSON.stringify(headers, null, 2));
         if (typeof body === 'object' && Object.keys(body).length === 0) {
           // JSOM empty object
-          if (endpointUrl.toLowerCase().indexOf('/_vti_bin/client.svc') !== -1) {
+          if (
+            endpointUrl.toLowerCase().indexOf('/_vti_bin/client.svc') !== -1 ||
+            endpointUrl.toLowerCase().indexOf('/_api/contextinfo') !== -1
+          ) {
             body = '{}';
             // When content-length is set to 0 in this case - since body has been
             // forcably set to "{}" - the content length becomes invalid. The following

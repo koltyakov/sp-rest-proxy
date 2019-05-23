@@ -1,0 +1,24 @@
+trigger:
+- master
+- dev
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: '10.x'
+  displayName: 'Install Node.js'
+
+- script: |
+    npm install
+    npm run build
+  displayName: 'npm install and build'
+
+- script: npm run test:ci
+  displayName: 'Run tests'
+  env:
+    SPAUTH_SITEURL: $(ci.spo.siteurl)
+    SPAUTH_USERNAME: $(ci.spo.username)
+    SPAUTH_PASSWORD: $(ci.spo.password)

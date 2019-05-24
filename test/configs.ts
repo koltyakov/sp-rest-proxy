@@ -1,4 +1,7 @@
+import { config } from 'dotenv';
 import { ITestSetup, ICiTestSetup, IPrivateTestSetup } from './interfaces';
+
+config();
 
 const ci = process.argv.slice(2).indexOf('--ci') !== -1;
 if (ci) { process.env.SPAUTH_ENV = 'production'; }
@@ -10,8 +13,8 @@ export const TestsConfigs: ITestSetup[] = ((headless: boolean) => {
       legacy: false,
       siteUrl: process.env.SPAUTH_SITEURL,
       authOptions: {
-        username: process.env.SPAUTH_CLIENTID,
-        password: process.env.SPAUTH_CLIENTSECTER
+        clientId: process.env.SPAUTH_CLIENTID,
+        ClientSecret: process.env.SPAUTH_CLIENTSECTET
       }
     }];
     return ciTestConf;

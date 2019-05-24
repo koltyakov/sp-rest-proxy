@@ -10,3 +10,4 @@ docker/
 .eslintrc
 tslconfig.json
 tslint.json
+.env

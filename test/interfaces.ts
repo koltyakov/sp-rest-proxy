@@ -1,4 +1,4 @@
-import { IUserCredentials } from 'node-sp-auth';
+import { IOnlineAddinCredentials } from 'node-sp-auth';
 
 export interface IBasicTestSetup {
   environmentName: string;
@@ -11,7 +11,7 @@ export interface IPrivateTestSetup extends IBasicTestSetup {
 
 export interface ICiTestSetup extends IBasicTestSetup {
   siteUrl: string;
-  authOptions: IUserCredentials;
+  authOptions: IOnlineAddinCredentials;
 }
 
 export type ITestSetup = IPrivateTestSetup | ICiTestSetup;

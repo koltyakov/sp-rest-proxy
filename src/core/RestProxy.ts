@@ -25,7 +25,8 @@ import {
   IRouters,
   IGatewayServerSettings,
   IGatewayClientSettings,
-  IProxyCallback
+  IProxyCallback,
+  IProxyErrorCallback
 } from './interfaces';
 
 export default class RestProxy {
@@ -98,7 +99,7 @@ export default class RestProxy {
   }
 
   // Keep public for backward compatibility
-  public serve(callback?: IProxyCallback): void {
+  public serve(callback?: IProxyCallback, errorCallback?: IProxyErrorCallback): void {
     (async () => {
 
       const ctx = await new AuthConfig(this.settings.authConfigSettings).getContext();
@@ -236,8 +237,8 @@ export default class RestProxy {
           // console.log('Error: No SSL settings provided!');
           // return;
           this.settings.ssl = {
-            cert: path.join(__dirname, './../ssl/cert.crt'),
-            key: path.join(__dirname, './../ssl/key.pem')
+            cert: path.join(__dirname, './../../ssl/cert.crt'),
+            key: path.join(__dirname, './../../ssl/key.pem')
           };
         }
         const options: https.ServerOptions = {
@@ -255,7 +256,12 @@ export default class RestProxy {
         });
       }
 
-    })().catch(err => this.logger.error('Error', err));
+    })().catch((error) => {
+      this.logger.error(error);
+      if (errorCallback) {
+        errorCallback(error);
+      }
+    });
   }
 
 }

@@ -57,3 +57,7 @@ export interface IProxyCallback {
     settings: IProxySettings
   ): void;
 }
+
+export interface IProxyErrorCallback {
+  (error: Error): void;
+}

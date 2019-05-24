@@ -42,6 +42,7 @@
     "socket.io": "^2.2.0"
   },
   "devDependencies": {
+    "@microsoft/gulp-core-build-serve": "^3.3.35",
     "@pnp/pnpjs": "^1.3.2",
     "@types/chai": "^4.1.7",
     "@types/core-js": "^2.5.0",

@@ -8,49 +8,57 @@ import * as Util from '@pnp/common';
 import { parseString as xmlStringToJson } from 'xml2js';
 import { PnpNode } from 'sp-pnp-node';
 import * as request from 'request-promise';
+import * as CertStore from '@microsoft/gulp-core-build-serve/lib/CertificateStore';
 
 import RestProxy, { IProxySettings, IProxyContext } from '../../src/core/RestProxy';
 import { trimMultiline } from '../../src/utils/misc';
-import { TestsConfigs, ICiTestSetup, IPrivateTestSetup } from '../configs';
+import { TestsConfigs } from '../configs';
 import { LogLevel } from '../../src/utils/logger';
+import { testVariables, getRequestDigest, getAuthConf } from './misc';
 
-const testVariables = {
-  newListName: 'SPRP List',
-  newDocLibName: 'SPRP Library',
-  headers: {
-    verbose: {
-      headers: {
-        Accept: 'application/json;odata=verbose'
-      }
-    },
-    minimalmetadata: {
-      headers: {
-        Accept: 'application/json;odata=minimalmetadata'
-      }
-    },
-    nometadata: {
-      headers: {
-        Accept: 'application/json;odata=nometadata'
-      }
-    }
-  }
-};
-
-const getRequestDigest = (): string => {
-  return '__proxy_can_do_it_without_digest';
-};
-
-// import * as CertStore from '@microsoft/gulp-core-build-serve/lib/CertificateStore';
-// const CertificateStore = CertStore.CertificateStore || CertStore.default;
-// const protocol: any = {
-//   protocol: 'https',
-//   ssl: {
-//     cert: CertificateStore.instance.certificateData,
-//     key: CertificateStore.instance.keyData
-//   }
-// };
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 describe(`Proxy tests`, () => {
+
+  before('preauthenticate for fair timings', function(done: any): void {
+    this.timeout(30 * 1000);
+  });
+
+  it(`should start with default SSL certs`, function(done: Mocha.Done): void {
+    this.timeout(30 * 1000);
+
+    const proxy: RestProxy = new RestProxy({
+      ...getAuthConf(TestsConfigs[0]),
+      logLevel: LogLevel.Off,
+      protocol: 'https'
+    });
+
+    proxy.serve((server) => {
+      server.close();
+      done();
+    }, done);
+  });
+
+  it(`should start with SPFx's SSL certs`, function(done: Mocha.Done): void {
+    this.timeout(30 * 1000);
+
+    const CertificateStore = CertStore.CertificateStore || (CertStore as any).default;
+
+    const proxy: RestProxy = new RestProxy({
+      ...getAuthConf(TestsConfigs[0]),
+      logLevel: LogLevel.Off,
+      protocol: 'https',
+      ssl: {
+        cert: CertificateStore.instance.certificateData,
+        key: CertificateStore.instance.keyData
+      }
+    });
+
+    proxy.serve((server) => {
+      server.close();
+      done();
+    }, done);
+  });
 
   for (const config of TestsConfigs) {
 
@@ -66,24 +74,7 @@ describe(`Proxy tests`, () => {
       before('Start Proxy', function(done: any): void {
         this.timeout(30 * 1000);
 
-        process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-
-        // Local test mode
-        if (typeof (config as IPrivateTestSetup).configPath !== 'undefined') {
-          proxySettings = {
-            configPath: (config as IPrivateTestSetup).configPath
-          };
-        } else { // Headless/CI mode
-          proxySettings = {
-            authConfigSettings: {
-              headlessMode: true,
-              authOptions: {
-                siteUrl: (config as ICiTestSetup).siteUrl,
-                ...(config as ICiTestSetup).authOptions
-              } as any,
-            }
-          };
-        }
+        proxySettings = getAuthConf(config);
 
         const proxy: RestProxy = new RestProxy({
           ...proxySettings,
@@ -113,7 +104,7 @@ describe(`Proxy tests`, () => {
           });
 
           done();
-        });
+        }, done);
       });
 
       after('Stop Proxy', function(done: any): void {

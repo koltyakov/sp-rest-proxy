@@ -13,8 +13,8 @@ export const TestsConfigs: ITestSetup[] = ((headless: boolean) => {
       legacy: false,
       siteUrl: process.env.SPAUTH_SITEURL,
       authOptions: {
-        clientId: process.env.SPAUTH_CLIENTID,
-        clientSecret: process.env.SPAUTH_CLIENTSECTET
+        username: process.env.SPAUTH_USERNAME,
+        password: process.env.SPAUTH_PASSWORD
       }
     }];
     return ciTestConf;

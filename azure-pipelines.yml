@@ -20,5 +20,5 @@ steps:
   displayName: 'Run tests'
   env:
     SPAUTH_SITEURL: $(ci.spo.siteurl)
-    SPAUTH_CLIENTID: $(ci.spo.clientId)
-    SPAUTH_CLIENTSECRET: $(ci.spo.clientSecret)
+    SPAUTH_USERNAME: $(ci.spo.username)
+    SPAUTH_PASSWORD: $(ci.spo.password)

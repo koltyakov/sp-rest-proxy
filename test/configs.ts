@@ -10,8 +10,8 @@ export const TestsConfigs: ITestSetup[] = ((headless: boolean) => {
       legacy: false,
       siteUrl: process.env.SPAUTH_SITEURL,
       authOptions: {
-        username: process.env.SPAUTH_USERNAME,
-        password: process.env.SPAUTH_PASSWORD
+        username: process.env.SPAUTH_CLIENTID,
+        password: process.env.SPAUTH_CLIENTSECTER
       }
     }];
     return ciTestConf;

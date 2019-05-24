@@ -14,7 +14,7 @@ export const TestsConfigs: ITestSetup[] = ((headless: boolean) => {
       siteUrl: process.env.SPAUTH_SITEURL,
       authOptions: {
         clientId: process.env.SPAUTH_CLIENTID,
-        ClientSecret: process.env.SPAUTH_CLIENTSECTET
+        clientSecret: process.env.SPAUTH_CLIENTSECTET
       }
     }];
     return ciTestConf;

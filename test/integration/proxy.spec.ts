@@ -14,14 +14,15 @@ import RestProxy, { IProxySettings, IProxyContext } from '../../src/core/RestPro
 import { trimMultiline } from '../../src/utils/misc';
 import { TestsConfigs } from '../configs';
 import { LogLevel } from '../../src/utils/logger';
-import { testVariables, getRequestDigest, getAuthConf } from './misc';
+import { testVariables, getRequestDigest, getAuthConf, getAuth } from './misc';
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 describe(`Proxy tests`, () => {
 
-  before('preauthenticate for fair timings', function(done: any): void {
+  before('preauthenticate for fair timings', function(done: Mocha.Done): void {
     this.timeout(30 * 1000);
+    getAuth(TestsConfigs[0]).then(() => done()).catch(done);
   });
 
   it(`should start with default SSL certs`, function(done: Mocha.Done): void {
@@ -71,7 +72,12 @@ describe(`Proxy tests`, () => {
       let proxyRootUri: string = null;
       let webRelativeUrl: string = null;
 
-      before('Start Proxy', function(done: any): void {
+      before('preauthenticate for fair timings', function(done: Mocha.Done): void {
+        this.timeout(30 * 1000);
+        getAuth(config).then(() => done()).catch(done);
+      });
+
+      before('start Proxy', function(done: Mocha.Done): void {
         this.timeout(30 * 1000);
 
         proxySettings = getAuthConf(config);
@@ -107,7 +113,7 @@ describe(`Proxy tests`, () => {
         }, done);
       });
 
-      after('Stop Proxy', function(done: any): void {
+      after('stop Proxy', function(done: Mocha.Done): void {
         this.timeout(30 * 1000);
         expressServer.close();
         // console.log(`Proxy has been stopped (${testConfig.environmentName})`)

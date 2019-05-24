@@ -1,3 +1,5 @@
+import { AuthConfig } from 'node-sp-auth-config';
+import { getAuth as getNodeAuth } from 'node-sp-auth';
 import { ITestSetup, IPrivateTestSetup, ICiTestSetup } from '../configs';
 
 export const testVariables = {
@@ -42,4 +44,15 @@ export const getAuthConf = (config: ITestSetup) => {
       }
     };
   return proxySettings;
+};
+
+export const getAuth = (config: ITestSetup) => {
+  const authConf = getAuthConf(config);
+  return new AuthConfig({
+    configPath: authConf.configPath,
+    ...authConf.authConfigSettings || {}
+  }).getContext()
+    .then(({ siteUrl, authOptions }) => {
+      return getNodeAuth(siteUrl, authOptions);
+    });
 };

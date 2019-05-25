@@ -12,7 +12,7 @@ import * as CertStore from '@microsoft/gulp-core-build-serve/lib/CertificateStor
 
 import RestProxy, { IProxySettings, IProxyContext } from '../../src/core/RestProxy';
 import { trimMultiline } from '../../src/utils/misc';
-import { TestsConfigs } from '../configs';
+import { Environments } from '../configs';
 import { LogLevel } from '../../src/utils/logger';
 import { testVariables, getRequestDigest, getAuthConf, getAuth } from './misc';
 
@@ -22,14 +22,14 @@ describe(`Proxy tests`, () => {
 
   before('preauthenticate for fair timings', function(done: Mocha.Done): void {
     this.timeout(30 * 1000);
-    getAuth(TestsConfigs[0]).then(() => done()).catch(done);
+    getAuth(Environments[0]).then(() => done()).catch(done);
   });
 
   it(`should start with default SSL certs`, function(done: Mocha.Done): void {
     this.timeout(30 * 1000);
 
     const proxy: RestProxy = new RestProxy({
-      ...getAuthConf(TestsConfigs[0]),
+      ...getAuthConf(Environments[0]),
       logLevel: LogLevel.Off,
       protocol: 'https'
     });
@@ -46,7 +46,7 @@ describe(`Proxy tests`, () => {
     const CertificateStore = CertStore.CertificateStore || (CertStore as any).default;
 
     const proxy: RestProxy = new RestProxy({
-      ...getAuthConf(TestsConfigs[0]),
+      ...getAuthConf(Environments[0]),
       logLevel: LogLevel.Off,
       protocol: 'https',
       ssl: {
@@ -61,7 +61,7 @@ describe(`Proxy tests`, () => {
     }, done);
   });
 
-  for (const config of TestsConfigs) {
+  for (const config of Environments) {
 
     describe(`Run tests in ${config.environmentName}`, () => {
 

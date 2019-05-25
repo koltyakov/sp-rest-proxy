@@ -1,6 +1,6 @@
 import { AuthConfig } from 'node-sp-auth-config';
 import { getAuth as getNodeAuth } from 'node-sp-auth';
-import { ITestSetup, IPrivateTestSetup, ICiTestSetup } from '../configs';
+import { ICiEnvironmentConfig, IPrivateEnvironmentConfig, IEnvironmentConfig } from '../configs';
 
 export const testVariables = {
   newListName: 'SPRP List',
@@ -28,25 +28,25 @@ export const getRequestDigest = (): string => {
   return '__proxy_can_do_it_without_digest';
 };
 
-export const getAuthConf = (config: ITestSetup) => {
+export const getAuthConf = (config: IEnvironmentConfig) => {
   const proxySettings =
-    typeof (config as IPrivateTestSetup).configPath !== 'undefined'
+    typeof (config as IPrivateEnvironmentConfig).configPath !== 'undefined'
     ? { // Local test mode
-      configPath: (config as IPrivateTestSetup).configPath
+      configPath: (config as IPrivateEnvironmentConfig).configPath
     }
     : { // Headless/CI mode
       authConfigSettings: {
         headlessMode: true,
         authOptions: {
-          siteUrl: (config as ICiTestSetup).siteUrl,
-          ...(config as ICiTestSetup).authOptions
-        } as any,
+          siteUrl: (config as ICiEnvironmentConfig).siteUrl,
+          ...(config as ICiEnvironmentConfig).authOptions
+        }
       }
     };
   return proxySettings;
 };
 
-export const getAuth = (config: ITestSetup) => {
+export const getAuth = (config: IEnvironmentConfig) => {
   const authConf = getAuthConf(config);
   return new AuthConfig({
     configPath: authConf.configPath,

@@ -1,14 +1,14 @@
 import { config } from 'dotenv';
-import { ITestSetup, ICiTestSetup, IPrivateTestSetup } from './interfaces';
+import { IEnvironmentConfig, ICiEnvironmentConfig, IPrivateEnvironmentConfig } from './interfaces';
 
 config();
 
 const ci = process.argv.slice(2).indexOf('--ci') !== -1;
 if (ci) { process.env.SPAUTH_ENV = 'production'; }
 
-export const TestsConfigs: ITestSetup[] = ((headless: boolean) => {
+export const Environments: IEnvironmentConfig[] = ((headless: boolean) => {
   if (headless) {
-    const ciTestConf: ICiTestSetup[] = [{
+    const ciTestConf: ICiEnvironmentConfig[] = [{
       environmentName: 'SharePoint Online',
       legacy: false,
       siteUrl: process.env.SPAUTH_SITEURL,
@@ -19,7 +19,7 @@ export const TestsConfigs: ITestSetup[] = ((headless: boolean) => {
     }];
     return ciTestConf;
   }
-  const privateConf: IPrivateTestSetup[] = [
+  const privateConf: IPrivateEnvironmentConfig[] = [
     {
       environmentName: 'SharePoint Online',
       configPath: './config/integration/private.spo.json',
@@ -39,4 +39,4 @@ export const TestsConfigs: ITestSetup[] = ((headless: boolean) => {
   return privateConf;
 })(ci);
 
-export { ITestSetup, ICiTestSetup, IPrivateTestSetup } from './interfaces';
+export { IEnvironmentConfig, ICiEnvironmentConfig, IPrivateEnvironmentConfig } from './interfaces';

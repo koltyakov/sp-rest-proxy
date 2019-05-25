@@ -1,17 +1,17 @@
-import { IUserCredentials } from 'node-sp-auth';
+import { IAuthOptions } from 'node-sp-auth';
 
-export interface IBasicTestSetup {
+interface IBasicEnvironmentConfig {
   environmentName: string;
   legacy: boolean;
 }
 
-export interface IPrivateTestSetup extends IBasicTestSetup {
+export interface IPrivateEnvironmentConfig extends IBasicEnvironmentConfig {
   configPath: string;
 }
 
-export interface ICiTestSetup extends IBasicTestSetup {
+export interface ICiEnvironmentConfig extends IBasicEnvironmentConfig {
   siteUrl: string;
-  authOptions: IUserCredentials;
+  authOptions: IAuthOptions;
 }
 
-export type ITestSetup = IPrivateTestSetup | ICiTestSetup;
+export type IEnvironmentConfig = IPrivateEnvironmentConfig | ICiEnvironmentConfig;

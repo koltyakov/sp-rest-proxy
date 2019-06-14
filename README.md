@@ -150,7 +150,7 @@ module.exports = {
     watchContentBase: true,
     writeToDisk: true,
     port,
-    before: app => {
+    before: (app) => {
       // Register SP API Proxy
       new RestProxy({ port }, app).serveProxy();
 
@@ -182,14 +182,21 @@ restProxy.serve();
 
 The proxy provides wizard-like approach for building and managing config files for [`node-sp-auth`](https://github.com/s-KaiNet/node-sp-auth) (Node.js to SharePoint unattended http authentication).
 
-- SharePoint 2013, 2016:
-  - Addin only permissions
-  - User credentials through the http ntlm handshake
-  - Form-based authentication (FBA)
 - SharePoint Online:
-  - Addin only permissions
-  - SAML based with user credentials
-  - ADFS user credentials (works with both SharePoint on-premise and Online)
+  - User credentials (SAML/ADFS)
+  - Add-In Only permissions
+  - On-Demand authentication (using Electron popup)
+- SharePoint 2019, 2016, 2013:
+  - User credentials (NTLM, NTLM v2)
+  - ADFS user credentials
+  - Form-based authentication (FBA)
+  - Form-based authentication (Forefront TMG)
+  - Add-In Only permissions
+  - On-Demand authentication (using Electron popup)
+- SharePoint 2010:
+  - User credentials (NTLM, NTMLv2)
+  - Form-based authentication (FBA)
+  - Form-based authentication (Forefront TMG)
 
 For more information please check node-sp-auth [credential options](https://github.com/s-KaiNet/node-sp-auth#params) and [wiki pages](https://github.com/s-KaiNet/node-sp-auth/wiki).
 Auth settings are stored inside `./config/private.json`.
@@ -209,7 +216,7 @@ import { loadPageContext } from 'sp-rest-proxy/dist/utils/env';
 import { Web } from '@pnp/sp';
 
 // loadPageContext - gets correct URL in localhost and SP environments
-loadPageContext().then(async _ => {
+loadPageContext().then(async () => {
 
   // In both localhost and published to SharePoint page
   // `_spPageContextInfo` will contain correct info for vital props
@@ -223,7 +230,7 @@ loadPageContext().then(async _ => {
   const list = web.getList(`${_spPageContextInfo.webServerRelativeUrl}/List/ListName`);
   const entityName = await list.getListItemEntityTypeFullName();
 
-  [1, 2, 3, 4].forEach(el => {
+  [1, 2, 3, 4].forEach((el) => {
     list.items.inBatch(batch).add({
       Title: `${el}`
     }, entityName);
@@ -232,7 +239,7 @@ loadPageContext().then(async _ => {
   await batch.execute();
   console.log('Done');
 
-}).catch(log);
+}).catch(console.warn);
 ```
 
 ## JSOM (SharePoint JavaScript Object Model)

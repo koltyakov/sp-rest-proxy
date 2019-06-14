@@ -8,7 +8,8 @@ import * as Util from '@pnp/common';
 import { parseString as xmlStringToJson } from 'xml2js';
 import { PnpNode } from 'sp-pnp-node';
 import * as request from 'request-promise';
-import * as CertStore from '@microsoft/gulp-core-build-serve/lib/CertificateStore';
+
+// import * as CertStore from '@microsoft/gulp-core-build-serve/lib/CertificateStore';
 
 import RestProxy, { IProxySettings, IProxyContext } from '../../src/core/RestProxy';
 import { trimMultiline } from '../../src/utils/misc';
@@ -40,26 +41,26 @@ describe(`Proxy tests`, () => {
     }, done);
   });
 
-  it(`should start with SPFx's SSL certs`, function(done: Mocha.Done): void {
-    this.timeout(30 * 1000);
+  // it(`should start with SPFx's SSL certs`, function(done: Mocha.Done): void {
+  //   this.timeout(30 * 1000);
 
-    const CertificateStore = CertStore.CertificateStore || (CertStore as any).default;
+  //   const CertificateStore = CertStore.CertificateStore || (CertStore as any).default;
 
-    const proxy: RestProxy = new RestProxy({
-      ...getAuthConf(Environments[0]),
-      logLevel: LogLevel.Off,
-      protocol: 'https',
-      ssl: {
-        cert: CertificateStore.instance.certificateData,
-        key: CertificateStore.instance.keyData
-      }
-    });
+  //   const proxy: RestProxy = new RestProxy({
+  //     ...getAuthConf(Environments[0]),
+  //     logLevel: LogLevel.Off,
+  //     protocol: 'https',
+  //     ssl: {
+  //       cert: CertificateStore.instance.certificateData,
+  //       key: CertificateStore.instance.keyData
+  //     }
+  //   });
 
-    proxy.serve((server) => {
-      server.close();
-      done();
-    }, done);
-  });
+  //   proxy.serve((server) => {
+  //     server.close();
+  //     done();
+  //   }, done);
+  // });
 
   for (const config of Environments) {
 

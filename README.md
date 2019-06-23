@@ -1,11 +1,11 @@
 # sp-rest-proxy - SharePoint REST API Proxy for local Front-end development tool-chains
 
-[![NPM](https://nodei.co/npm/sp-rest-proxy.png?mini=true&downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/sp-rest-proxy/)
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fkoltyakov%2Fsp-rest-proxy.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fkoltyakov%2Fsp-rest-proxy?ref=badge_shield)
+[![NPM](https://nodei.co/npm/sp-rest-proxy.png?mini=true&downloads=true&downloadRank=true)](https://nodei.co/npm/sp-rest-proxy/)
 
 [![npm version](https://badge.fury.io/js/sp-rest-proxy.svg)](https://badge.fury.io/js/sp-rest-proxy)
 [![Downloads](https://img.shields.io/npm/dm/sp-rest-proxy.svg)](https://www.npmjs.com/package/sp-rest-proxy)
 [![Build Status](https://koltyakov.visualstudio.com/SPNode/_apis/build/status/sp-rest-proxy?branchName=master)](https://koltyakov.visualstudio.com/SPNode/_build/latest?definitionId=7&branchName=master)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fkoltyakov%2Fsp-rest-proxy.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fkoltyakov%2Fsp-rest-proxy?ref=badge_shield)
 [![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/sharepoint-node/Lobby)
 
 > Allows performing API calls to local Express application with forwarding the queries to a remote SharePoint instance.

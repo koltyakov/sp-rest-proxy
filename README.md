@@ -1,6 +1,7 @@
 # sp-rest-proxy - SharePoint REST API Proxy for local Front-end development tool-chains
 
 [![NPM](https://nodei.co/npm/sp-rest-proxy.png?mini=true&downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/sp-rest-proxy/)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fkoltyakov%2Fsp-rest-proxy.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fkoltyakov%2Fsp-rest-proxy?ref=badge_shield)
 
 [![npm version](https://badge.fury.io/js/sp-rest-proxy.svg)](https://badge.fury.io/js/sp-rest-proxy)
 [![Downloads](https://img.shields.io/npm/dm/sp-rest-proxy.svg)](https://www.npmjs.com/package/sp-rest-proxy)
@@ -273,3 +274,7 @@ Check out the [example](https://github.com/koltyakov/sp-rest-proxy/blob/master/t
 
 - [Docker Hub](https://hub.docker.com/r/koltyakov/sp-rest-proxy/)
 - [Local example](https://github.com/koltyakov/sp-rest-proxy/tree/master/docker)
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fkoltyakov%2Fsp-rest-proxy.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fkoltyakov%2Fsp-rest-proxy?ref=badge_large)

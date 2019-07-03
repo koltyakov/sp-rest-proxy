@@ -4,7 +4,9 @@
   "description": "sp-rest-proxy for docker",
   "main": "./server.js",
   "scripts": {
-    "proxy": "node ./server"
+    "proxy": "node ./server",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "keywords": [
     "sharepoint",
@@ -24,6 +26,8 @@
   },
   "homepage": "https://github.com/koltyakov/sp-rest-proxy#readme",
   "dependencies": {
-    "sp-rest-proxy": "^2.8.10"
-  }
+    "sp-rest-proxy": "^2.8.10",
+    "snyk": "^1.189.0"
+  },
+  "snyk": true
 }

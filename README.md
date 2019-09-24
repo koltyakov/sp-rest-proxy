@@ -14,7 +14,7 @@ Original concept of the proxy was created to show how it could be easy to implem
 
 ![In a nutshell](./docs/img/high-level-scheme.png)
 
-## Supports SPFx and PnP JS Core
+## Supports SPFx and PnP JS
 
 ## Supported SharePoint versions
 
@@ -206,7 +206,7 @@ Auth settings are stored inside `./config/private.json`.
 
 sp-rest-proxy works with PnPjs (check out [brief notice](https://github.com/koltyakov/sp-rest-proxy/issues/26) how to configure).
 
-![PnP JS Core + sp-rest-proxy](http://koltyakov.ru/images/pnp-sp-rest-proxy.png)
+![PnP JS + sp-rest-proxy](http://koltyakov.ru/images/pnp-sp-rest-proxy.png)
 
 ### Load page context helper
 

@@ -18,7 +18,7 @@ export const loadPageContext = (): Promise<IPageContextInfo> => {
         const restUrl = trimMultiline(`
           ${window.location.origin}/_api/web?
             $select=Title,Language,ServerRelativeUrl,Url,
-              CurrentUser/Id,CurrentUser/LoginName,CurrentUser/Email,CurrentUser/Title&
+              CurrentUser/Id,CurrentUser/LoginName,CurrentUser/Email,CurrentUser/Title,CurrentUser/IsSiteAdmin&
             $expand=CurrentUser
         `);
         return fetch(restUrl, {
@@ -57,6 +57,7 @@ export const loadPageContext = (): Promise<IPageContextInfo> => {
             userLoginName: webInfo.CurrentUser.LoginName,
             userDisplayName: webInfo.CurrentUser.Title,
             userEmail: webInfo.CurrentUser.Email,
+            isSiteAdmin: webInfo.CurrentUser.IsSiteAdmin,
             // Misc
             __webAbsoluteUrl: webInfo.Url,
             __siteAbsoluteUrl: siteInfo.Url,

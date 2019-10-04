@@ -26,3 +26,8 @@ patch:
         patched: '2019-07-04T03:59:48.285Z'
     - node-sp-auth-config > node-sp-auth > request-promise > request-promise-core > lodash:
         patched: '2019-07-04T03:59:48.285Z'
+  SNYK-JS-HTTPSPROXYAGENT-469131:
+    - snyk > proxy-agent > https-proxy-agent:
+        patched: '2019-10-04T03:59:51.953Z'
+    - snyk > proxy-agent > pac-proxy-agent > https-proxy-agent:
+        patched: '2019-10-04T03:59:51.953Z'

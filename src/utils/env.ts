@@ -8,17 +8,17 @@ export const isLocalhost = Boolean(
   window.location.hostname.match(/^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/)
 );
 
-export const loadPageContext = (port?: number): Promise<IPageContextInfo> => {
+export const loadPageContext = (proxyEndpoint?: string): Promise<IPageContextInfo> => {
   return new Promise((resolve) => {
     if (typeof _spPageContextInfo !== 'undefined') {
       return resolve(_spPageContextInfo);
     }
     if (isLocalhost) {
-      let apiEndpoint = window.location.origin;
-      if (port) {
-        const [ protocol, uri ] = apiEndpoint.split(':');
-        apiEndpoint = `${protocol}:${uri}:${port}`;
-      }
+      let apiEndpoint = proxyEndpoint || window.location.origin;
+      // if (port) {
+      //   const [ protocol, uri ] = apiEndpoint.split(':');
+      //   apiEndpoint = `${protocol}:${uri}:${port}`;
+      // }
       const getWebInfo = (): Promise<any> => {
         const restUrl = trimMultiline(`
           ${apiEndpoint}/_api/web?

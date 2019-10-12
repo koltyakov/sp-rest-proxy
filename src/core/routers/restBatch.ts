@@ -17,7 +17,7 @@ export class RestBatchRouter extends BasicRouter {
       reqBody = request.body;
       this.processBatchRequest(reqBody, request, response);
     } else {
-      request.on('data', chunk => reqBody += chunk);
+      request.on('data', (chunk) => reqBody += chunk);
       request.on('end', () => this.processBatchRequest(reqBody, request, response));
     }
   }
@@ -31,7 +31,7 @@ export class RestBatchRouter extends BasicRouter {
     } else {
       const regExp = new RegExp('^(POST|GET|MERGE|DELETE) https?://localhost(:[0-9]+)?/', 'i');
       const origin = this.ctx.siteUrl.split('/').splice(0, 3).join('/');
-      body = body.split('\n').map(line => {
+      body = body.split('\n').map((line) => {
         if (regExp.test(line)) {
           const parts = line.split(' ');
           const method = parts.shift();
@@ -48,14 +48,14 @@ export class RestBatchRouter extends BasicRouter {
     this.spr = this.getHttpClient();
     const agent = this.util.isUrlHttps(endpointUrl) ? this.settings.agent : undefined;
     this.spr.requestDigest(endpointUrl.split('/_api')[0])
-      .then(digest => {
+      .then((digest) => {
         let headers: any = {};
         const ignoreHeaders = [
           'host', 'referer', 'origin',
           'if-none-match', 'connection', 'cache-control', 'user-agent',
           'accept-encoding', 'x-requested-with', 'accept-language'
         ];
-        Object.keys(req.headers).forEach(prop => {
+        Object.keys(req.headers).forEach((prop) => {
           if (ignoreHeaders.indexOf(prop.toLowerCase()) === -1) {
             if (prop.toLowerCase() === 'accept' && req.headers[prop] !== '*/*') {
               headers['Accept'] = req.headers[prop];
@@ -77,8 +77,8 @@ export class RestBatchRouter extends BasicRouter {
         // this.logger.debug('\nHeaders:\n', JSON.stringify(requestHeadersPass, null, 2));
         return this.spr.post(endpointUrl, { headers, body, agent, json: false });
       })
-      .then(r => this.transmitResponse(res, r))
-      .catch(err => this.transmitError(res, err));
+      .then((r) => this.transmitResponse(res, r))
+      .catch((err) => this.transmitError(res, err));
   }
 
 }

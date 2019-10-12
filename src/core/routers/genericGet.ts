@@ -23,7 +23,7 @@ export class GetRouter extends BasicRouter {
     const agent = this.util.isUrlHttps(endpointUrl) ? this.settings.agent : undefined;
     const headers: any = {};
     const ignoreHeaders = [ 'host', 'referer', 'origin', 'accept-encoding', 'connection', 'if-none-match' ];
-    Object.keys(req.headers).forEach(prop => {
+    Object.keys(req.headers).forEach((prop) => {
       if (ignoreHeaders.indexOf(prop.toLowerCase()) === -1) {
         if (prop.toLowerCase() === 'accept' && req.headers[prop] !== '*/*') {
           headers.Accept = req.headers[prop];
@@ -56,8 +56,8 @@ export class GetRouter extends BasicRouter {
     // Static resources from SharePoint <<
 
     this.spr.get(endpointUrl, { headers, ...advanced, agent })
-      .then(r => this.transmitResponse(res, r))
-      .catch(err => this.transmitError(res, err));
+      .then((r) => this.transmitResponse(res, r))
+      .catch((err) => this.transmitError(res, err));
   }
 
   private serveLocalResources(req: Request, res: Response): boolean {

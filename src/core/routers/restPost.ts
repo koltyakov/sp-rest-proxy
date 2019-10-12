@@ -17,7 +17,7 @@ export class RestPostRouter extends BasicRouter {
       reqBody = request.body;
       this.processPostRequest(reqBody, request, response);
     } else {
-      request.on('data', chunk => reqBody += chunk);
+      request.on('data', (chunk) => reqBody += chunk);
       request.on('end', () => this.processPostRequest(reqBody, request, response));
     }
   }
@@ -28,7 +28,7 @@ export class RestPostRouter extends BasicRouter {
     this.logger.verbose('Request body:', body);
     const agent = this.util.isUrlHttps(endpointUrl) ? this.settings.agent : undefined;
     this.spr.requestDigest(endpointUrl.split('/_api')[0])
-      .then(digest => {
+      .then((digest) => {
         let headers: any = {};
         const jsonOption: any = { json: true };
         const ignoreHeaders = [
@@ -36,7 +36,7 @@ export class RestPostRouter extends BasicRouter {
           'connection', 'cache-control', 'user-agent',
           'accept-encoding', 'x-requested-with', 'accept-language'
         ];
-        Object.keys(req.headers).forEach(prop => {
+        Object.keys(req.headers).forEach((prop) => {
           if (ignoreHeaders.indexOf(prop.toLowerCase()) === -1) {
             if (prop.toLowerCase() === 'accept' && req.headers[prop] !== '*/*') {
               headers['Accept'] = req.headers[prop];
@@ -79,7 +79,7 @@ export class RestPostRouter extends BasicRouter {
             // forcably set to "{}" - the content length becomes invalid. The following
             // line removes the content-length header to avoid errors downstream.
           }
-          Object.keys(headers).forEach(prop => {
+          Object.keys(headers).forEach((prop) => {
             if (prop.toLowerCase() === 'content-length') {
               delete headers[prop];
             }
@@ -87,8 +87,8 @@ export class RestPostRouter extends BasicRouter {
         }
         return this.spr.post(endpointUrl, { headers, body, ...jsonOption, agent });
       })
-      .then(r => this.transmitResponse(res, r))
-      .catch(err => this.transmitError(res, err));
+      .then((r) => this.transmitResponse(res, r))
+      .catch((err) => this.transmitError(res, err));
   }
 
 }

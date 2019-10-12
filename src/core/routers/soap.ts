@@ -15,14 +15,14 @@ export class SoapRouter extends BasicRouter {
     this.logger.info('\nPOST (SOAP): ' + endpointUrl);
     const agent = this.util.isUrlHttps(endpointUrl) ? this.settings.agent : undefined;
     let body = '';
-    req.on('data', chunk => body += chunk);
+    req.on('data', (chunk) => body += chunk);
     req.on('end', () => {
       if (req.headers.origin) {
         const regExpOrigin = new RegExp(req.headers.origin as any, 'g');
         body = body.replace(regExpOrigin, this.ctx.siteUrl);
       }
       this.util.getAuthOptions()
-        .then(opt => {
+        .then((opt) => {
           const headers = {
             ...opt.headers,
             'SOAPAction': req.headers.soapaction,
@@ -32,8 +32,8 @@ export class SoapRouter extends BasicRouter {
           };
           return this.spr.post(endpointUrl, { headers, body, agent, json: false });
         })
-        .then(r => this.transmitResponse(res, r))
-        .catch(err => this.transmitError(res, err));
+        .then((r) => this.transmitResponse(res, r))
+        .catch((err) => this.transmitError(res, err));
     });
   }
 

@@ -28,7 +28,7 @@ export class Server {
 
   public init = (): void => {
     this.server.listen(this.settings.port || this.proxy.port);
-    this.io.on('connection', socket => {
+    this.io.on('connection', (socket) => {
 
       this.socket = socket;
 
@@ -70,7 +70,7 @@ export class Server {
   private getTransmitter = (req: express.Request, res: express.Response): void => {
     const transaction = generateGuid();
     this.logger.info('\nGET: ' + req.originalUrl);
-    const responseCallback = data => {
+    const responseCallback = (data) => {
       if (data.transaction === transaction) {
         const statusCode = data.response.statusCode;
         let body = data.response.body;
@@ -94,7 +94,7 @@ export class Server {
   private postTransmitter = (req: express.Request, res: express.Response): void => {
     const transaction = generateGuid();
     this.logger.info('\nPOST: ' + req.originalUrl);
-    const responseCallback = data => {
+    const responseCallback = (data) => {
       if (data.transaction === transaction) {
         const statusCode = data.response.statusCode;
         let body = data.response.body;
@@ -113,7 +113,7 @@ export class Server {
           callback(reqBody);
         }
       } else {
-        request.on('data', chunk => reqBody += chunk);
+        request.on('data', (chunk) => reqBody += chunk);
         request.on('end', () => {
           if (callback && typeof callback === 'function') {
             callback(reqBody);
@@ -121,7 +121,7 @@ export class Server {
         });
       }
     };
-    extractPostRequestBody(req, body => {
+    extractPostRequestBody(req, (body) => {
       const request = {
         url: req.originalUrl,
         method: 'POST',

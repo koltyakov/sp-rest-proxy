@@ -15,7 +15,7 @@ export class CsomRouter extends BasicRouter {
     this.logger.info('\nPOST (CSOM): ' + endpointUrl);
     const agent = this.util.isUrlHttps(endpointUrl) ? this.settings.agent : undefined;
     let body = '';
-    req.on('data', chunk => body += chunk);
+    req.on('data', (chunk) => body += chunk);
     req.on('end', () => {
       Promise.all([
         this.spr.requestDigest((endpointUrl).split('/_vti_bin')[0]),
@@ -31,8 +31,8 @@ export class CsomRouter extends BasicRouter {
           };
           return this.spr.post(endpointUrl, { headers, body, agent, json: false });
         })
-        .then(r => this.transmitResponse(res, r))
-        .catch(err => this.transmitError(res, err));
+        .then((r) => this.transmitResponse(res, r))
+        .catch((err) => this.transmitError(res, err));
     });
   }
 

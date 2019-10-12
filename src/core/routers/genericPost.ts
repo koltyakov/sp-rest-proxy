@@ -15,14 +15,14 @@ export class PostRouter extends BasicRouter {
     this.logger.info('\nPOST (generic): ' + endpointUrl);
     const agent = this.util.isUrlHttps(endpointUrl) ? this.settings.agent : undefined;
     let body = '';
-    req.on('data', chunk => body += chunk);
+    req.on('data', (chunk) => body += chunk);
     req.on('end', async () => {
       if (req.headers.origin) {
         const regExpOrigin = new RegExp(req.headers.origin as any, 'g');
         body = body.replace(regExpOrigin, this.ctx.siteUrl);
       }
       const requestHeadersPass = {};
-      Object.keys(req.headers).forEach(prop => {
+      Object.keys(req.headers).forEach((prop) => {
         if (prop.toLowerCase() === 'accept' && req.headers[prop] !== '*/*') {
           // tslint:disable-next-line:no-string-literal
           requestHeadersPass['Accept'] = req.headers[prop];
@@ -56,7 +56,7 @@ export class PostRouter extends BasicRouter {
       }
 
       this.util.getAuthOptions()
-        .then(opt => {
+        .then((opt) => {
           const headers = {
             ...opt.headers,
             ...requestHeadersPass
@@ -67,8 +67,8 @@ export class PostRouter extends BasicRouter {
           };
           return this.spr.post(endpointUrl, { headers, body, ...options, agent });
         })
-        .then(r => this.transmitResponse(res, r))
-        .catch(err => this.transmitError(res, err));
+        .then((r) => this.transmitResponse(res, r))
+        .catch((err) => this.transmitError(res, err));
     });
   }
 

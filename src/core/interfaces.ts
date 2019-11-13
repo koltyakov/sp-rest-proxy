@@ -4,6 +4,7 @@ import { Router, Request } from 'express';
 import { Agent, Server as HttpsServer } from 'https';
 import { Server as HttpServer,IncomingMessage } from 'http';
 import { LogLevel } from '../utils/logger';
+import { BasicRouter } from './BasicRouter';
 
 export interface IProxySettings {
   hostname?: string;
@@ -65,5 +66,5 @@ export interface IProxyErrorCallback {
 }
 
 export interface IProxyHooks {
-  responseMapper?: (req: Request, res: IncomingMessage) => Promise<IncomingMessage> | IncomingMessage;
+  responseMapper?: (req: Request, res: IncomingMessage, router?: BasicRouter) => Promise<IncomingMessage> | IncomingMessage;
 }

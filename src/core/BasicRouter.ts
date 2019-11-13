@@ -32,7 +32,7 @@ export class BasicRouter {
     // Injecting ad-hoc response mapper
     if (this.settings.hooks && this.settings.hooks.responseMapper && typeof this.settings.hooks.responseMapper === 'function') {
       try {
-        response = await this.settings.hooks.responseMapper(res.req, response);
+        response = await this.settings.hooks.responseMapper(res.req, response, this);
       } catch (ex) { /**/ }
     }
     res.send(response.body);

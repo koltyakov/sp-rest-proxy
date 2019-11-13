@@ -19,10 +19,14 @@ const settings: IProxySettings = {
   // hostname: '10.42.7.50',
   // port: 3777
   hooks: {
-    responseMapper: (req, res) => {
-      if (req.method === 'GET') {
-        if (req.originalUrl.indexOf('/_api/web?$select=Title') === 0) {
-          res.body = { message: 'Hey!' }; // by applying crazy staff, don't expect the code works when deployed to SharePoint page
+    responseMapper: (req, res, router) => {
+      if (req.method === 'POST') {
+        if (req.originalUrl.toLowerCase().indexOf('/files/add') !== -1) {
+          const body = JSON.parse(res.body);
+          if (typeof body.d.ListItemAllFields.__deferred.uri === 'string') {
+            body.d.ListItemAllFields.__deferred.uri = router.util.buildProxyEndpointUrl(body.d.ListItemAllFields.__deferred.uri);
+          }
+          res.body = JSON.stringify(body);
         }
       }
       return res;

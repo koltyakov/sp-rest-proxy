@@ -8,15 +8,20 @@ export const isLocalhost = Boolean(
   window.location.hostname.match(/^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/)
 );
 
-export const loadPageContext = (): Promise<IPageContextInfo> => {
-  return new Promise(resolve => {
+export const loadPageContext = (proxyEndpoint?: string): Promise<IPageContextInfo> => {
+  return new Promise((resolve) => {
     if (typeof _spPageContextInfo !== 'undefined') {
       return resolve(_spPageContextInfo);
     }
     if (isLocalhost) {
+      let apiEndpoint = proxyEndpoint || window.location.origin;
+      // if (port) {
+      //   const [ protocol, uri ] = apiEndpoint.split(':');
+      //   apiEndpoint = `${protocol}:${uri}:${port}`;
+      // }
       const getWebInfo = (): Promise<any> => {
         const restUrl = trimMultiline(`
-          ${window.location.origin}/_api/web?
+          ${apiEndpoint}/_api/web?
             $select=Title,Language,ServerRelativeUrl,Url,
               CurrentUser/Id,CurrentUser/LoginName,CurrentUser/Email,CurrentUser/Title,CurrentUser/IsSiteAdmin&
             $expand=CurrentUser
@@ -27,17 +32,17 @@ export const loadPageContext = (): Promise<IPageContextInfo> => {
             ['Accept', 'application/json;odata=verbose'],
             ['X-ProxyStrict', 'false']
           ]
-        }).then(res => res.json());
+        }).then((res) => res.json());
       };
       const getSiteInfo = (): Promise<any> => {
-        const restUrl = `${window.location.origin}/_api/site?$select=ServerRelativeUrl,Url`;
+        const restUrl = `${apiEndpoint}/_api/site?$select=ServerRelativeUrl,Url`;
         return fetch(restUrl, {
           method: 'GET',
           headers: [
             ['Accept', 'application/json;odata=verbose'],
             ['X-ProxyStrict', 'false']
           ]
-        }).then(res => res.json());
+        }).then((res) => res.json());
       };
       return Promise.all([ getWebInfo(), getSiteInfo() ])
         .then(([{ d: webInfo }, { d: siteInfo }]) => {
@@ -45,12 +50,12 @@ export const loadPageContext = (): Promise<IPageContextInfo> => {
             ...{} as any,
             // Web info
             webTitle: webInfo.Title,
-            webAbsoluteUrl: window.location.origin + webInfo.ServerRelativeUrl,
+            webAbsoluteUrl: apiEndpoint + webInfo.ServerRelativeUrl,
             webServerRelativeUrl: webInfo.ServerRelativeUrl,
             // Locale
             currentLanguage: webInfo.Language,
             // Site info
-            siteAbsoluteUrl: window.location.origin + siteInfo.ServerRelativeUrl,
+            siteAbsoluteUrl: apiEndpoint + siteInfo.ServerRelativeUrl,
             siteServerRelativeUrl: siteInfo.ServerRelativeUrl,
             // User info
             userId: webInfo.CurrentUser.Id,

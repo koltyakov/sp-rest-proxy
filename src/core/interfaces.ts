@@ -1,9 +1,10 @@
 import { IAuthOptions } from 'node-sp-auth';
 import { IAuthConfigSettings } from 'node-sp-auth-config';
-import { Router } from 'express';
+import { Router, Request } from 'express';
 import { Agent, Server as HttpsServer } from 'https';
-import { Server as HttpServer } from 'http';
+import { Server as HttpServer,IncomingMessage } from 'http';
 import { LogLevel } from '../utils/logger';
+import { BasicRouter } from './BasicRouter';
 
 export interface IProxySettings {
   hostname?: string;
@@ -25,6 +26,8 @@ export interface IProxySettings {
   processBatchMultipartBody?: (body: string) => string;
 
   logLevel?: LogLevel;
+
+  hooks?: IProxyHooks;
 }
 
 export interface ISSLConf {
@@ -60,4 +63,8 @@ export interface IProxyCallback {
 
 export interface IProxyErrorCallback {
   (error: Error): void;
+}
+
+export interface IProxyHooks {
+  responseMapper?: (req: Request, res: IncomingMessage, router?: BasicRouter) => Promise<IncomingMessage> | IncomingMessage;
 }

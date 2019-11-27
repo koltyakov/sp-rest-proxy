@@ -1,6 +1,6 @@
 
 export const generateGuid = (): string => {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
     // tslint:disable-next-line:no-bitwise
     const r = Math.random() * 16 | 0;
     // tslint:disable-next-line:no-bitwise
@@ -10,7 +10,7 @@ export const generateGuid = (): string => {
 };
 
 export const checkNestedProperties = (object: any, ...args: string[]): boolean => {
-  args.forEach(arg => {
+  args.forEach((arg) => {
     if (!object || !object.hasOwnProperty(arg)) {
       return false;
     }
@@ -30,5 +30,5 @@ export const getCaseInsensitiveProp = (object: Object, propertyName: string): an
 };
 
 export const trimMultiline = (multiline: string): string => {
-  return multiline.trim().split('\n').map(line => line.trim()).join('\n');
+  return multiline.trim().split('\n').map((line) => line.trim()).join('\n');
 };

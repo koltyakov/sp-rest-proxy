@@ -25,7 +25,7 @@ export class RestGetRouter extends BasicRouter {
       'connection', 'cache-control', 'user-agent',
       'accept-encoding', 'x-requested-with', 'accept-language'
     ];
-    Object.keys(req.headers).forEach(prop => {
+    Object.keys(req.headers).forEach((prop) => {
       if (ignoreHeaders.indexOf(prop.toLowerCase()) === -1) {
         if (prop.toLowerCase() === 'accept' && req.headers[prop] !== '*/*') {
           headers.Accept = req.headers[prop];
@@ -38,7 +38,7 @@ export class RestGetRouter extends BasicRouter {
     });
     // this.logger.debug('\nHeaders:\n', JSON.stringify(req.headers, null, 2));
     this.spr.get(endpointUrl, { headers, ...additionalOptions, agent })
-      .then(r => {
+      .then((r) => {
         // Paged collections patch
         if (typeof r.body['odata.nextLink'] === 'string') {
           r.body['odata.nextLink'] = this.util.buildProxyEndpointUrl(r.body['odata.nextLink']);
@@ -52,8 +52,8 @@ export class RestGetRouter extends BasicRouter {
         }
         return r;
       })
-      .then(r => this.transmitResponse(res, r))
-      .catch(err => this.transmitError(res, err));
+      .then((r) => this.transmitResponse(res, r))
+      .catch((err) => this.transmitError(res, err));
   }
 
 }

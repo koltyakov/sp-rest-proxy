@@ -110,7 +110,7 @@ export default class RestProxy {
       } as IProxyContext;
 
       const bodyParserRaw = bodyParser.raw({
-        type: _req => true, // '*/*', // To catch request without Content-Type header
+        type: () => true, // '*/*', // To catch request without Content-Type header
         limit: this.settings.rawBodyLimitSize,
         verify: (req, _res, buf, encoding) => {
           if (buf && buf.length) {

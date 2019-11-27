@@ -15,7 +15,7 @@ export class Client {
   }
 
   public init = () => {
-    this.socket.on('REQUEST', request => {
+    this.socket.on('REQUEST', (request) => {
       const endpoint = this.enpointUrl(request.url);
       this.logger.info(`${request.method} request to ${endpoint}`);
       httpRequest(endpoint, {

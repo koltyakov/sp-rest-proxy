@@ -25,10 +25,16 @@ export class BasicRouter {
     return this.spr;
   }
 
-  public transmitResponse(res: Response, response: IncomingMessage): void {
+  public async transmitResponse(res: Response, response: IncomingMessage): Promise<void> {
     this.logger.verbose(response.statusCode, response.body);
     res.status(response.statusCode);
     res.contentType(response.headers['content-type'] || '');
+    // Injecting ad-hoc response mapper
+    if (this.settings.hooks && this.settings.hooks.responseMapper && typeof this.settings.hooks.responseMapper === 'function') {
+      try {
+        response = await this.settings.hooks.responseMapper(res.req, response, this);
+      } catch (ex) { /**/ }
+    }
     res.send(response.body);
   }
 

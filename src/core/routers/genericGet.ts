@@ -63,7 +63,7 @@ export class GetRouter extends BasicRouter {
   private serveLocalResources(req: Request, res: Response): boolean {
     let staticIndexUrl = '/index.html';
     if (req.url !== '/') {
-      staticIndexUrl = req.url;
+      staticIndexUrl = req.url.split('?')[0];
     } else {
       let pageContent = String(fs.readFileSync(path.join(this.settings.staticRoot, staticIndexUrl)));
       pageContent = pageContent.replace('##proxyVersion#', this.settings.metadata.version);

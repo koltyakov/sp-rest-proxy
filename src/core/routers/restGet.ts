@@ -50,6 +50,10 @@ export class RestGetRouter extends BasicRouter {
         if (typeof r.body['odata.metadata'] === 'string') {
           r.body['odata.metadata'] = this.util.buildProxyEndpointUrl(r.body['odata.metadata']);
         }
+        // OData patch to PnPjs URI resolver
+        if (r.body.d && r.body.d.__metadata && r.body.d.__metadata.uri) {
+          r.body.d.__metadata.uri = this.util.buildProxyEndpointUrl(r.body.d.__metadata.uri);
+        }
         return r;
       })
       .then((r) => this.transmitResponse(res, r))

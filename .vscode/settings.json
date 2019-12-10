@@ -6,5 +6,6 @@
   "git.enableSmartCommit": true,
   "git.confirmSync": false,
   "git.autofetch": true,
-  "explorer.confirmDragAndDrop": false
+  "explorer.confirmDragAndDrop": false,
+  "typescript.tsdk": "node_modules\\typescript\\lib"
 }

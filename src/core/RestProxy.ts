@@ -109,6 +109,7 @@ export default class RestProxy {
         proxyHostUrl: `${this.settings.protocol}://${this.settings.hostname}:${this.settings.port}`
       } as IProxyContext;
 
+      // tslint:disable-next-line: deprecation
       const bodyParserRaw = bodyParser.raw({
         type: () => true, // '*/*', // To catch request without Content-Type header
         limit: this.settings.rawBodyLimitSize,
@@ -120,6 +121,7 @@ export default class RestProxy {
         }
       });
 
+      // tslint:disable-next-line: deprecation
       const bodyParserUrlencoded = bodyParser.urlencoded({ extended: true });
 
       // REST - Files and attachments
@@ -152,6 +154,7 @@ export default class RestProxy {
       // REST - POST requests (JSON)
       this.routers.apiRestRouter.post(
         '/*',
+        // tslint:disable-next-line: deprecation
         bodyParser.json({
           limit: this.settings.jsonPayloadLimitSize
         }),
@@ -163,6 +166,7 @@ export default class RestProxy {
         // REST - PUT requests (JSON)
         this.routers.apiRestRouter.put(
           '/*',
+          // tslint:disable-next-line: deprecation
           bodyParser.json({
             limit: this.settings.jsonPayloadLimitSize
           }),
@@ -172,6 +176,7 @@ export default class RestProxy {
         // REST - PATCH requests (JSON)
         this.routers.apiRestRouter.patch(
           '/*',
+          // tslint:disable-next-line: deprecation
           bodyParser.json({
             limit: this.settings.jsonPayloadLimitSize
           }),

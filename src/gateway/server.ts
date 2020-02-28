@@ -32,6 +32,7 @@ export class Server {
 
       this.socket = socket;
 
+      // tslint:disable-next-line: deprecation
       const bodyParserRaw = bodyParser.raw({
         type: '*/*',
         limit: this.proxy.rawBodyLimitSize,
@@ -53,6 +54,7 @@ export class Server {
       this.app.post('*/_api/[$]batch', bodyParserRaw, this.postTransmitter);
 
       // REST - POST requests (JSON)
+      // tslint:disable-next-line: deprecation
       this.app.post('*/_api/*', bodyParser.json({ limit: this.proxy.jsonPayloadLimitSize }), this.postTransmitter);
 
       //  CSOM/SOAP requests (XML)
@@ -61,6 +63,7 @@ export class Server {
       // Static router
       this.app.get('*', this.getTransmitter);
 
+      // tslint:disable-next-line: deprecation
       this.app.use(bodyParser.urlencoded({ extended: true }));
       this.app.use(cors());
 

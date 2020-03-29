@@ -2,7 +2,7 @@ import { IAuthOptions } from 'node-sp-auth';
 import { IAuthConfigSettings } from 'node-sp-auth-config';
 import { Router, Request } from 'express';
 import { Agent, Server as HttpsServer } from 'https';
-import { Server as HttpServer,IncomingMessage } from 'http';
+import { Server as HttpServer, IncomingMessage } from 'http';
 import { LogLevel } from '../utils/logger';
 import { BasicRouter } from './BasicRouter';
 
@@ -53,17 +53,13 @@ export interface IGatewayClientSettings {
   serverUrl: string;
 }
 
-export interface IProxyCallback {
-  (
-    server: HttpsServer | HttpServer,
-    context: IProxyContext,
-    settings: IProxySettings
-  ): void;
-}
+export type IProxyCallback = (
+  server: HttpsServer | HttpServer,
+  context: IProxyContext,
+  settings: IProxySettings
+) => void;
 
-export interface IProxyErrorCallback {
-  (error: Error): void;
-}
+export type IProxyErrorCallback = (error: Error) => void;
 
 export interface IProxyHooks {
   responseMapper?: (req: Request, res: IncomingMessage, router?: BasicRouter) => Promise<IncomingMessage> | IncomingMessage;

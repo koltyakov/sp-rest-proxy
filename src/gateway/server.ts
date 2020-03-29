@@ -89,7 +89,7 @@ export class Server {
       url: req.originalUrl,
       method: 'GET',
       headers: req.headers,
-      transaction: transaction
+      transaction
     };
     this.io.emit('REQUEST', request);
   }
@@ -129,8 +129,8 @@ export class Server {
         url: req.originalUrl,
         method: 'POST',
         headers: req.headers,
-        body: body,
-        transaction: transaction
+        body,
+        transaction
       };
       this.io.emit('REQUEST', request);
     });

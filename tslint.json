@@ -1,5 +1,5 @@
 {
-  "extends": "tslint-config-standard",
+  "extends": "tslint:latest",
   "rules": {
     "semicolon": [true, "always", "ignore-interfaces"],
     "space-before-function-paren": false,
@@ -7,6 +7,7 @@
     "no-unused-variable": false,
     "strict-type-predicates": false,
     "no-console": true,
-    "arrow-parens": true
+    "arrow-parens": true,
+    "no-string-literal": false
   }
 }

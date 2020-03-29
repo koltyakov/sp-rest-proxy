@@ -1,5 +1,6 @@
 import { trimMultiline } from './misc';
 
+// tslint:disable-next-line: no-empty-interface
 export interface IPageContextInfo extends _spPageContextInfo {}
 
 export const isLocalhost = Boolean(
@@ -14,7 +15,7 @@ export const loadPageContext = (proxyEndpoint?: string): Promise<IPageContextInf
       return resolve(_spPageContextInfo);
     }
     if (isLocalhost) {
-      let apiEndpoint = proxyEndpoint || window.location.origin;
+      const apiEndpoint = proxyEndpoint || window.location.origin;
       // if (port) {
       //   const [ protocol, uri ] = apiEndpoint.split(':');
       //   apiEndpoint = `${protocol}:${uri}:${port}`;

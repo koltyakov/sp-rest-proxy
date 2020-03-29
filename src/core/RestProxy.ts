@@ -107,7 +107,7 @@ export default class RestProxy {
       const context = {
         ...ctx,
         proxyHostUrl: `${this.settings.protocol}://${this.settings.hostname}:${this.settings.port}`
-      } as IProxyContext;
+      } as unknown as IProxyContext;
 
       // tslint:disable-next-line: deprecation
       const bodyParserRaw = bodyParser.raw({
@@ -228,11 +228,11 @@ export default class RestProxy {
       // Deligate serving to external app
       if (this.isExtApp) { return; }
 
-      const upCallback = (server: https.Server | http.Server, context: IProxyContext, settings: IProxySettings, callback?: IProxyCallback) => {
-        this.logger.info(`SharePoint REST Proxy has been started on ${context.proxyHostUrl}`);
+      const upCallback = (s: https.Server | http.Server, cx: IProxyContext, settings: IProxySettings, cb?: IProxyCallback) => {
+        this.logger.info(`SharePoint REST Proxy has been started on ${cx.proxyHostUrl}`);
         // After proxy is started callback
-        if (callback && typeof callback === 'function') {
-          callback(server, context, settings);
+        if (cb && typeof cb === 'function') {
+          cb(s, cx, settings);
         }
       };
 

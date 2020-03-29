@@ -1,4 +1,6 @@
+// tslint:disable-next-line: no-implicit-dependencies
 import * as SocketIOClient from 'socket.io-client';
+// tslint:disable-next-line: no-implicit-dependencies
 import * as httpRequest from 'request';
 
 import { Logger } from '../utils/logger';

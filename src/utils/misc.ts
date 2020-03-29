@@ -19,7 +19,7 @@ export const checkNestedProperties = (object: any, ...args: string[]): boolean =
   return true;
 };
 
-export const getCaseInsensitiveProp = (object: Object, propertyName: string): any => {
+export const getCaseInsensitiveProp = (object: { [key: string]: any }, propertyName: string): any => {
   propertyName = propertyName.toLowerCase();
   return Object.keys(object).reduce((res: any, prop: string) => {
     if (prop.toLowerCase() === propertyName) {

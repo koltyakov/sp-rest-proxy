@@ -1,0 +1,34 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.14.1
+ignore: {}
+# patches apply the minimum changes required to fix a vulnerability
+patch:
+  SNYK-JS-LODASH-567746:
+    - sp-rest-proxy > node-sp-auth > lodash:
+        patched: '2020-04-30T23:46:55.898Z'
+    - sp-rest-proxy > sp-request > lodash:
+        patched: '2020-04-30T23:46:55.898Z'
+    - sp-rest-proxy > node-sp-auth-config > inquirer > lodash:
+        patched: '2020-04-30T23:46:55.898Z'
+    - sp-rest-proxy > node-sp-auth-config > node-sp-auth > lodash:
+        patched: '2020-04-30T23:46:55.898Z'
+    - sp-rest-proxy > sp-request > node-sp-auth > lodash:
+        patched: '2020-04-30T23:46:55.898Z'
+    - sp-rest-proxy > node-sp-auth > node-sp-auth-config > inquirer > lodash:
+        patched: '2020-04-30T23:46:55.898Z'
+    - sp-rest-proxy > node-sp-auth > request-promise > request-promise-core > lodash:
+        patched: '2020-04-30T23:46:55.898Z'
+    - sp-rest-proxy > sp-request > request-promise > request-promise-core > lodash:
+        patched: '2020-04-30T23:46:55.898Z'
+    - sp-rest-proxy > node-sp-auth-config > node-sp-auth > node-sp-auth-config > inquirer > lodash:
+        patched: '2020-04-30T23:46:55.898Z'
+    - sp-rest-proxy > sp-request > node-sp-auth > node-sp-auth-config > inquirer > lodash:
+        patched: '2020-04-30T23:46:55.898Z'
+    - sp-rest-proxy > node-sp-auth-config > node-sp-auth > request-promise > request-promise-core > lodash:
+        patched: '2020-04-30T23:46:55.898Z'
+    - sp-rest-proxy > sp-request > node-sp-auth > request-promise > request-promise-core > lodash:
+        patched: '2020-04-30T23:46:55.898Z'
+    - sp-rest-proxy > sp-request > node-sp-auth > node-sp-auth-config > node-sp-auth > lodash:
+        patched: '2020-04-30T23:46:55.898Z'
+    - sp-rest-proxy > sp-request > node-sp-auth > node-sp-auth-config > node-sp-auth > request-promise > request-promise-core > lodash:
+        patched: '2020-04-30T23:46:55.898Z'

@@ -16,7 +16,7 @@
     "@microsoft/sp-core-library": "~1.8.0",
     "@microsoft/sp-lodash-subset": "~1.8.0",
     "@microsoft/sp-office-ui-fabric-core": "~1.8.0",
-    "@microsoft/sp-webpart-base": "~1.8.0",
+    "@microsoft/sp-webpart-base": "~1.10.0",
     "@types/react": "16.8.8",
     "@types/react-addons-shallow-compare": "0.14.22",
     "@types/react-addons-test-utils": "0.14.24",

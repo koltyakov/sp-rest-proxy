@@ -38,8 +38,8 @@ export class Server {
         limit: this.proxy.rawBodyLimitSize,
         verify: (req, _res, buf, encoding) => {
           if (buf && buf.length) {
-            (req as any).rawBody = buf.toString(encoding || 'utf8');
-            (req as any).buffer = buf;
+            (req as unknown as { rawBody: string }).rawBody = buf.toString(encoding as BufferEncoding || 'utf8');
+            (req as unknown as { buffer: Buffer }).buffer = buf;
           }
         }
       });

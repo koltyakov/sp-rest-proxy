@@ -43,7 +43,7 @@ export default class HelloWorld extends React.Component<IHelloWorldProps, IHello
             <div className={ styles.row }>
               <div className={ styles.column }>
                 <ul>
-                  {this.state.lists.map(listName => <li>{listName}</li>)}
+                  {this.state.lists.map((listName) => <li>{listName}</li>)}
                 </ul>
               </div>
             </div>
@@ -57,9 +57,9 @@ export default class HelloWorld extends React.Component<IHelloWorldProps, IHello
     this.setState({
       lists: ['Loading...']
     });
-    this.web.lists.select('Title').orderBy('Title', true).get().then(lists => {
+    this.web.lists.select('Title').orderBy('Title', true).get().then((lists) => {
       this.setState({
-        lists: lists.map(l => l.Title)
+        lists: lists.map((l) => l.Title)
       });
     });
   }

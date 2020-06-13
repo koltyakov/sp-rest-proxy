@@ -35,16 +35,16 @@ export default class RestProxy {
   private settings: IProxySettings;
   private routers: IRouters;
   private logger: Logger;
-  private isExtApp: boolean = false;
+  private isExtApp = false;
 
   constructor(settings: IProxySettings = {}, app?: express.Application) {
     const authConfigSettings: IAuthConfigSettings = settings.authConfigSettings || {};
 
     this.settings = {
-      ...settings as any,
+      ...settings,
       protocol: typeof settings.protocol !== 'undefined' ? settings.protocol : 'http',
       hostname: settings.hostname || process.env.HOSTNAME || 'localhost',
-      port: settings.port || process.env.PORT || 8080,
+      port: settings.port || parseInt(process.env.PORT, 10) || 8080,
       staticRoot: path.resolve(settings.staticRoot || path.join(__dirname, '/../../static')),
       rawBodyLimitSize: settings.rawBodyLimitSize || '10MB',
       jsonPayloadLimitSize: settings.jsonPayloadLimitSize || '2MB',
@@ -115,8 +115,8 @@ export default class RestProxy {
         limit: this.settings.rawBodyLimitSize,
         verify: (req, _res, buf, encoding) => {
           if (buf && buf.length) {
-            (req as any).rawBody = buf.toString(encoding || 'utf8');
-            (req as any).buffer = buf;
+            (req as unknown as { rawBody: string }).rawBody = buf.toString(encoding as BufferEncoding || 'utf8');
+            (req as unknown as { buffer: Buffer }).buffer = buf;
           }
         }
       });
@@ -252,6 +252,7 @@ export default class RestProxy {
         };
         server = https.createServer(options, this.app);
       } else {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         server = require('http').Server(this.app);
       }
 

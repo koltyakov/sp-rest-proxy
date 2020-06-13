@@ -1,8 +1,6 @@
-// tslint:disable-next-line: no-implicit-dependencies
 import * as SocketIOClient from 'socket.io-client';
-// tslint:disable-next-line: no-implicit-dependencies
-import * as httpRequest from 'request';
 
+import fetch from 'node-fetch';
 import { Logger } from '../utils/logger';
 import { IGatewayClientSettings, IProxySettings } from '../core/interfaces';
 
@@ -16,21 +14,33 @@ export class Client {
     this.logger = new Logger(proxy.logLevel);
   }
 
-  public init = () => {
-    this.socket.on('REQUEST', (request) => {
+  public init = (): void => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    this.socket.on('REQUEST', (request: any) => {
       const endpoint = this.enpointUrl(request.url);
       this.logger.info(`${request.method} request to ${endpoint}`);
-      httpRequest(endpoint, {
+      const responsePackage = {
+        transaction: request.transaction,
+        err: null,
+        response: null
+      };
+      fetch(endpoint, {
         method: request.method,
         headers: request.headers
-      }, (err, response) => {
-        const responsePackage = {
-          transaction: request.transaction,
-          err,
-          response
-        };
-        this.socket.emit('RESPONSE', responsePackage);
-      });
+      })
+        .then((r) => {
+          if (!r.ok) {
+            responsePackage.err = r.statusText;
+          }
+          return r;
+        })
+        .then(async (r) => {
+          responsePackage.response = {
+            ...r,
+            body: await r.text()
+          };
+          this.socket.emit('RESPONSE', responsePackage);
+        });
     });
   }
 

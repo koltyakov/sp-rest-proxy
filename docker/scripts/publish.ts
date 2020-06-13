@@ -23,11 +23,13 @@ async function publish () {
 
   const repoName = 'koltyakov/sp-rest-proxy';
 
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const metadata = require(join(__dirname, '..', '..', 'package.json'));
   const version = metadata.version;
-  let result;
+  let result: string;
 
   let updatePackage = false;
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const dockerPackageJson = require(join(__dirname, '..', 'package.json'));
   if (dockerPackageJson.version !== version) {
     dockerPackageJson.version = version;
@@ -51,7 +53,7 @@ async function publish () {
   result = await execPromise(`cd docker && docker build -t ${repoName}:latest .`);
   log(result);
 
-  log(`=== Pushing images to docker hub ===`);
+  log('=== Pushing images to docker hub ===');
 
   result = await execPromise(`docker push ${repoName}:${version}`);
   log(result);
@@ -59,7 +61,7 @@ async function publish () {
   result = await execPromise(`docker push ${repoName}:latest`);
   log(result);
 
-  log(`=== Deleting local images ===`);
+  log('=== Deleting local images ===');
 
   result = await execPromise(`docker images | grep ${repoName}`);
 
@@ -67,8 +69,8 @@ async function publish () {
     .trim()
     .split('\n')
     // tslint:disable-next-line:no-regex-spaces
-    .map(r => r.replace(/  +/g, ' ').split(' '))
-    .map(r => r[2]);
+    .map((r) => r.replace(/  +/g, ' ').split(' '))
+    .map((r) => r[2]);
 
   images = images.filter((elem, pos) => images.indexOf(elem) === pos);
 
@@ -81,10 +83,10 @@ async function publish () {
 }
 
 publish()
-  .then(_ => {
+  .then(() => {
     log('=== Done ===');
   })
-  .catch(err => {
+  .catch((err) => {
     log('=== Failed ===');
     log(err);
   });

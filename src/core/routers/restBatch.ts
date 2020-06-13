@@ -1,15 +1,20 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 
 import { BasicRouter } from '../BasicRouter';
+import { FetchClient } from '../../utils/proxy';
 import { IProxyContext, IProxySettings } from '../interfaces';
+import { Headers } from 'node-fetch';
 
 export class RestBatchRouter extends BasicRouter {
 
+  private fetch: FetchClient;
+
   constructor(context: IProxyContext, settings: IProxySettings) {
     super(context, settings);
+    this.fetch = this.getHttpClient();
   }
 
-  public router = (request: Request, response: Response, _next?: NextFunction) => {
+  public router = (request: Request, response: Response): void => {
     const endpointUrl = this.util.buildEndpointUrl(request);
     this.logger.info('\nPOST (batch): ' + endpointUrl);
     let reqBody = '';
@@ -22,9 +27,9 @@ export class RestBatchRouter extends BasicRouter {
     }
   }
 
-  private processBatchRequest(body: any, req: Request, res: Response) {
+  private processBatchRequest(body: string, req: Request, res: Response) {
     const endpointUrl = this.util.buildEndpointUrl(req);
-    body = (req as any).rawBody;
+    body = (req as unknown as { rawBody: string }).rawBody;
     const { processBatchMultipartBody: transform } = this.settings;
     if (transform && typeof transform === 'function') {
       body = transform(body);
@@ -45,38 +50,37 @@ export class RestBatchRouter extends BasicRouter {
     }
     // req.headers['Content-Length'] = reqBodyData.byteLength;
     this.logger.verbose('Request body:', body);
-    this.spr = this.getHttpClient();
     const agent = this.util.isUrlHttps(endpointUrl) ? this.settings.agent : undefined;
-    this.spr.requestDigest(endpointUrl.split('/_api')[0])
-      .then((digest) => {
-        let headers: any = {};
-        const ignoreHeaders = [
-          'host', 'referer', 'origin',
-          'if-none-match', 'connection', 'cache-control', 'user-agent',
-          'accept-encoding', 'x-requested-with', 'accept-language'
-        ];
-        Object.keys(req.headers).forEach((prop) => {
-          if (ignoreHeaders.indexOf(prop.toLowerCase()) === -1) {
-            if (prop.toLowerCase() === 'accept' && req.headers[prop] !== '*/*') {
-              headers['Accept'] = req.headers[prop];
-            } else if (prop.toLowerCase() === 'content-type') {
-              headers['Content-Type'] = req.headers[prop];
-            } else if (prop.toLowerCase() === 'x-requestdigest') {
-              // headers['X-RequestDigest'] = req.headers[prop]; // temporary commented
-            } else if (prop.toLowerCase() === 'content-length') {
-              // requestHeadersPass['Content-Length'] = req.headers[prop];
-            } else {
-              headers[prop] = req.headers[prop];
-            }
-          }
-        });
-        headers = {
-          ...headers,
-          'X-RequestDigest': headers['X-RequestDigest'] || digest
-        };
-        // this.logger.debug('\nHeaders:\n', JSON.stringify(requestHeadersPass, null, 2));
-        return this.spr.post(endpointUrl, { headers, body, agent, json: false });
-      })
+    const headers = new Headers();
+    const ignoreHeaders = [
+      'host', 'referer', 'origin',
+      'if-none-match', 'connection', 'cache-control', 'user-agent',
+      'accept-encoding', 'x-requested-with', 'accept-language'
+    ];
+    Object.keys(req.headers).forEach((prop) => {
+      if (ignoreHeaders.indexOf(prop.toLowerCase()) === -1) {
+        if (prop.toLowerCase() === 'accept' && req.headers[prop] !== '*/*') {
+          headers.set('Accept', this.util.reqHeader(req.headers, prop));
+        } else if (prop.toLowerCase() === 'content-type') {
+          headers.set('Content-Type', this.util.reqHeader(req.headers, prop));
+        } else if (prop.toLowerCase() === 'x-requestdigest') {
+          // headers['X-RequestDigest'] = req.headers[prop]; // temporary commented
+        } else if (prop.toLowerCase() === 'content-length') {
+          // requestHeadersPass['Content-Length'] = req.headers[prop];
+        } else {
+          headers.set(prop, this.util.reqHeader(req.headers, prop));
+        }
+      }
+    });
+    // this.logger.debug('\nHeaders:\n', JSON.stringify(requestHeadersPass, null, 2));
+    // return this.spr.post(endpointUrl, { headers, body, agent, json: false });
+    this.fetch(endpointUrl, {
+      method: 'POST',
+      headers,
+      body,
+      agent
+    })
+      .then(this.handleErrors)
       .then((r) => this.transmitResponse(res, r))
       .catch((err) => this.transmitError(res, err));
   }

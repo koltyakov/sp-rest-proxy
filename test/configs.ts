@@ -25,16 +25,16 @@ export const Environments: IEnvironmentConfig[] = ((headless: boolean) => {
       configPath: './config/integration/private.spo.json',
       legacy: false
     },
-    {
-      environmentName: 'On-Premise 2016',
-      configPath: './config/integration/private.2016.json',
-      legacy: false
-    },
-    {
-      environmentName: 'On-Premise 2013',
-      configPath: './config/integration/private.2013.json',
-      legacy: true
-    }
+    // {
+    //   environmentName: 'On-Premise 2016',
+    //   configPath: './config/integration/private.2016.json',
+    //   legacy: false
+    // },
+    // {
+    //   environmentName: 'On-Premise 2013',
+    //   configPath: './config/integration/private.2013.json',
+    //   legacy: true
+    // }
   ];
   return privateConf;
 })(ci);

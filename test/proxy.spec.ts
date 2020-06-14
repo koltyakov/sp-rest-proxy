@@ -8,8 +8,6 @@ import * as Util from '@pnp/common-commonjs';
 import { parseString as xmlStringToJson } from 'xml2js';
 import { PnpNode } from 'sp-pnp-node';
 
-// import * as CertStore from '@microsoft/gulp-core-build-serve/lib/CertificateStore';
-
 import { Server as HttpsServer } from 'https';
 import { Server as HttpServer } from 'http';
 import RestProxy, { IProxySettings, IProxyContext } from '../src/core/RestProxy';
@@ -18,14 +16,15 @@ import { Environments } from './configs';
 import { LogLevel } from '../src/utils/logger';
 import { testVariables, getRequestDigest, getAuthConf, getAuth } from './helpers';
 
+// import * as CertStore from '@microsoft/gulp-core-build-serve/lib/CertificateStore';
 // process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 describe('Proxy tests', () => {
 
-  // before('preauthenticate for fair timings', function(done: Mocha.Done): void {
-  //   this.timeout(30 * 1000);
-  //   getAuth(Environments[0]).then(() => done()).catch(done);
-  // });
+  before('preauthenticate for fair timings', function(done: Mocha.Done): void {
+    this.timeout(30 * 1000);
+    getAuth(Environments[0]).then(() => done()).catch(done);
+  });
 
   it('should start with default SSL certs', function(done: Mocha.Done): void {
     this.timeout(30 * 1000);
@@ -40,8 +39,9 @@ describe('Proxy tests', () => {
     }, done);
   });
 
-  // it(`should start with SPFx's SSL certs`, function(done: Mocha.Done): void {
+  // it('should start with SPFx\'s SSL certs', function(done: Mocha.Done): void {
   //   this.timeout(30 * 1000);
+  //   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   //   const CertificateStore = CertStore.CertificateStore || (CertStore as any).default;
   //   const proxy: RestProxy = new RestProxy({
   //     ...getAuthConf(Environments[0]),
@@ -187,29 +187,31 @@ describe('Proxy tests', () => {
 
       it('should create a new list', function(done: Mocha.Done): void {
         this.timeout(30 * 1000);
+        (async () => {
 
-        axios.post(`${proxyRootUri}/_api/web/lists`, {
-          __metadata: { type: 'SP.List' },
-          Title: testVariables.newListName,
-          Description: 'This list was created for test purposes',
-          AllowContentTypes: false,
-          ContentTypesEnabled: false,
-          BaseTemplate: 100
-        }, {
-          headers: {
-            'X-RequestDigest': getRequestDigest(),
-            'Accept': 'application/json;odata=verbose',
-            'Content-Type': 'application/json;odata=verbose'
-          }
-        })
-          .then(() => {
-            return sp.web.lists.getByTitle(testVariables.newListName).select('Title').get();
-          })
-          .then((r) => {
-            expect(r.Title).to.equal(testVariables.newListName);
-            done();
-          })
-          .catch(done);
+          await sp.web.lists.getByTitle(testVariables.newListName).delete().catch(() => { /**/ });
+
+          await axios.post(`${proxyRootUri}/_api/web/lists`, {
+            __metadata: { type: 'SP.List' },
+            Title: testVariables.newListName,
+            Description: 'This list was created for test purposes',
+            AllowContentTypes: false,
+            ContentTypesEnabled: false,
+            BaseTemplate: 100
+          }, {
+            headers: {
+              'X-RequestDigest': getRequestDigest(),
+              'Accept': 'application/json;odata=verbose',
+              'Content-Type': 'application/json;odata=verbose'
+            }
+          });
+
+          const r = await sp.web.lists.getByTitle(testVariables.newListName).select('Title').get();
+
+          expect(r.Title).to.equal(testVariables.newListName);
+          done();
+
+        })().catch(done);
       });
 
       it('should create a list item', function(done: Mocha.Done): void {
@@ -662,23 +664,25 @@ describe('Proxy tests', () => {
 
         const attachmentFile: string = path.join(__dirname, './attachments/image.png');
         const fileName = `${path.parse(attachmentFile).name}${path.parse(attachmentFile).ext}`;
-        const fileBuffer: Buffer = fs.readFileSync(attachmentFile);
+        const fileBuffer = fs.readFileSync(attachmentFile);
 
         const docLibFolder = `${webRelativeUrl}/${testVariables.newDocLibName}`;
+        const fileUri = `${webRelativeUrl}/${testVariables.newDocLibName}/image.png`;
 
         const methodUri = `${proxyRootUri}/_api/web/` +
           `getFolderByServerRelativeUrl('${docLibFolder}')` +
           `/files/add(overwrite=true,url='${fileName}')`;
 
-        axios.post(
-          methodUri, fileBuffer, {
-            headers: {
-              'X-RequestDigest': getRequestDigest(),
-              'Accept': 'application/json;odata=verbose',
-              // 'Content-Type': 'application/json;odata=verbose;charset=utf-8'
-            }
-          }
-        )
+        axios.post(methodUri, fileBuffer, {
+          headers: {
+            'X-RequestDigest': getRequestDigest(),
+            'Accept': 'application/json;odata=verbose'
+          },
+        })
+          .then(async () => {
+            const f = await sp.web.getFileByServerRelativeUrl(fileUri).get();
+            expect(parseInt(f.Length, 10)).eq(fileBuffer.byteLength);
+          })
           .then(() => done())
           .catch(done);
       });

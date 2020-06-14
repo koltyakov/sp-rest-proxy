@@ -14,7 +14,7 @@ const argv = parseArgs(process.argv.slice(2));
 const settings: IProxySettings = {
   configPath: argv.p || './config/private.json',
   staticRoot: './test/manual/static',
-  logLevel: LogLevel.Verbose,
+  logLevel: LogLevel.Debug,
   // protocol: 'https',
   // hostname: '10.42.7.50',
   // port: 3777
@@ -24,7 +24,8 @@ const settings: IProxySettings = {
         if (req.originalUrl.toLowerCase().indexOf('/files/add') !== -1) {
           const body = await res.json();
           if (typeof body.d.ListItemAllFields.__deferred.uri === 'string') {
-            body.d.ListItemAllFields.__deferred.uri = router.util.buildProxyEndpointUrl(body.d.ListItemAllFields.__deferred.uri);
+            body.d.ListItemAllFields.__deferred.uri =
+              router.url.proxyEndpoint(body.d.ListItemAllFields.__deferred.uri);
           }
           return new Response(JSON.stringify(body), res);
         }

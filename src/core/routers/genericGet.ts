@@ -4,16 +4,13 @@ import { Request, Response } from 'express';
 import { Headers, RequestInit } from 'node-fetch';
 
 import { BasicRouter } from '../BasicRouter';
-import { FetchClient } from '../../utils/proxy';
+import { getHeader } from '../../utils/headers';
 import { IProxyContext, IProxySettings } from '../interfaces';
 
 export class GetRouter extends BasicRouter {
 
-  private fetch: FetchClient;
-
   constructor(context: IProxyContext, settings: IProxySettings) {
     super(context, settings);
-    this.fetch = this.getHttpClient();
   }
 
   public router = (req: Request, res: Response): void => {
@@ -21,54 +18,48 @@ export class GetRouter extends BasicRouter {
     if (this.serveLocalResources(req, res)) {
       return;
     }
-    let endpointUrl = this.util.buildEndpointUrl(req);
+    let endpointUrl = this.url.apiEndpoint(req);
     this.logger.info('\nGET (generic): ' + endpointUrl);
-    const agent = this.util.isUrlHttps(endpointUrl) ? this.settings.agent : undefined;
     const headers = new Headers();
     const ignoreHeaders = [ 'host', 'referer', 'origin', 'accept-encoding', 'connection', 'if-none-match' ];
     Object.keys(req.headers).forEach((prop) => {
       if (ignoreHeaders.indexOf(prop.toLowerCase()) === -1) {
         if (prop.toLowerCase() === 'accept' && req.headers[prop] !== '*/*') {
-          headers.set('Accept', this.util.reqHeader(req.headers, prop));
+          headers.set('Accept', getHeader(req.headers, prop));
         } else if (prop.toLowerCase() === 'content-type') {
-          headers.set('Content-Type', this.util.reqHeader(req.headers, prop));
+          headers.set('Content-Type', getHeader(req.headers, prop));
         } else {
-          headers.set(prop, this.util.reqHeader(req.headers, prop));
+          headers.set(prop, getHeader(req.headers, prop));
         }
       }
     });
-    // this.logger.debug('\nHeaders:', JSON.stringify(requestHeadersPass, null, 2));
-    const advanced: Partial<RequestInit> = {
-      // json: false,
-      // processData: false,
-      // encoding: null,
-    };
 
     // Static resources from SharePoint >>
     const ext = endpointUrl.split('?')[0].split('.').pop().toLowerCase();
     if (['js', 'css', 'aspx', 'css', 'html', 'json', 'axd'].indexOf(ext) !== -1) {
       // delete advanced.encoding;
-      headers.set('accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8');
+      headers.set('Accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8');
     }
     if (endpointUrl.indexOf('/ScriptResource.axd') !== -1) {
       const axdUrlArr = endpointUrl.split('/ScriptResource.axd');
       endpointUrl = `${axdUrlArr[0].split('/').splice(0, 3).join('/')}/ScriptResource.axd${axdUrlArr[1]}`;
-      // request.get({ uri: endpointUrl, agent }).pipe(res);
-      this.fetch(endpointUrl, { headers, agent })
-        .then(this.handleErrors)
-        .then((resp) => this.transmitResponseStream(res, resp))
-        .catch((err) => this.transmitError(res, err));
+      this.sp.fetch(endpointUrl, { headers })
+        .then(this.handlers.isOK)
+        .then((d) => this.handlers.response(res)(d, (r) => r.text()))
+        .catch(this.handlers.error(res));
       return;
     }
     // Static resources from SharePoint <<
 
-    // this.spr.get(endpointUrl, { headers, ...advanced, agent })
-    //   .then((r) => this.transmitResponse(res, r))
-    //   .catch((err) => this.transmitError(res, err));
-    this.fetch(endpointUrl, { headers, agent, ...advanced })
-      .then(this.handleErrors)
-      .then((resp) => this.transmitResponse(res, resp))
-      .catch((err) => this.transmitError(res, err));
+    this.sp.fetch(endpointUrl, { headers })
+      .then(this.handlers.isOK)
+      .then((r) => {
+        if (endpointUrl.toLowerCase().indexOf('/_vti_bin') !== -1) {
+          return this.handlers.response(res)(r);
+        }
+        return this.handlers.responsePipe(res)(r);
+      })
+      .catch(this.handlers.error(res));
   }
 
   private serveLocalResources(req: Request, res: Response): boolean {

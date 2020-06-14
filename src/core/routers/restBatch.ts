@@ -1,21 +1,19 @@
 import { Request, Response } from 'express';
+import { Headers } from 'node-fetch';
 
 import { BasicRouter } from '../BasicRouter';
-import { FetchClient } from '../../utils/proxy';
+import { getHeader } from '../../utils/headers';
+
 import { IProxyContext, IProxySettings } from '../interfaces';
-import { Headers } from 'node-fetch';
 
 export class RestBatchRouter extends BasicRouter {
 
-  private fetch: FetchClient;
-
   constructor(context: IProxyContext, settings: IProxySettings) {
     super(context, settings);
-    this.fetch = this.getHttpClient();
   }
 
   public router = (request: Request, response: Response): void => {
-    const endpointUrl = this.util.buildEndpointUrl(request);
+    const endpointUrl = this.url.apiEndpoint(request);
     this.logger.info('\nPOST (batch): ' + endpointUrl);
     let reqBody = '';
     if (request.body) {
@@ -28,7 +26,7 @@ export class RestBatchRouter extends BasicRouter {
   }
 
   private processBatchRequest(body: string, req: Request, res: Response) {
-    const endpointUrl = this.util.buildEndpointUrl(req);
+    const endpointUrl = this.url.apiEndpoint(req);
     body = (req as unknown as { rawBody: string }).rawBody;
     const { processBatchMultipartBody: transform } = this.settings;
     if (transform && typeof transform === 'function') {
@@ -48,9 +46,7 @@ export class RestBatchRouter extends BasicRouter {
         return line;
       }).join('\n');
     }
-    // req.headers['Content-Length'] = reqBodyData.byteLength;
     this.logger.verbose('Request body:', body);
-    const agent = this.util.isUrlHttps(endpointUrl) ? this.settings.agent : undefined;
     const headers = new Headers();
     const ignoreHeaders = [
       'host', 'referer', 'origin',
@@ -60,29 +56,19 @@ export class RestBatchRouter extends BasicRouter {
     Object.keys(req.headers).forEach((prop) => {
       if (ignoreHeaders.indexOf(prop.toLowerCase()) === -1) {
         if (prop.toLowerCase() === 'accept' && req.headers[prop] !== '*/*') {
-          headers.set('Accept', this.util.reqHeader(req.headers, prop));
+          headers.set('Accept', getHeader(req.headers, prop));
         } else if (prop.toLowerCase() === 'content-type') {
-          headers.set('Content-Type', this.util.reqHeader(req.headers, prop));
-        } else if (prop.toLowerCase() === 'x-requestdigest') {
-          // headers['X-RequestDigest'] = req.headers[prop]; // temporary commented
-        } else if (prop.toLowerCase() === 'content-length') {
-          // requestHeadersPass['Content-Length'] = req.headers[prop];
+          headers.set('Content-Type', getHeader(req.headers, prop));
         } else {
-          headers.set(prop, this.util.reqHeader(req.headers, prop));
+          headers.set(prop, getHeader(req.headers, prop));
         }
       }
     });
-    // this.logger.debug('\nHeaders:\n', JSON.stringify(requestHeadersPass, null, 2));
-    // return this.spr.post(endpointUrl, { headers, body, agent, json: false });
-    this.fetch(endpointUrl, {
-      method: 'POST',
-      headers,
-      body,
-      agent
-    })
-      .then(this.handleErrors)
-      .then((r) => this.transmitResponse(res, r))
-      .catch((err) => this.transmitError(res, err));
+
+    this.sp.fetch(endpointUrl, { method: 'POST', headers, body })
+      .then(this.handlers.isOK)
+      .then(this.handlers.response(res))
+      .catch(this.handlers.error(res));
   }
 
 }

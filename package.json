@@ -8,13 +8,14 @@
     "serve": "ts-node ./src/server",
     "build": "npm run lint && rimraf ./dist && tsc -p .",
     "lint": "tsc --noEmit && eslint \"*/**/*.{js,ts,tsx}\" --quiet --fix",
-    "test": "ts-node ./test/init && mocha --config ./test/.mocharc.json || ECHO.",
+    "test:init": "ts-node ./test/init --init",
+    "test": "npm run test:init && mocha --config ./test/.mocharc.json || ECHO.",
     "test:manual": "ts-node ./test/manual/server",
     "test:ci": "mocha --config ./test/.mocharc.json --ci || ECHO.",
     "docker": "ts-node ./docker/scripts/publish"
   },
   "keywords": [
-    "sharepoint",
+    "SharePoint",
     "rest",
     "proxy",
     "debug",

@@ -50,11 +50,11 @@ export default class RestProxy {
       jsonPayloadLimitSize: settings.jsonPayloadLimitSize || '2MB',
       metadata: require(path.join(__dirname, '/../../package.json')),
       strictRelativeUrls: typeof settings.strictRelativeUrls !== 'undefined' ? settings.strictRelativeUrls : false,
-      agent: settings.agent || new https.Agent({
-        rejectUnauthorized: false,
-        keepAlive: true,
-        keepAliveMsecs: 10000
-      }),
+      // agent: settings.agent || new https.Agent({
+      //   rejectUnauthorized: false,
+      //   keepAlive: true,
+      //   keepAliveMsecs: 10000
+      // }),
       authConfigSettings: {
         ...authConfigSettings,
         configPath: path.resolve(authConfigSettings.configPath || settings.configPath || './config/private.json'),

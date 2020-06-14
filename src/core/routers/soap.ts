@@ -1,23 +1,20 @@
 import { Request, Response } from 'express';
 
 import { BasicRouter } from '../BasicRouter';
-import { FetchClient } from '../../utils/proxy';
-import { IProxyContext, IProxySettings } from '../interfaces';
 import { Headers } from 'node-fetch';
+import { getHeader } from '../../utils/headers';
+
+import { IProxyContext, IProxySettings } from '../interfaces';
 
 export class SoapRouter extends BasicRouter {
 
-  private fetch: FetchClient;
-
   constructor(context: IProxyContext, settings: IProxySettings) {
     super(context, settings);
-    this.fetch = this.getHttpClient();
   }
 
   public router = (req: Request, res: Response): void => {
-    const endpointUrl = this.util.buildEndpointUrl(req);
+    const endpointUrl = this.url.apiEndpoint(req);
     this.logger.info('\nPOST (SOAP): ' + endpointUrl);
-    const agent = this.util.isUrlHttps(endpointUrl) ? this.settings.agent : undefined;
     let body = '';
     req.on('data', (chunk) => body += chunk);
     req.on('end', () => {
@@ -26,20 +23,18 @@ export class SoapRouter extends BasicRouter {
         body = body.replace(regExpOrigin, this.ctx.siteUrl);
       }
       const headers = new Headers({
-        'SOAPAction': this.util.reqHeader(req.headers, 'SOAPAction'),
         'Accept': 'application/xml, text/xml, */*; q=0.01',
         'Content-Type': 'text/xml;charset="UTF-8"',
         'X-Requested-With': 'XMLHttpRequest'
       });
-      // return this.spr.post(endpointUrl, { headers, body, agent, json: false });
-      this.fetch(endpointUrl, {
-        method: 'POST',
-        headers,
-        body,
-        agent
-      })
-        .then((r) => this.transmitResponse(res, r))
-        .catch((err) => this.transmitError(res, err));
+      const soapAction = getHeader(req.headers, 'SOAPAction');
+      if (soapAction) {
+        headers.set('SOAPAction', soapAction);
+      }
+      this.sp.fetch(endpointUrl, { method: 'POST', headers, body })
+        .then(this.handlers.isOK)
+        .then(this.handlers.response(res))
+        .catch(this.handlers.error(res));
     });
   }
 

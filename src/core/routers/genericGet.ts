@@ -1,10 +1,10 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { Request, Response } from 'express';
-import { Headers, RequestInit } from 'node-fetch';
+// import { Headers } from 'node-fetch';
 
 import { BasicRouter } from '../BasicRouter';
-import { getHeader } from '../../utils/headers';
+import { getHeaders } from '../../utils/headers';
 import { IProxyContext, IProxySettings } from '../interfaces';
 
 export class GetRouter extends BasicRouter {
@@ -20,26 +20,9 @@ export class GetRouter extends BasicRouter {
     }
     let endpointUrl = this.url.apiEndpoint(req);
     this.logger.info('\nGET (generic): ' + endpointUrl);
-    const headers = new Headers();
-    const ignoreHeaders = [ 'host', 'referer', 'origin', 'accept-encoding', 'connection', 'if-none-match' ];
-    Object.keys(req.headers).forEach((prop) => {
-      if (ignoreHeaders.indexOf(prop.toLowerCase()) === -1) {
-        if (prop.toLowerCase() === 'accept' && req.headers[prop] !== '*/*') {
-          headers.set('Accept', getHeader(req.headers, prop));
-        } else if (prop.toLowerCase() === 'content-type') {
-          headers.set('Content-Type', getHeader(req.headers, prop));
-        } else {
-          headers.set(prop, getHeader(req.headers, prop));
-        }
-      }
-    });
+    const headers = getHeaders(req.headers);
 
     // Static resources from SharePoint >>
-    const ext = endpointUrl.split('?')[0].split('.').pop().toLowerCase();
-    if (['js', 'css', 'aspx', 'css', 'html', 'json', 'axd'].indexOf(ext) !== -1) {
-      // delete advanced.encoding;
-      headers.set('Accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8');
-    }
     if (endpointUrl.indexOf('/ScriptResource.axd') !== -1) {
       const axdUrlArr = endpointUrl.split('/ScriptResource.axd');
       endpointUrl = `${axdUrlArr[0].split('/').splice(0, 3).join('/')}/ScriptResource.axd${axdUrlArr[1]}`;
@@ -54,10 +37,11 @@ export class GetRouter extends BasicRouter {
     this.sp.fetch(endpointUrl, { headers })
       .then(this.handlers.isOK)
       .then((r) => {
-        if (endpointUrl.toLowerCase().indexOf('/_vti_bin') !== -1) {
-          return this.handlers.response(res)(r);
-        }
-        return this.handlers.responsePipe(res)(r);
+        // if (endpointUrl.toLowerCase().indexOf('/_vti_bin') !== -1) {
+        //   return this.handlers.response(res)(r);
+        // }
+        // return this.handlers.responsePipe(res)(r);
+        return this.handlers.response(res)(r, (r) => r.buffer());
       })
       .catch(this.handlers.error(res));
   }

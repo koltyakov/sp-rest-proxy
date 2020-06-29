@@ -33,11 +33,26 @@ export const getHeader = (headers: IncomingHttpHeaders, header: string): string 
   return res;
 };
 
-export const copyHeaders = (resp: Response, headers: Headers, copy: string[]): void => {
+export const copyHeaders = (resp: Response, headers: Headers, copy: string[] = [], ignore: string[] = []): void => {
   copy = copy.map((k) => k.toLowerCase());
+  ignore = ignore.map((k) => k.toLowerCase());
   headers.forEach((val, key) => {
-    if (copy.indexOf(key.toLowerCase()) !== -1) {
-      resp.setHeader(key, val);
+    if (ignore.indexOf(key.toLowerCase()) === -1) {
+      if (copy.length === 0 || copy.indexOf(key.toLowerCase()) !== -1) {
+        resp.setHeader(key, val);
+      }
     }
   });
+};
+
+export const getHeaders = (reqHeaders: IncomingHttpHeaders, ignoreHeaders: string[] = []): Headers => {
+  const headers = new Headers();
+  const ignoreDefaults = [ 'host', 'referer', 'origin' ];
+  ignoreHeaders = [ ...ignoreHeaders.map((h) => h.toLowerCase()), ...ignoreDefaults ];
+  Object.keys(reqHeaders).forEach((prop) => {
+    if (ignoreHeaders.indexOf(prop.toLowerCase()) === -1) {
+      headers.set(prop, getHeader(reqHeaders, prop));
+    }
+  });
+  return headers;
 };

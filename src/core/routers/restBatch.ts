@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
-import { Headers } from 'node-fetch';
+// import { Headers } from 'node-fetch';
 
 import { BasicRouter } from '../BasicRouter';
-import { getHeader } from '../../utils/headers';
+import { getHeaders } from '../../utils/headers';
 
 import { IProxyContext, IProxySettings } from '../interfaces';
 
@@ -47,24 +47,7 @@ export class RestBatchRouter extends BasicRouter {
       }).join('\n');
     }
     this.logger.verbose('Request body:', body);
-    const headers = new Headers();
-    const ignoreHeaders = [
-      'host', 'referer', 'origin',
-      'if-none-match', 'connection', 'cache-control', 'user-agent',
-      'accept-encoding', 'x-requested-with', 'accept-language'
-    ];
-    Object.keys(req.headers).forEach((prop) => {
-      if (ignoreHeaders.indexOf(prop.toLowerCase()) === -1) {
-        if (prop.toLowerCase() === 'accept' && req.headers[prop] !== '*/*') {
-          headers.set('Accept', getHeader(req.headers, prop));
-        } else if (prop.toLowerCase() === 'content-type') {
-          headers.set('Content-Type', getHeader(req.headers, prop));
-        } else {
-          headers.set(prop, getHeader(req.headers, prop));
-        }
-      }
-    });
-
+    const headers = getHeaders(req.headers);
     this.sp.fetch(endpointUrl, { method: 'POST', headers, body })
       .then(this.handlers.isOK)
       .then(this.handlers.response(res))

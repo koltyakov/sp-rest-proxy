@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 
 import { BasicRouter } from '../BasicRouter';
-import { Headers, BodyInit } from 'node-fetch';
-import { getHeader } from '../../utils/headers';
+import { BodyInit } from 'node-fetch';
+import { getHeaders } from '../../utils/headers';
 
 import { IProxyContext, IProxySettings } from '../interfaces';
 
@@ -28,25 +28,7 @@ export class RestPostRouter extends BasicRouter {
   private processPostRequest = (body: BodyInit, req: Request, res: Response) => {
     const endpointUrl = this.url.apiEndpoint(req);
     this.logger.verbose('Request body:', body);
-    const headers = new Headers();
-    const ignoreHeaders = [
-      'host', 'referer', 'origin', 'x-requestdigest',
-      'connection', 'cache-control', 'user-agent',
-      'accept-encoding', 'x-requested-with', 'accept-language'
-    ];
-    Object.keys(req.headers).forEach((prop) => {
-      if (ignoreHeaders.indexOf(prop.toLowerCase()) === -1) {
-        if (prop.toLowerCase() === 'accept' && req.headers[prop] !== '*/*') {
-          headers.set('Accept', getHeader(req.headers, prop));
-        } else if (prop.toLowerCase() === 'content-type') {
-          headers.set('Content-Type', getHeader(req.headers, prop));
-        } else if (prop.toLowerCase() === 'x-requestdigest') {
-          headers.set('X-RequestDigest', getHeader(req.headers, prop));
-        } else {
-          headers.set(prop, getHeader(req.headers, prop));
-        }
-      }
-    });
+    const headers = getHeaders(req.headers);
     if (this.isDocumentEndpoint(endpointUrl)) {
       body = (req as unknown as { buffer: Buffer }).buffer;
       if (body) {

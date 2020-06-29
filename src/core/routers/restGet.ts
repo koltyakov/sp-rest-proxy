@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 
 import { BasicRouter } from '../BasicRouter';
 import { Headers, Response as FetchResponse } from 'node-fetch';
-import { getHeader } from '../../utils/headers';
+import { getHeaders } from '../../utils/headers';
 
 import { IProxyContext, IProxySettings } from '../interfaces';
 
@@ -15,27 +15,12 @@ export class RestGetRouter extends BasicRouter {
   public router = (req: Request, res: Response): void => {
     const endpointUrl = this.url.apiEndpoint(req);
     this.logger.info('\nGET: ' + endpointUrl);
-    const headers = new Headers();
+    // const headers = new Headers();
+    const headers = getHeaders(req.headers);
     const isDoc = endpointUrl.split('?')[0].toLowerCase().endsWith('/$value');
     if (isDoc) {
       headers.set('binaryStringResponseBody', 'true');
     }
-    const ignoreHeaders = [
-      'host', 'referer', 'origin',
-      'connection', 'cache-control', 'user-agent',
-      'accept-encoding', 'x-requested-with', 'accept-language'
-    ];
-    Object.keys(req.headers).forEach((prop) => {
-      if (ignoreHeaders.indexOf(prop.toLowerCase()) === -1) {
-        if (prop.toLowerCase() === 'accept' && getHeader(req.headers, prop) !== '*/*') {
-          headers.set('Accept', getHeader(req.headers, prop));
-        } else if (prop.toLowerCase() === 'content-type') {
-          headers.set('Content-Type', getHeader(req.headers, prop));
-        } else {
-          headers.set(prop, getHeader(req.headers, prop));
-        }
-      }
-    });
     this.sp.fetch(endpointUrl, { method: 'GET', headers })
       .then(this.handlers.isOK)
       .then(async (r) => {

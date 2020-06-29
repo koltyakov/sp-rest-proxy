@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
-import { Headers } from 'node-fetch';
+// import { Headers } from 'node-fetch';
 
 import { BasicRouter } from '../BasicRouter';
-import { getHeader } from '../../utils/headers';
+import { getHeaders } from '../../utils/headers';
 
 import { IProxyContext, IProxySettings } from '../interfaces';
 
@@ -22,28 +22,8 @@ export class PostRouter extends BasicRouter {
         const regExpOrigin = new RegExp(req.headers.origin, 'g');
         body = body.replace(regExpOrigin, this.ctx.siteUrl);
       }
-      const headers = new Headers();
-      Object.keys(req.headers).forEach((prop) => {
-        if (prop.toLowerCase() === 'accept' && req.headers[prop] !== '*/*') {
-          headers.set('Accept', getHeader(req.headers, prop));
-        }
-        if (prop.toLowerCase() === 'content-type') {
-          headers.set('Content-Type', getHeader(req.headers, prop));
-        }
-        // Slug header fixes https://github.com/koltyakov/sp-rest-proxy/issues/51
-        if (prop.toLowerCase() === 'slug') {
-          headers.set('Slug', getHeader(req.headers, prop));
-        }
-        if (prop.toLowerCase() === 'if-match') {
-          headers.set('If-Match', getHeader(req.headers, prop));
-        }
-        if (prop.toLowerCase() === 'x-http-method') {
-          headers.set('X-HTTP-Method', getHeader(req.headers, prop));
-        }
-        if (prop.toLowerCase() === 'x-requestdigest') {
-          headers.set('X-RequestDigest', getHeader(req.headers, prop));
-        }
-      });
+
+      const headers = getHeaders(req.headers);
 
       if (typeof body === 'object') {
         body = JSON.stringify(body);

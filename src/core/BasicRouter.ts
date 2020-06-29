@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 
 import { SPClient, SPResponse, FetchError } from '../utils/client';
 import { UrlUtils } from '../utils/url';
-import { Logger, LogLevel } from '../utils/logger';
+import { Logger } from '../utils/logger';
 
 import { IProxyContext, IProxySettings } from './interfaces';
 import { copyHeaders } from '../utils/headers';
@@ -54,30 +54,13 @@ export class BasicRouter {
         } catch (ex) { /**/ }
       }
 
-      copyHeaders(r, resp.headers, keepHeaders);
+      // copyHeaders(r, resp.headers, keepHeaders);
+      copyHeaders(r, resp.headers, [], [ 'content-encoding', 'content-security-policy', 'set-cookie', 'transfer-encoding' ]);
       r.status(resp.status);
 
       const ct = resp.headers.get('content-type');
       if (ct) { r.contentType(ct); }
       r.send(data);
-    },
-
-    responsePipe: (r: Response) => async (resp: SPResponse): Promise<void> => {
-      if (this.settings.logLevel >= LogLevel.Verbose) {
-        const data = await resp.clone().text();
-        this.logger.verbose(resp.statusText, data);
-      }
-      // Injecting ad-hoc response mapper
-      if (typeof this.settings.hooks?.responseMapper === 'function') {
-        try {
-          resp = await this.settings.hooks.responseMapper(r.req, resp, this);
-        } catch (ex) { /**/ }
-      }
-      copyHeaders(r, resp.headers, keepHeaders);
-      r.status(resp.status);
-      const ct = resp.headers.get('content-type');
-      if (ct) { r.contentType(ct); }
-      resp.body.pipe(r);
     },
 
     error: (r: Response) => (err: FetchError): void => {

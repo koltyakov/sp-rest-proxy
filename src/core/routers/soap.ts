@@ -1,8 +1,7 @@
 import { Request, Response } from 'express';
 
 import { BasicRouter } from '../BasicRouter';
-import { Headers } from 'node-fetch';
-import { getHeader } from '../../utils/headers';
+import { getHeaders } from '../../utils/headers';
 
 import { IProxyContext, IProxySettings } from '../interfaces';
 
@@ -22,15 +21,7 @@ export class SoapRouter extends BasicRouter {
         const regExpOrigin = new RegExp(req.headers.origin, 'g');
         body = body.replace(regExpOrigin, this.ctx.siteUrl);
       }
-      const headers = new Headers({
-        'Accept': 'application/xml, text/xml, */*; q=0.01',
-        'Content-Type': 'text/xml;charset="UTF-8"',
-        'X-Requested-With': 'XMLHttpRequest'
-      });
-      const soapAction = getHeader(req.headers, 'SOAPAction');
-      if (soapAction) {
-        headers.set('SOAPAction', soapAction);
-      }
+      const headers = getHeaders(req.headers);
       this.sp.fetch(endpointUrl, { method: 'POST', headers, body })
         .then(this.handlers.isOK)
         .then(this.handlers.response(res))

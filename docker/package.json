@@ -1,6 +1,6 @@
 {
   "name": "sp-rest-proxy-docker",
-  "version": "2.11.1",
+  "version": "3.0.0",
   "description": "sp-rest-proxy for docker",
   "main": "./server.js",
   "scripts": {
@@ -24,6 +24,6 @@
   },
   "homepage": "https://github.com/koltyakov/sp-rest-proxy#readme",
   "dependencies": {
-    "sp-rest-proxy": "^2.11.1"
+    "sp-rest-proxy": "^3.0.0"
   }
 }

@@ -10,6 +10,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "sp-rest-proxy": "^2.7.8"
+    "sp-rest-proxy": "^3.0.1"
   }
 }

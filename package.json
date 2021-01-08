@@ -38,7 +38,7 @@
     "node-fetch": "^2.6.1",
     "node-sp-auth": "^3.0.1",
     "node-sp-auth-config": "^3.0.1",
-    "socket.io": "^2.3.0"
+    "socket.io": "^2.4.0"
   },
   "devDependencies": {
     "@pnp/pnpjs-commonjs": "^2.0.10",

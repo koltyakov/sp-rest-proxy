@@ -31,3 +31,16 @@ export const getCaseInsensitiveProp = (object: { [key: string]: unknown }, prope
 export const trimMultiline = (multiline: string): string => {
   return multiline.trim().split('\n').map((line) => line.trim()).join('\n');
 };
+
+export const waitForCondition = (cond: () => boolean, timeout = 100, tries = 50): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    if (cond()) {
+      return resolve();
+    }
+    tries -= 1;
+    if (tries === 0) {
+      return reject(new Error('No more tries left'));
+    }
+    setTimeout(() => resolve(waitForCondition(cond, timeout, tries)), timeout);
+  });
+};

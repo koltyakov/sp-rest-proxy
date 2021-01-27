@@ -72,5 +72,7 @@ export const loadPageContext = (proxyEndpoint?: string): Promise<Partial<IPageCo
           return resolve(_spPageContextInfoFake);
         });
     }
+    // Not a localhost, but still no object model loaded
+    SP.SOD.executeFunc('sp.js', 'SP.ClientContext', () => resolve(_spPageContextInfo));
   });
 };

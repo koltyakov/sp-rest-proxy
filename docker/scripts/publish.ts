@@ -8,12 +8,8 @@ const log = console.log;
 const execPromise = (command: string): Promise<string> => {
   return new Promise((resolve, reject) => {
     exec(command, (err, stdout, stderr) => {
-      if (err) {
-        return reject(err);
-      }
-      if (stderr) {
-        return reject(stderr);
-      }
+      if (err) return reject(err);
+      if (stderr) return reject(stderr);
       resolve(stdout);
     });
   });
@@ -87,6 +83,7 @@ publish()
     log('=== Done ===');
   })
   .catch((err) => {
-    log('=== Failed ===');
+    log('=== Error log ===');
     log(err);
+    log('=== Failed ===');
   });

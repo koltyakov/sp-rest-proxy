@@ -22,7 +22,7 @@ export class Server {
     private app: express.Application
   ) {
     this.server = http.createServer(this.app);
-    this.io = SocketIO(this.server);
+    this.io = new SocketIO.Server(this.server);
     this.logger = new Logger(proxy.logLevel);
   }
 

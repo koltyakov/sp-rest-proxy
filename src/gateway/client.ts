@@ -1,4 +1,4 @@
-import * as SocketIOClient from 'socket.io-client';
+import SocketIOClient, { Socket } from 'socket.io-client';
 
 import fetch from 'node-fetch';
 import { Logger } from '../utils/logger';
@@ -6,7 +6,7 @@ import { IGatewayClientSettings, IProxySettings } from '../core/interfaces';
 
 export class Client {
 
-  private socket: SocketIOClient.Socket;
+  private socket: Socket;
   private logger: Logger;
 
   constructor (private settings: IGatewayClientSettings, private proxy: IProxySettings) {

@@ -24,7 +24,7 @@ export class RestGetRouter extends BasicRouter {
     this.sp.fetch(endpointUrl, { method: 'GET', headers })
       .then(this.handlers.isOK)
       .then(async (r) => {
-        const ct = new Headers(r.headers).get('content-type');
+        const ct = new Headers(r.headers).get('content-type') || '';
         if (ct.toLowerCase().indexOf('application/json') !== 0) {
           return r;
         }

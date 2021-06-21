@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { Headers, Response as FetchResponse } from 'node-fetch';
 
 import { BasicRouter } from '../BasicRouter';
 import { BodyInit } from 'node-fetch';
@@ -58,6 +59,35 @@ export class RestPostRouter extends BasicRouter {
 
     this.sp.fetch(endpointUrl, { method: 'POST', headers, body })
       .then(this.handlers.isOK)
+      .then(async (r) => {
+        const ct = new Headers(r.headers).get('content-type') || '';
+        if (ct.toLowerCase().indexOf('application/json') !== 0) {
+          return r;
+        }
+        try {
+          const body = await r.json();
+
+          // Paged collections patch
+          if (typeof body['odata.nextLink'] === 'string') {
+            body['odata.nextLink'] = this.url.proxyEndpoint(body['odata.nextLink']);
+          }
+          if (typeof body.d?.__next === 'string') {
+            body.d.__next = this.url.proxyEndpoint(body.d.__next);
+          }
+          // OData patch to PnPjs chained requests work
+          if (typeof body['odata.metadata'] === 'string') {
+            body['odata.metadata'] = this.url.proxyEndpoint(body['odata.metadata']);
+          }
+          // OData patch to PnPjs URI resolver, Verbose mode
+          if (body?.d?.__metadata?.uri) {
+            body.d.__metadata.uri = this.url.proxyEndpoint(body.d.__metadata.uri);
+          }
+
+          return new FetchResponse(JSON.stringify(body), r);
+
+        } catch (ex) { this.logger.error(ex); }
+        return r;
+      })
       .then(this.handlers.response(res))
       .catch(this.handlers.error(res));
   }

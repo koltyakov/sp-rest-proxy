@@ -164,6 +164,10 @@ module.exports = {
 };
 ```
 
+## Rollup Dev Server
+
+For [Rollup](https://rollupjs.org/guide/en/)-based workflows, e.g. [Vite](https://vitejs.dev) tools, please check community plugin: [rollup-plugin-sp-rest-proxy](https://github.com/rquanx/rollup-plugin-sp-rest-proxy).
+
 ## TypeScript support
 
 In early days of `sp-rest-proxy`, the library was written in ES6 and used `module.exports` which was kept after migrating to TypeScript later on for the backward compatibility reasons.

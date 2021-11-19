@@ -46,7 +46,7 @@ export class SPClient {
   public fetch = async (url: string, init: FetchOptions = {}): Promise<Response> => {
     const auth =  await spauth.getAuth(this.ctx.siteUrl, this.ctx.authOptions);
     let digest: string;
-    if (init.method === 'POST' || init.method === 'PUT' || init.method === 'PATCH' || init.method === 'DELETE') {
+    if (init.method === 'POST') {
       try {
         if (!digest && url.toLowerCase().indexOf('/_api/contextinfo') === -1) {
           digest = await this.requestDigest(url.split('/_api')[0].split('/_vti_bin')[0]);
@@ -58,9 +58,9 @@ export class SPClient {
       ...init,
       ...auth.options || {},
       headers: mergeHeaders(
-        new Headers({ 'X-RequestDigest': digest }),
-        new Headers(auth.headers),
         init?.headers,
+        new Headers(auth.headers),
+        new Headers(digest ? { 'X-RequestDigest': digest } : {}),
       )
     };
     return fetch(url, opts);

@@ -65,7 +65,8 @@ export class RestPostRouter extends BasicRouter {
           return r;
         }
         try {
-          const body = await r.json();
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const body = await r.json() as any;
 
           // Paged collections patch
           if (typeof body['odata.nextLink'] === 'string') {

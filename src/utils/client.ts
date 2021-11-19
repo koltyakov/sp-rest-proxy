@@ -85,7 +85,8 @@ export class SPClient {
         }
         return r.json();
       })
-      .then((r) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .then((r: any) => {
         const digest = r.d.GetContextWebInformation.FormDigestValue as string;
         const ttl = parseInt(r.d.GetContextWebInformation.FormDigestTimeoutSeconds, 10);
         cache.set(`${webUrl}:digest`, digest, ttl - 30 * 1000);

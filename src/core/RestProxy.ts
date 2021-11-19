@@ -28,6 +28,7 @@ import {
   IProxyCallback,
   IProxyErrorCallback
 } from './interfaces';
+import { RestDeleteRouter } from './routers/restDelete';
 
 export default class RestProxy {
 
@@ -146,10 +147,7 @@ export default class RestProxy {
       );
 
       // REST - GET requests (JSON)
-      this.routers.apiRestRouter.get(
-        '/*',
-        new RestGetRouter(context, this.settings).router
-      );
+      this.routers.apiRestRouter.get('/*', new RestGetRouter(context, this.settings).router);
 
       // REST - POST requests (JSON)
       this.routers.apiRestRouter.post(
@@ -160,6 +158,9 @@ export default class RestProxy {
         }),
         new RestPostRouter(context, this.settings).router
       );
+
+      // REST - DELETE requests, issue #133
+      this.routers.apiRestRouter.delete('/*', new RestDeleteRouter(context, this.settings).router);
 
       // Put and Patch workaround issue #59
       (() => {

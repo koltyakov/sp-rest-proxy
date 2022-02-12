@@ -7,9 +7,8 @@ const log = console.log;
 
 const execPromise = (command: string): Promise<string> => {
   return new Promise((resolve, reject) => {
-    exec(command, (err, stdout, stderr) => {
+    exec(command, (err, stdout) => {
       if (err) return reject(err);
-      if (stderr) return reject(stderr);
       resolve(stdout);
     });
   });

@@ -35,7 +35,7 @@
     "body-parser": "^1.19.1",
     "cors": "^2.8.5",
     "express": "^4.17.2",
-    "node-fetch": "^2.6.7",
+    "node-fetch": "^3.2.10",
     "node-sp-auth": "^3.0.4",
     "node-sp-auth-config": "^3.0.2",
     "socket.io": "^4.4.1",

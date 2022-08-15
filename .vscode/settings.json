@@ -1,7 +1,7 @@
 {
   "files.trimTrailingWhitespace": true,
   "editor.tabSize": 2,
-  "editor.autoIndent": true,
+  "editor.autoIndent": "full",
   "window.zoomLevel": 0,
   "git.enableSmartCommit": true,
   "git.confirmSync": false,

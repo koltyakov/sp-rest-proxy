@@ -42,10 +42,10 @@ async function publish () {
 
   log(`=== Building image for version ${version} ===`);
 
-  result = await execPromise(`cd docker && docker build -t ${repoName}:${version} .`);
+  result = await execPromise(`cd docker && docker build --platform linux/amd64 -t ${repoName}:${version} .`);
   log(result);
 
-  result = await execPromise(`cd docker && docker build -t ${repoName}:latest .`);
+  result = await execPromise(`cd docker && docker build --platform linux/amd64 -t ${repoName}:latest .`);
   log(result);
 
   log('=== Pushing images to docker hub ===');

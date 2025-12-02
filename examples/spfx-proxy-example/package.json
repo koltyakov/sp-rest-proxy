@@ -13,7 +13,7 @@
     "serve": "concurrently --kill-others \"npm run proxy\" \"gulp serve\""
   },
   "dependencies": {
-    "@microsoft/sp-core-library": "~1.8.0",
+    "@microsoft/sp-core-library": "~1.13.0",
     "@microsoft/sp-lodash-subset": "~1.8.0",
     "@microsoft/sp-office-ui-fabric-core": "~1.8.0",
     "@microsoft/sp-webpart-base": "~1.17.0",
